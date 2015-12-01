@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="fill_parent"
+    android:orientation="horizontal"
+    android:background="@drawable/generic_shadow"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginTop="8dp"
+    android:animateLayoutChanges="true"
+    >
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="10dp"
+        android:layout_height="fill_parent"
+        android:layout_alignParentTop="true"
+        android:id="@+id/symptom_row_color"
+        android:background="@color/Missing"
+        android:layout_marginTop="0dp"></LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/symptomrow_container"
+        android:animateLayoutChanges="true"
+        android:clickable="true">
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Large Text"
+                android:id="@+id/symptom_title"
+                android:layout_gravity="start"
+                android:layout_alignTop="@+id/symptom_input"
+                android:paddingRight="24dp"
+                android:textAlignment="textStart"
+                android:layout_alignParentStart="true" />
+
+            <Button
+                android:layout_width="@dimen/input_button"
+                android:layout_height="@dimen/input_button"
+                android:text="Missing"
+                android:textSize="11sp"
+                android:textColor="@android:color/darker_gray"
+                android:id="@+id/symptom_input"
+                android:background="@drawable/roundgrey"
+                android:layout_gravity="right"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="lorem ipsum dfldkjlfkjdlkf jsldafj alsdkfj laskdfj laksjdflkjsdflkj lkj dlkfjdlfkj ldkfj ldkfjdlf kjdlfk jdflkj   dlkfjdlfkjdlfkj"
+                android:id="@+id/symptom_desc"
+                android:paddingEnd="24dp"
+                android:textAlignment="inherit"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:layout_below="@+id/symptom_title"
+                android:layout_alignStart="@+id/symptom_title"
+                android:layout_toStartOf="@+id/symptom_input" />
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>

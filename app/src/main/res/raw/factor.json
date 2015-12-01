@@ -1,0 +1,24 @@
+﻿﻿[
+{
+"name": "Calorie intake",
+"range_min": 0,
+"range_max": 5000,
+"values": "",
+"key": "factor_calorieintake",
+"input": "tracked",
+"rep_window": "day",
+"type": "factor",
+"desc": "How many calories have you eaten or consumed during the day."
+},
+{
+"name": "Daily exercise",
+"range_min": null,
+"range_max": null,
+"values": "biking, running, swimming, gym, team sports, walking",
+"key": "factor_dailyexercise",
+"input": "multiple",
+"rep_window": "day",
+"type": "factor",
+"desc": "What exercise activities you have performed during the day"
+}
+]

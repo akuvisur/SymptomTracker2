@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Small Text"
+        android:id="@+id/value_text"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/has_image"
+        android:padding="4dp"
+        android:gravity="end"
+        android:visibility="invisible"/>
+
+    <ImageButton
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:id="@+id/has_comment"
+        android:src="@drawable/notes"
+        android:scaleType="fitXY"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:visibility="invisible"
+        android:background="@android:color/transparent"
+        android:padding="4dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="4dp"/>
+
+    <ImageButton
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:id="@+id/has_image"
+        android:src="@drawable/camera"
+        android:scaleType="fitXY"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/has_comment"
+        android:visibility="invisible"
+        android:background="@android:color/transparent"
+        android:padding="4dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="4dp"/>
+</RelativeLayout>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/top_level"
+        android:animateLayoutChanges="true">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:id="@+id/data_selectionbar"
+            android:padding="4dp">
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="12 hours"
+                android:textColor="@color/white"
+                android:id="@+id/data_grouping_option"
+                android:padding="4dp"
+                android:layout_marginRight="12dp"
+                android:clickable="true"
+                android:background="@color/Factor_highlight"/>
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:id="@+id/data_symptom_checkbox"
+                android:checked="true"/>
+
+            <TextView
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Symptoms"
+                android:textColor="@color/white"
+                android:id="@+id/data_symptoms"
+                android:padding="4dp"
+                android:layout_marginRight="8dp"
+                android:clickable="true"
+                android:background="@color/colorPrimaryDark"/>
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:id="@+id/data_factor_checkbox"
+                android:checked="true"/>
+
+            <TextView
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Factors"
+                android:textColor="@color/white"
+                android:id="@+id/data_factors"
+                android:padding="4dp"
+                android:layout_marginRight="8dp"
+                android:clickable="true"
+                android:background="@color/colorPrimaryDark"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/data_extracontainer"
+            android:animateLayoutChanges="true">
+
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/data_selectorcontainer"
+            android:animateLayoutChanges="true">
+
+        </LinearLayout>
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/data_scrollview">
+
+            <com.github.mikephil.charting.charts.BubbleChart
+                android:id="@+id/data_symptomchart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="50dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:contentDescription=""
+                android:animateLayoutChanges="true"
+                android:layout_marginRight="20dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/generic_shadow"/>
+
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

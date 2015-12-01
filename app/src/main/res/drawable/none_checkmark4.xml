@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape xmlns:android="http://schemas.android.com/apk/res/android"
+            android:shape="rectangle">
+            <solid android:color="@color/None"/>
+            <corners android:bottomRightRadius="100dp"
+                android:bottomLeftRadius="100dp"
+                android:topRightRadius="100dp"
+                android:topLeftRadius="100dp"/>
+            <stroke android:width="3dp"
+                android:color="@color/None_stroke"/>
+
+        </shape>
+    </item>
+    <item android:drawable="@drawable/checkmark4"></item>
+</layer-list>

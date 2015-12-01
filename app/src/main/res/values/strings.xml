@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">SymptomTracker</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_symptoms">Symptoms</string>
+    <string name="action_factors">Factors</string>
+    <string name="action_data">View data</string>
+    <string name="help_popup_interval">The time between possible popup launches, each launch uses \'Popup frequency\' to determine whether to launch a popup or not. Unit in milliseconds, 60000 milliseconds = 1 minute.</string>
+    <string name="help_notification_hour">The preferred time for a reminder notification to show up if you have missing data for that day.</string>
+    <string name="help_popup_frequency">The approximated possibility(%) (when using simple prediction mode) to create a popup if you have missing data.</string>
+</resources>

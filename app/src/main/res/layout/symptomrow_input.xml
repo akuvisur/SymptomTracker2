@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/symptom_desc"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="4dp">
+
+        <Button
+            android:layout_width="@dimen/input_button"
+            android:layout_height="@dimen/input_button"
+            android:textSize="11sp"
+            android:text="None"
+            android:id="@+id/symptom_none"
+            android:background="@drawable/round_none"
+            android:layout_gravity="right"
+            android:layout_marginEnd="30dp"
+            android:textColor="@color/black"/>
+
+        <Button
+            android:layout_width="@dimen/input_button"
+            android:layout_height="@dimen/input_button"
+            android:textSize="11sp"
+            android:text="Mild"
+            android:id="@+id/symptom_mild"
+            android:background="@drawable/round_mild"
+            android:layout_gravity="right"
+            android:layout_marginEnd="30dp"
+            android:textColor="@color/black"/>
+
+        <Button
+            android:layout_width="@dimen/input_button"
+            android:layout_height="@dimen/input_button"
+            android:textSize="11sp"
+            android:text="Severe"
+            android:id="@+id/symptom_severe"
+            android:background="@drawable/round_severe"
+            android:layout_gravity="right"
+            android:textColor="@color/black"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="6dp"
+    android:paddingTop="6dp"
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp"
+    android:background="@color/hilight"
+    android:id="@+id/symptom_detail_background">
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white">
+        <com.github.mikephil.charting.charts.BarChart
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/symptom_detail_bar"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignBottom="@+id/symptom_detail_line"
+            android:clickable="true"/>
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_alignParentStart="true"
+            android:id="@+id/symptom_detail_line"
+            android:layout_toStartOf="@+id/symptom_detail_bar"
+            />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/symptom_detail_extracontainer"
+        android:animateLayoutChanges="true"
+        android:padding="4dp"
+        android:background="@color/white"
+        />
+</LinearLayout>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#84D1D0</color>
+    <color name="colorPrimaryDark">#04889F</color>
+    <color name="colorAccent">#73B985</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#202020</color>
+    <color name="green">#5CD65C</color>
+    <color name="hilight">#D6D6D6</color>
+
+    <!-- Soft color scheme for list item backgrounds -->
+    <color name="list1">#04889F</color>
+    <color name="list2">#4F9E64</color>
+    <color name="list6">#80D2FF</color>
+    <color name="list5">#FFA1BA</color>
+    <color name="list4">#F36F3C</color>
+    <color name="list3">#d34dff</color>
+    <color name="list7">#79ff4d</color>
+    <color name="list10">#FFAD5B</color>
+    <color name="list9">#202020</color>
+    <color name="list8">#82FFB4</color>
+
+    <!-- Symptom colors -->
+    <color name="None">#C4D0D0</color>
+    <color name="None_stroke">#ACBDBD</color>
+    <color name="Mild">#FEE476</color>
+    <color name="Mild_stroke">#FFDC4F</color>
+    <color name="Severe">#F36F3C</color>
+    <color name="Severe_stroke">#F68F67</color>
+
+    <color name="Missing">#FFFFFF</color>
+
+    <!-- Element generic colors -->
+    <color name="Symptom">#95A2DD</color>
+    <color name="Symptom_lighter">#b2bbe6</color>
+    <color name="Factor">#73B985</color>
+    <color name="Factor_highlight">#4F9E64</color>
+    <color name="Settings">#555555</color>
+    <color name="Dataview">#FFAD5B</color>
+
+    <!-- Factor hues for charting -->
+    <color name="Factor1">#73b985</color>
+    <color name="Factor2">#b97373</color>
+    <color name="Factor3">#73b9b9</color>
+    <color name="Factor4">#8473b9</color>
+    <color name="Factor5">#b973a7</color>
+    <color name="Factor6">#b97373</color>
+</resources>
