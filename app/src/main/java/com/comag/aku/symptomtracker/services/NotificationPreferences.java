@@ -5,6 +5,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.comag.aku.symptomtracker.Settings;
+import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.comag.aku.symptomtracker.model.NoSQLStorage;
 
 import java.util.HashMap;
@@ -46,7 +47,7 @@ public class NotificationPreferences {
         //Log.d("notiprefs", "bothercount: " + botherCount);
     }
 
-    private static double getCurrentDummyPreference() {
+    private static int getCurrentDummyPreference() {
         init();
         okCount = sharedPrefs.getInt("okcount", 0);
         botherCount = sharedPrefs.getInt("bothercount", 0);
@@ -58,21 +59,25 @@ public class NotificationPreferences {
         // starting from range of 25% to 75% and going down to range of 5% to 95%
         double b =  (25 - ((Math.min(1.0, ((double) (okCount+botherCount)/100)))*20)) / 100;
         // if a is outside the given accepted window, return a boundary value
-        if (a < b) return b;
-        else if (a > (100-b)) return 100-b;
-        else return a;
+        if (a < b) return (int) b;
+        else if (a > (100-b)) return (int) (100-b);
+        else return (int) a;
     }
 
-    private static double getCurrentLearningPreference() {
+    private static int getCurrentLearningPreference() {
         return 50;
     }
 
-    public static double getCurrentPreference() {
+    public static int getCurrentPreference() {
         switch (NotificationService.getMode()) {
             case DUMMY_MODE:
-                return getCurrentDummyPreference();
+                int pref = getCurrentDummyPreference();
+                AppPreferences.userSettings.setPopupFrequency(pref);
+                return pref;
             case LEARNING_MODE:
-                return getCurrentLearningPreference();
+                pref =  getCurrentLearningPreference();
+                AppPreferences.userSettings.setPopupFrequency(pref);
+                return pref;
             default:
                 return 50;
         }

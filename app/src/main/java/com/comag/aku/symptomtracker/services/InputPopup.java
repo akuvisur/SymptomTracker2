@@ -21,6 +21,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.colintmiller.simplenosql.NoSQL;
 import com.colintmiller.simplenosql.NoSQLEntity;
@@ -113,6 +114,7 @@ public class InputPopup {
                 anim = AnimationUtils.loadAnimation(NotificationService.getContext(), R.anim.anim_out_left);
                 anim.setDuration(250);
                 popupLayout.startAnimation(anim);
+                Toast.makeText(NotificationService.getContext(), "I will try to bother you less frequently", Toast.LENGTH_SHORT).show();
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -125,6 +127,7 @@ public class InputPopup {
                             case LEARNING_MODE:
                                 break;
                         }
+
                     }
                 }, 250);
             }
@@ -164,6 +167,7 @@ public class InputPopup {
                 anim = AnimationUtils.loadAnimation(NotificationService.getContext(), android.R.anim.slide_out_right);
                 anim.setDuration(250);
                 popupLayout.startAnimation(anim);
+                Toast.makeText(NotificationService.getContext(), "Inputted values saved.", Toast.LENGTH_SHORT).show();
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {

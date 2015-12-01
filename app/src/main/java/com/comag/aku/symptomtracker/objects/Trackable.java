@@ -5,5 +5,6 @@ package com.comag.aku.symptomtracker.objects;
  */
 public class Trackable {
     public String rep_window;
+    public String type;
 
 }

@@ -20,6 +20,7 @@ import com.comag.aku.symptomtracker.model.ApiManager;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.comag.aku.symptomtracker.model.DatabaseStorage;
 import com.comag.aku.symptomtracker.objects.Schema;
+import com.comag.aku.symptomtracker.services.NotificationService;
 
 import java.util.TreeMap;
 
@@ -31,6 +32,8 @@ public class Launch extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Settings.currentContext = getApplicationContext();
         Settings.currentActivity = this;
+
+        startService(new Intent(this, NotificationService.class));
 
         if (Settings.DEBUG) AppPreferences.clear();
         else {

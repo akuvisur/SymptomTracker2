@@ -1,27 +1,18 @@
 package com.comag.aku.symptomtracker;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.PixelFormat;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -29,7 +20,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
@@ -47,6 +37,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.comag.aku.symptomtracker.graphics.LeaveStudy;
+import com.comag.aku.symptomtracker.graphics.NewSymptom;
 import com.comag.aku.symptomtracker.graphics.FactorDataViewer;
 import com.comag.aku.symptomtracker.graphics.listeners.BubbleSelectorListener;
 import com.comag.aku.symptomtracker.graphics.SymptomDataViewer;
@@ -62,7 +54,6 @@ import com.comag.aku.symptomtracker.objects.Factor;
 import com.comag.aku.symptomtracker.objects.ValueMap;
 import com.comag.aku.symptomtracker.objects.tracking.Condition;
 import com.comag.aku.symptomtracker.services.NotificationPreferences;
-import com.comag.aku.symptomtracker.services.NotificationService;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.BubbleChart;
@@ -93,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
         Settings.currentActivity = this;
         Settings.currentContext = getApplicationContext();
         Settings.factory = LayoutInflater.from(this);
-        startService(new Intent(this, NotificationService.class));
     }
 
     @Override
@@ -367,11 +357,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void addSymptom(View view) {
-        Log.d("addsymptom", "click");
+        new NewSymptom().show(Settings.currentActivity);
     }
 
     public static void leaveStudy(View view) {
-        Log.d("leavestudy", "click");
+        new LeaveStudy().show(Settings.currentActivity);
     }
 
     public static LinearLayout scrollContainer;

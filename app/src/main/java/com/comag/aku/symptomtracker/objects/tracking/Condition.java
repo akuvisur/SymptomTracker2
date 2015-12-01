@@ -115,27 +115,22 @@ public class Condition {
     }
 
     public boolean isMonth(int month) {
-        if (isYear() && this.month == month) return true;
-        else return false;
+        return (isYear() && this.month == month);
     }
 
     public boolean isWeek(int week) {
-        if (isYear() && this.week == week) return true;
-        else return false;
+        return (isYear() && this.week == week);
     }
 
     public boolean isDay(int day) {
         //Log.d("isDAY()", String.valueOf(day) + " compared to conditions " + this.day);
-        if (isYear() && this.day == day) return true;
-        else return false;
+        return (isYear() && this.day == day);
     }
 
     // compare given hour to this conditions hour
     public boolean isHour(int hour) {
         //Log.d("isHour()", String.valueOf(hour) + " compared to conditions " + this.hour);
-        if (isYear() && this.day == Settings.cal.get(Calendar.DAY_OF_YEAR) && this.hour == hour)
-            return true;
-        else return false;
+        return (isYear() && this.day == Settings.cal.get(Calendar.DAY_OF_YEAR) && this.hour == hour);
     }
 
     public boolean isCurrent() {
@@ -161,16 +156,21 @@ public class Condition {
     private String getRepWindow() {
         String rep_window = "";
         if (!AppPreferences.symptoms.isEmpty()) {
-            switch(type) {
-                case "symptom":
-                    rep_window = AppPreferences.symptoms.get(key).rep_window;
-                    break;
-                case "factor":
-                    rep_window = AppPreferences.factors.get(key).rep_window;
-                    break;
-                default:
-                    rep_window = "day";
+            try {
+                switch(type) {
+                    case "symptom":
+                        return AppPreferences.symptoms.get(key).rep_window;
+                    case "factor":
+                        return AppPreferences.factors.get(key).rep_window;
+                    default:
+                        return "day";
+                }
             }
+            catch (NullPointerException e) {
+                // no rep window?
+                return "day";
+            }
+
         }
         return rep_window;
     }

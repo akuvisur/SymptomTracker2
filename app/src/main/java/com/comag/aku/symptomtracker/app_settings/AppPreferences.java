@@ -38,6 +38,7 @@ public class AppPreferences {
     private static SharedPreferences sharedPrefs;
     public static Schema schema;
     public static HashMap<String, Symptom> symptoms = new HashMap<>();
+    public static HashMap<String, Symptom> generatedSymptoms = new HashMap<>();
     public static TreeMap<String, Factor> factors = new TreeMap<>();
 
     public static UserSettings userSettings;
@@ -68,16 +69,27 @@ public class AppPreferences {
         if (Settings.DEBUG) NoSQLStorage.clear();
     }
 
+    public static void addUserSymptom(Symptom s) {
+        Log.d("prefs", "adding user generated symptom: " + s.toString());
+        generatedSymptoms.put(s.key, s);
+        symptoms.put(s.key, s);
+        addSymptoms();
+    }
+
     public static void addSymptoms() {
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.putString("symptoms", gson.toJson(AppPreferences.symptoms));
-        editor.commit();
+        Log.d("addSymptoms", gson.toJson(AppPreferences.symptoms));
+        editor.putString("generated", gson.toJson(AppPreferences.generatedSymptoms));
+        Log.d("addGenerated", gson.toJson(AppPreferences.generatedSymptoms));
+
+        editor.apply();
     }
 
     public static void addFactors() {
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.putString("factors", gson.toJson(AppPreferences.factors));
-        editor.commit();
+        editor.apply();
     }
 
     public static boolean hasLoaded() {
@@ -92,11 +104,6 @@ public class AppPreferences {
         }
         else {
             //Log.d("schema", sharedPrefs.getString("schema", "{}"));
-            try {
-                JSONObject schemaObj = new JSONObject(sharedPrefs.getString("schema", "{}"));
-
-            }
-            catch (JSONException e) {}
             schema = gson.fromJson(sharedPrefs.getString("schema", "{}"), Schema.class);
 
             // use normal JSONObject because it has a constructor directly from a string
@@ -105,13 +112,27 @@ public class AppPreferences {
                 Iterator<String> keys = o.keys();
                 while (keys.hasNext()) {
                     String key = keys.next();
+                    Log.d("loading", "normal symptoms " + o.getJSONObject(key));
                     // use the gson serializer to generate a JsonObject for Symptom constructor
-                    symptoms.put(o.getJSONObject(key).getString("key"), gson.fromJson(o.getJSONObject(key).getString("json"), Symptom.class));
+                    symptoms.put(o.getJSONObject(key).getString("key"), gson.fromJson(o.getJSONObject(key).toString(), Symptom.class));
                     //Log.d("prefs", "added to symptoms");
                 }
             }
             catch (JSONException e) {e.printStackTrace();}
 
+            try {
+                JSONObject o = new JSONObject(sharedPrefs.getString("generated", "{}"));
+                Iterator<String> keys = o.keys();
+                while (keys.hasNext()) {
+                    String key = keys.next();
+                    Log.d("loading", "generated symptoms " + o.getJSONObject(key));
+                    // use the gson serializer to generate a JsonObject for Symptom constructor
+                    symptoms.put(o.getJSONObject(key).getString("key"), gson.fromJson(o.getJSONObject(key).toString(), Symptom.class));
+                    generatedSymptoms.put(o.getJSONObject(key).getString("key"), gson.fromJson(o.getJSONObject(key).toString(), Symptom.class));
+                    //Log.d("prefs", "added to symptoms");
+                }
+            }
+            catch (JSONException e) {e.printStackTrace();}
             //Log.d("symptoms map", symptoms.toString());
 
             try {

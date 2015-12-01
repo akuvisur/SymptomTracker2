@@ -39,7 +39,7 @@ public class Symptoms implements Callback<JsonObject> {
 
     @Override
     public void onFailure(Throwable t) {
-        Toast.makeText(Settings.currentContext, "Loading factors - No internet connection available?", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(Settings.currentContext, "Loading factors - No internet connection available?", Toast.LENGTH_SHORT).show();
         Log.d("symptoms API", "failed to load, no internet connection?" +t);
     }
 }

@@ -16,7 +16,6 @@ public class Factor extends Trackable {
     public JsonObject json;
 
     public String name;
-    public String type;
     public String key;
     public String input;
     public String desc;

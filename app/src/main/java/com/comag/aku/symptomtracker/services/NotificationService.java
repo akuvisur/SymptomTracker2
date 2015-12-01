@@ -115,7 +115,7 @@ public class NotificationService extends IntentService {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        Log.d("postnew", "was not running - launch!");
+                        //Log.d("postnew", "was not running - launch!");
                         emitNotification();
                         new InputPopup().show();
                         showingPopup = true;
@@ -126,7 +126,7 @@ public class NotificationService extends IntentService {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        Log.d("postnew", "was running");
+                        //Log.d("postnew", "was running");
                         emitDummyMode();
                     }
                 }, AppPreferences.userSettings.getPopupInterval());
@@ -137,7 +137,7 @@ public class NotificationService extends IntentService {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    Log.d("postnew", "user didnt liek!");
+                    //Log.d("postnew", "user didnt liek!");
                     emitDummyMode();
                 }
             }, AppPreferences.userSettings.getPopupInterval());
