@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Handler;
 import android.widget.Toast;
 
 import com.comag.aku.symptomtracker.Launch;
@@ -32,8 +33,13 @@ public class LeaveStudy {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         AppPreferences.clear();
-                        Settings.currentActivity.startActivity(new Intent(Settings.currentActivity, Launch.class));
-                        Toast.makeText(Settings.currentContext, "Cleared settings", Toast.LENGTH_LONG).show();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Settings.currentActivity.startActivity(new Intent(Settings.currentActivity, Launch.class));
+                                Toast.makeText(Settings.currentContext, "Cleared settings", Toast.LENGTH_LONG).show();
+                            }
+                        }, 1000);
                     }
                 });
         dialog = dialogBuilder.create();

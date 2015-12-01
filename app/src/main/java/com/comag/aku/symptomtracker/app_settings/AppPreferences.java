@@ -201,6 +201,10 @@ public class AppPreferences {
         init();
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.clear();
-        editor.commit();
+        editor.apply();
+    }
+
+    public static boolean appIsSetUp() {
+        return load();
     }
 }

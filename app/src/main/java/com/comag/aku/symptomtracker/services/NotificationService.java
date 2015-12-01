@@ -93,6 +93,7 @@ public class NotificationService extends IntentService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (!AppPreferences.appIsSetUp()) return START_NOT_STICKY;
         if (!AppPreferences.hasLoaded()) AppPreferences.load();
         switch (mode) {
             case DUMMY_MODE:
