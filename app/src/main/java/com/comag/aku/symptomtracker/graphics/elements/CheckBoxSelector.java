@@ -97,9 +97,9 @@ public class CheckBoxSelector {
                 MainActivity.dataFactors.add(key);
                 _this.setChecked(true);
                 if (AppPreferences.factors.get(key).input.equals("tracked"))
-                    MainActivity.scrollContainer.addView(FactorDataViewer.generateFactorCombinedChart(key, (int) Math.random() * 6));
+                    MainActivity.scrollContainer.addView(FactorDataViewer.generateFactorCombinedChart(key, (int) (Math.random() * 6)));
                 else
-                    MainActivity.scrollContainer.addView(FactorDataViewer.generateFactorBarChart(key, (int) Math.random() * 6));
+                    MainActivity.scrollContainer.addView(FactorDataViewer.generateFactorBarChart(key, (int) (Math.random() * 6)));
             }
             MainActivity.chartChanged();
         }

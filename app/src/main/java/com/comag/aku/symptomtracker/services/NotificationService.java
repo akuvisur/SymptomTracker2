@@ -39,7 +39,8 @@ public class NotificationService extends IntentService {
 
     public static int NOTIFICATION_DELAY_MS = 120000;
 
-    public enum NotificationMode { DUMMY_MODE, LEARNING_MODE };
+    public enum NotificationMode { DUMMY_MODE, LEARNING_MODE }
+
     private static NotificationMode mode = NotificationMode.DUMMY_MODE;
     public static NotificationMode getMode() {return mode;}
     public static void setMode(NotificationMode newMode) {mode = newMode;}

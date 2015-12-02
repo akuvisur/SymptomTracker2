@@ -17,7 +17,6 @@ import com.comag.aku.symptomtracker.services.NotificationService;
  * Created by aku on 01/12/15.
  */
 public class LeaveStudy {
-    private Dialog dialog;
 
     public void show(Activity a) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(a);
@@ -43,7 +42,7 @@ public class LeaveStudy {
                         }, 1000);
                     }
                 });
-        dialog = dialogBuilder.create();
+        Dialog dialog = dialogBuilder.create();
         dialog.show();
     }
 }

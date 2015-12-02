@@ -139,9 +139,8 @@ public class Launch extends AppCompatActivity {
         }
     }
 
-    private AlertDialog.Builder builder;
     public void emitNotification(View view) {
-        builder = new AlertDialog.Builder(AppHelpers.currentActivity);
+        AlertDialog.Builder builder = new AlertDialog.Builder(AppHelpers.currentActivity);
         builder.setView(R.layout.symptomrow);
         builder.setTitle("Add a symptom");
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {

@@ -291,8 +291,8 @@ public class MainActivity extends AppCompatActivity {
                 AppPreferences.setUserSetting(AppPreferences.POPUP_AUTOMATED, isChecked);
                 popupFreq.setEnabled(!isChecked);
                 if (isChecked) {
-                    popupFreqText.setText(String.valueOf((int) (NotificationPreferences.getCurrentPreference() * 100)));
-                    popupFreq.setProgress((int) (NotificationPreferences.getCurrentPreference() * 100));
+                    popupFreqText.setText(String.valueOf(NotificationPreferences.getCurrentPreference() * 100));
+                    popupFreq.setProgress(NotificationPreferences.getCurrentPreference() * 100);
                 }
                 Toast.makeText(AppHelpers.currentContext, "Popup automation changed to " + isChecked, Toast.LENGTH_SHORT).show();
             }
@@ -405,9 +405,6 @@ public class MainActivity extends AppCompatActivity {
     public TextView symButton;
     public TextView facButton;
 
-    private CheckBox symCheck;
-    private CheckBox facCheck;
-
     public static ArrayList<String> dataSymptoms = new ArrayList<>();
     public static ArrayList<String> dataFactors = new ArrayList<>();
 
@@ -433,7 +430,7 @@ public class MainActivity extends AppCompatActivity {
 
         symptomChart = (BubbleChart) findViewById(R.id.data_symptomchart);
 
-        symCheck = (CheckBox) findViewById(R.id.data_symptom_checkbox);
+        CheckBox symCheck = (CheckBox) findViewById(R.id.data_symptom_checkbox);
         symCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -441,7 +438,7 @@ public class MainActivity extends AppCompatActivity {
                 else scrollContainer.removeView(symptomChart);
             }
         });
-        facCheck = (CheckBox) findViewById(R.id.data_factor_checkbox);
+        CheckBox facCheck = (CheckBox) findViewById(R.id.data_factor_checkbox);
         facCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -449,8 +446,7 @@ public class MainActivity extends AppCompatActivity {
                     for (View v : factorViews.values()) {
                         scrollContainer.addView(v);
                     }
-                }
-                else {
+                } else {
                     for (View v : factorViews.values()) {
                         scrollContainer.removeView(v);
                     }
@@ -631,10 +627,9 @@ public class MainActivity extends AppCompatActivity {
         symptomChart.setLayoutParams(p);
     }
 
-    private static Animation chartAnim;
     private static void animateChart() {
         symptomChart.animateXY(750, 750, Easing.EasingOption.EaseInQuart, Easing.EasingOption.EaseOutQuart);
-        chartAnim = AnimationUtils.loadAnimation(AppHelpers.currentContext, android.R.anim.fade_in);
+        Animation chartAnim = AnimationUtils.loadAnimation(AppHelpers.currentContext, android.R.anim.fade_in);
         chartAnim.setDuration(250);
         symptomChart.startAnimation(chartAnim);
     }
@@ -674,7 +669,7 @@ public class MainActivity extends AppCompatActivity {
                     factorCharts.get(key).invalidate();
                     break;
                 case "multiple":
-                    ((BarChart) factorCharts.get(key)).setData(FactorDataViewer.generateFactorBarChartData(key, FactorDataViewer.chartOrder.get(key)));
+                    factorCharts.get(key).setData(FactorDataViewer.generateFactorBarChartData(key, FactorDataViewer.chartOrder.get(key)));
                     factorCharts.get(key).notifyDataSetChanged();
                     factorCharts.get(key).invalidate();
                     break;
@@ -691,7 +686,8 @@ public class MainActivity extends AppCompatActivity {
         extraContainer.getChildAt(0).startAnimation(anim);
         new Handler().postDelayed(new Runnable() {
             @Override
-            public void run() {extraContainer.removeAllViews();
+            public void run() {
+                extraContainer.removeAllViews();
             }
         }, 250);
     }

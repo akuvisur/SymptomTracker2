@@ -47,33 +47,12 @@ import java.util.List;
  * Created by aku on 04/11/15.
  */
 public class FactorRowAdapter extends ArrayAdapter<Factor> {
-    private LinearLayout container;
-    private LinearLayout stateBar;
-    private TextView title;
-    private TextView desc;
-    private Button stateButton;
-    private View extraRow;
 
-    private TextView commentButton;
-    private TextView cameraButton;
-
-    private SeekBar rangeBar;
-    private TextView rangeText;
-    private TextView minValue;
-    private TextView maxValue;
-
-    private ImageButton extraCommentButton;
     private ImageButton extraCameraButton;
-    private TextView extraValueText;
-
-    private Animation anim;
 
     View addElement;
     View inputElement;
     HashMap<String, View> rows;
-
-    private int curPosition = 0;
-    private Factor curFactor;
 
     List<Factor> objects;
 
@@ -88,9 +67,6 @@ public class FactorRowAdapter extends ArrayAdapter<Factor> {
     HashMap<String, View> addElements;
 
     HashMap<String, ImageButton> okButtons;
-
-    // "view", "input", "done"
-    private String state = "view" ;
 
     public FactorRowAdapter(Context context, int resource, List<Factor> objects) {
         super(context, resource, objects);
@@ -116,9 +92,9 @@ public class FactorRowAdapter extends ArrayAdapter<Factor> {
         LayoutInflater inflater = (LayoutInflater) AppHelpers.currentContext
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        curPosition = position;
-        curFactor = objects.get(position);
-        state = UIManager.getFactorState(curFactor.key);
+        int curPosition = position;
+        Factor curFactor = objects.get(position);
+        String state = UIManager.getFactorState(curFactor.key);
 
         if (MainActivity.onlyShowMissingFactors && !Values.fetch(curFactor.key).getValue().equals("missing")) {
             rowView = inflater.inflate(R.layout.emptylistitem, null);
@@ -130,22 +106,22 @@ public class FactorRowAdapter extends ArrayAdapter<Factor> {
 
         ValueMap value = Values.fetch(curFactor.key);
 
-        container = (LinearLayout) rowView.findViewById(R.id.factorrow_container);
+        LinearLayout container = (LinearLayout) rowView.findViewById(R.id.factorrow_container);
         container.setOnTouchListener(containerTouchListeners.get(curFactor.key));
 
-        stateBar = (LinearLayout) rowView.findViewById(R.id.factor_row_color);
+        LinearLayout stateBar = (LinearLayout) rowView.findViewById(R.id.factor_row_color);
 
-        title = (TextView) rowView.findViewById(R.id.factor_title);
+        TextView title = (TextView) rowView.findViewById(R.id.factor_title);
         title.setText(curFactor.name);
         title.setTextColor(ContextCompat.getColor(AppHelpers.currentContext, R.color.black));
 
-        desc = (TextView) rowView.findViewById(R.id.factor_desc);
+        TextView desc = (TextView) rowView.findViewById(R.id.factor_desc);
         desc.setText(curFactor.desc);
 
-        stateButton = (Button) rowView.findViewById(R.id.factor_input);
+        Button stateButton = (Button) rowView.findViewById(R.id.factor_input);
         stateButton.setOnClickListener(stateButtonListeners.get(curFactor.key));
 
-        extraRow = inflater.inflate(R.layout.extrarow, parent, false);
+        View extraRow = inflater.inflate(R.layout.extrarow, parent, false);
 
         switch (value.getValue()) {
             case "missing":
@@ -163,7 +139,7 @@ public class FactorRowAdapter extends ArrayAdapter<Factor> {
                         stateButton.setBackground(ContextCompat.getDrawable(AppHelpers.currentContext, R.drawable.checkmark_primary));
                         stateButton.setText("");
                         stateBar.setBackgroundColor(ContextCompat.getColor(AppHelpers.currentContext, R.color.colorPrimaryDark));
-                        extraValueText = (TextView) extraRow.findViewById(R.id.value_text);
+                        TextView extraValueText = (TextView) extraRow.findViewById(R.id.value_text);
                         extraValueText.setText(value.getValue());
                         extraValueText.setVisibility(View.VISIBLE);
                         break;
@@ -171,7 +147,7 @@ public class FactorRowAdapter extends ArrayAdapter<Factor> {
         }
 
         if (value.hasComment()) {
-            extraCommentButton = (ImageButton) extraRow.findViewById(R.id.has_comment);
+            ImageButton extraCommentButton = (ImageButton) extraRow.findViewById(R.id.has_comment);
             extraCommentButton.setVisibility(View.VISIBLE);
         }
 
@@ -184,25 +160,27 @@ public class FactorRowAdapter extends ArrayAdapter<Factor> {
             container.addView(extraRow);
         }
 
+        Animation anim;
         if (state.equals("input")) {
             switch (curFactor.input) {
                 case "tracked":
                     inputElement = AppHelpers.factory.inflate(R.layout.factorrow_input_range, null);
 
-                    rangeBar = (SeekBar) inputElement.findViewById(R.id.factor_input_range);
+                    SeekBar rangeBar = (SeekBar) inputElement.findViewById(R.id.factor_input_range);
                     rangeBar.setOnSeekBarChangeListener(rangeInputListeners.get(curFactor.key));
                     rangeBar.setMax(Integer.valueOf(curFactor.range_max));
 
-                    rangeText = (TextView) inputElement.findViewById(R.id.factor_input_range_value);
+                    TextView rangeText = (TextView) inputElement.findViewById(R.id.factor_input_range_value);
 
                     ((RangeBarListener) rangeInputListeners.get(curFactor.key)).setTextView(rangeText);
 
-                    minValue = (TextView) inputElement.findViewById(R.id.min_range);
+                    TextView minValue = (TextView) inputElement.findViewById(R.id.min_range);
                     minValue.setText(curFactor.range_min);
-                    maxValue = (TextView) inputElement.findViewById(R.id.max_range);
+                    TextView maxValue = (TextView) inputElement.findViewById(R.id.max_range);
                     maxValue.setText(curFactor.range_max);
 
-                    try {rangeBar.setProgress(Integer.valueOf(value.getValue()));
+                    try {
+                        rangeBar.setProgress(Integer.valueOf(value.getValue()));
                         rangeText.setText(value.getValue());
                     } catch (NumberFormatException e) {}
 
@@ -227,11 +205,11 @@ public class FactorRowAdapter extends ArrayAdapter<Factor> {
             addElement = AppHelpers.factory.inflate(R.layout.factorrow_add, null);
             addElements.put(curFactor.key, addElement);
 
-            commentButton = (TextView) addElement.findViewById(R.id.add_comment);
+            TextView commentButton = (TextView) addElement.findViewById(R.id.add_comment);
             commentButton.setOnClickListener(commentButtonListeners.get(curFactor.key));
             if (value.hasComment()) { commentButton.setText("Edit notes");}
 
-            cameraButton = (TextView) addElement.findViewById(R.id.add_picture);
+            TextView cameraButton = (TextView) addElement.findViewById(R.id.add_picture);
             cameraButton.setOnClickListener(cameraButtonListeners.get(curFactor.key));
             if (value.hasPicture()) { cameraButton.setText("Replace picture");}
 

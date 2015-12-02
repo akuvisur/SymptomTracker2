@@ -55,18 +55,6 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
     private final GestureDetector gestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener() {
         public void onLongPress(MotionEvent e) {Log.d("SymptomAdapter", "Longpress detected : " + curSymptom.toString());}});
 
-    private LinearLayout container;
-    private LinearLayout stateBar;
-    private TextView title;
-    private TextView desc;
-    private Button stateButton;
-    private Button noneButton;
-    private Button mildButton;
-    private Button severeButton;
-    private TextView commentButton;
-    private TextView cameraButton;
-
-    private ImageButton extraCommentButton;
     private ImageButton extraCameraButton;
 
     View addElement;
@@ -90,10 +78,6 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
     HashMap<String, View> inputElements;
     HashMap<String, View> addElements;
 
-    private View extraRow;
-
-    // "view", "input", "done"
-    private String state = "view";
     private boolean firstVisibleElementFound = false;
 
     public SymptomRowAdapter(Context context, int resource, List<Symptom> objects) {
@@ -124,7 +108,7 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         curSymptom = objects.get(position);
-        state = UIManager.getSymptomState(curSymptom.key);
+        String state = UIManager.getSymptomState(curSymptom.key);
         if (MainActivity.onlyShowMissingSymptoms && !Values.fetch(curSymptom.key).getValue().equals("missing")) {
             rowView = inflater.inflate(R.layout.emptylistitem, null);
             UIManager.switchSymptomState(curSymptom.key, "view");
@@ -140,19 +124,19 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
 
         rowView = inflater.inflate(R.layout.symptomrow, null);
 
-        container = (LinearLayout) rowView.findViewById(R.id.symptomrow_container);
+        LinearLayout container = (LinearLayout) rowView.findViewById(R.id.symptomrow_container);
         container.setOnTouchListener(containerTouchListeners.get(curSymptom.key));
 
-        stateBar = (LinearLayout) rowView.findViewById(R.id.symptom_row_color);
+        LinearLayout stateBar = (LinearLayout) rowView.findViewById(R.id.symptom_row_color);
 
-        title = (TextView) rowView.findViewById(R.id.symptom_title);
+        TextView title = (TextView) rowView.findViewById(R.id.symptom_title);
         title.setText(curSymptom.name);
         title.setTextColor(ContextCompat.getColor(AppHelpers.currentContext, R.color.black));
 
-        desc = (TextView) rowView.findViewById(R.id.symptom_desc);
+        TextView desc = (TextView) rowView.findViewById(R.id.symptom_desc);
         desc.setText(curSymptom.desc);
 
-        stateButton = (Button) rowView.findViewById(R.id.symptom_input);
+        Button stateButton = (Button) rowView.findViewById(R.id.symptom_input);
         stateButton.setOnClickListener(stateButtonListeners.get(curSymptom.key));
         stateButtons.put(curSymptom.key, stateButton);
 
@@ -222,10 +206,10 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                 stateButton.setBackground(ContextCompat.getDrawable(AppHelpers.currentContext, R.drawable.roundgrey));
         }
 
-        extraRow = inflater.inflate(R.layout.extrarow, parent, false);
+        View extraRow = inflater.inflate(R.layout.extrarow, parent, false);
 
         if (value.hasComment()) {
-            extraCommentButton = (ImageButton) extraRow.findViewById(R.id.has_comment);
+            ImageButton extraCommentButton = (ImageButton) extraRow.findViewById(R.id.has_comment);
             extraCommentButton.setVisibility(View.VISIBLE);
         }
 
@@ -242,13 +226,13 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
         if (state.equals("input")) {
             inputElement = AppHelpers.factory.inflate(R.layout.symptomrow_input, null);
 
-            noneButton = (Button) inputElement.findViewById(R.id.symptom_none);
+            Button noneButton = (Button) inputElement.findViewById(R.id.symptom_none);
             noneButton.setOnClickListener(noneButtonListeners.get(curSymptom.key));
 
-            mildButton = (Button) inputElement.findViewById(R.id.symptom_mild);
+            Button mildButton = (Button) inputElement.findViewById(R.id.symptom_mild);
             mildButton.setOnClickListener(mildButtonListeners.get(curSymptom.key));
 
-            severeButton = (Button) inputElement.findViewById(R.id.symptom_severe);
+            Button severeButton = (Button) inputElement.findViewById(R.id.symptom_severe);
             severeButton.setOnClickListener(severeButtonListeners.get(curSymptom.key));
 
             Animation anim = AnimationUtils.loadAnimation(AppHelpers.currentContext, R.anim.anim_in_right);
@@ -260,11 +244,11 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
         else if (UIManager.getSymptomState(curSymptom.key).equals("done")) {
             addElement = AppHelpers.factory.inflate(R.layout.symptomrow_add, null);
 
-            commentButton = (TextView) addElement.findViewById(R.id.add_comment);
+            TextView commentButton = (TextView) addElement.findViewById(R.id.add_comment);
             commentButton.setOnClickListener(commentButtonListeners.get(curSymptom.key));
             if (value.hasComment()) { commentButton.setText("Edit notes");}
 
-            cameraButton = (TextView) addElement.findViewById(R.id.add_picture);
+            TextView cameraButton = (TextView) addElement.findViewById(R.id.add_picture);
             cameraButton.setOnClickListener(cameraButtonListeners.get(curSymptom.key));
             if (value.hasPicture()) { cameraButton.setText("Replace picture");}
 

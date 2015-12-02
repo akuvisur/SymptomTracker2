@@ -18,8 +18,6 @@ import com.comag.aku.symptomtracker.objects.Symptom;
  */
 public class SettingsGeneratedSymptomRow {
     private String key;
-    private Button removeButton;
-    private TextView name;
 
     private AlertDialog dialog;
 
@@ -29,8 +27,8 @@ public class SettingsGeneratedSymptomRow {
 
     public View get() {
         View result = AppHelpers.factory.inflate(R.layout.generated_row, null);
-        removeButton = (Button) result.findViewById(R.id.settings_remove_generated);
-        name = (TextView) result.findViewById(R.id.settings_generated_name);
+        Button removeButton = (Button) result.findViewById(R.id.settings_remove_generated);
+        TextView name = (TextView) result.findViewById(R.id.settings_generated_name);
         name.setText(Symptom.keyToName(key));
         removeButton.setOnClickListener(new View.OnClickListener() {
             @Override

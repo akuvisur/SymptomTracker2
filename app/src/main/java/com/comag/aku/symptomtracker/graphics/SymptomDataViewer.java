@@ -261,7 +261,6 @@ public class SymptomDataViewer {
 
     public static HashMap<String, LineChart> symptomLine = new HashMap<>();
     public static BarChart symptomBar;
-    private static LinearLayout background;
     private static HashMap<String, LinearLayout> symptomDetailContainers = new HashMap<>();
     private static Animation detailAnim;
     private static YAxis y;
@@ -272,7 +271,7 @@ public class SymptomDataViewer {
         if (!showingSymptoms.contains(value.key)) {
             showingSymptoms.add(value.key);
             final View symInfo = AppHelpers.factory.inflate(R.layout.symptom_detail, null);
-            background = (LinearLayout) symInfo.findViewById(R.id.symptom_detail_background);
+            LinearLayout background = (LinearLayout) symInfo.findViewById(R.id.symptom_detail_background);
             background.setBackgroundColor(chartSymptomColors.get(value.key));
 
             symptomDetailContainers.put(value.key, (LinearLayout) symInfo.findViewById(R.id.symptom_detail_extracontainer));
@@ -380,20 +379,17 @@ public class SymptomDataViewer {
     }
 
     public static ConditionMap selectedChartSymptom;
-    private static ArrayList<String> xVals;
-    private static ArrayList<Entry> yVals;
-    private static ArrayList<Entry> yHighlight;
-    private static TreeMap<Integer, ArrayList<Float>> averagedValues;
+
     private static void setSymptomInfoData(ConditionMap value) {
         Calendar cal = Calendar.getInstance();
         Calendar entryCal = Calendar.getInstance();
         Calendar curCal = Calendar.getInstance();
         cal.setTimeInMillis(System.currentTimeMillis());
         cal.add(Calendar.DAY_OF_YEAR, -13);
-        averagedValues = new TreeMap<>();
-        yVals = new ArrayList<>();
-        xVals = new ArrayList<>();
-        yHighlight = new ArrayList<Entry>();
+        TreeMap<Integer, ArrayList<Float>> averagedValues = new TreeMap<>();
+        ArrayList<Entry> yVals = new ArrayList<>();
+        ArrayList<String> xVals = new ArrayList<>();
+        ArrayList<Entry> yHighlight = new ArrayList<Entry>();
         // set items
         for (int x = 0; x < 14; x++) {
             boolean found = false;
@@ -427,7 +423,6 @@ public class SymptomDataViewer {
             // reuse this here to check if the selected entry is for this index
             // have to include all values in order to animate it in the same order as "real" line
             curCal.setTimeInMillis(selectedChartSymptom.timestamp);
-            ArrayList<Float> avg = new ArrayList<>();
             if (selectedChartSymptom != null && curCal.get(Calendar.DAY_OF_YEAR) == cal.get(Calendar.DAY_OF_YEAR)) {
                 yHighlight.add(new Entry(calculateAverage(averagedValues.get(curCal.get(Calendar.DAY_OF_YEAR))), x));
             }

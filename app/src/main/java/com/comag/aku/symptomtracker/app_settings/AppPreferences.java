@@ -1,5 +1,6 @@
 package com.comag.aku.symptomtracker.app_settings;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
@@ -33,7 +34,6 @@ public class AppPreferences {
     final public static String POPUP_FREQUENCY = "popup_freq";
 
     private static Gson gson = new Gson();
-    private static String myTrackedData = "TrackingData";
     private static SharedPreferences sharedPrefs;
     public static Schema schema;
     public static HashMap<String, Symptom> symptoms = new HashMap<>();
@@ -43,13 +43,14 @@ public class AppPreferences {
     public static UserSettings userSettings;
 
     private static void init() {
+        String myTrackedData = "TrackingData";
         if (AppHelpers.currentContext != null) {
             if (sharedPrefs == null)
-                sharedPrefs = AppHelpers.currentContext.getSharedPreferences(myTrackedData, AppHelpers.currentContext.MODE_PRIVATE);
+                sharedPrefs = AppHelpers.currentContext.getSharedPreferences(myTrackedData, Context.MODE_PRIVATE);
         }
         else {
             if (sharedPrefs == null)
-                sharedPrefs = NotificationService.getContext().getSharedPreferences(myTrackedData, NotificationService.getContext().MODE_PRIVATE);
+                sharedPrefs = NotificationService.getContext().getSharedPreferences(myTrackedData, Context.MODE_PRIVATE);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.comag.aku.symptomtracker.services;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
@@ -9,14 +10,14 @@ import com.comag.aku.symptomtracker.app_settings.AppPreferences;
  */
 public class NotificationPreferences {
 
-    private static String myPreferences = "NotificationData";
     private static SharedPreferences sharedPrefs;
 
     private static int okCount = 0;
     private static int botherCount = 0;
 
     private static void init() {
-        if (sharedPrefs == null) sharedPrefs = NotificationService.getContext().getSharedPreferences(myPreferences, NotificationService.getContext().MODE_PRIVATE);
+        String myPreferences = "NotificationData";
+        if (sharedPrefs == null) sharedPrefs = NotificationService.getContext().getSharedPreferences(myPreferences, Context.MODE_PRIVATE);
     }
 
     public static void addDummyOk() {

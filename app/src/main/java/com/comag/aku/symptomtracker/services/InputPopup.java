@@ -1,9 +1,6 @@
 package com.comag.aku.symptomtracker.services;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.AnimationDrawable;
@@ -27,10 +24,9 @@ import android.widget.Toast;
 import com.colintmiller.simplenosql.NoSQL;
 import com.colintmiller.simplenosql.NoSQLEntity;
 import com.colintmiller.simplenosql.RetrievalCallback;
-import com.comag.aku.symptomtracker.Launch;
-import com.comag.aku.symptomtracker.MainActivity;
-import com.comag.aku.symptomtracker.R;
 import com.comag.aku.symptomtracker.AppHelpers;
+import com.comag.aku.symptomtracker.Launch;
+import com.comag.aku.symptomtracker.R;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.comag.aku.symptomtracker.graphics.FlowLayout;
 import com.comag.aku.symptomtracker.graphics.UIManager;
@@ -55,10 +51,6 @@ import java.util.Random;
  * Created by aku on 26/11/15.
  */
 public class InputPopup {
-    private Button botherButton;
-    private Button appButton;
-    private Button okButton;
-    private LinearLayout inputRows;
     private View row;
     private Animation anim;
 
@@ -84,11 +76,11 @@ public class InputPopup {
         inflater = (LayoutInflater) NotificationService.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         popupLayout = inflater.inflate(R.layout.popup, null);
 
-        botherButton = (Button) popupLayout.findViewById(R.id.popup_bother);
-        appButton = (Button) popupLayout.findViewById(R.id.popup_app);
-        okButton = (Button) popupLayout.findViewById(R.id.popup_ok);
+        Button botherButton = (Button) popupLayout.findViewById(R.id.popup_bother);
+        Button appButton = (Button) popupLayout.findViewById(R.id.popup_app);
+        Button okButton = (Button) popupLayout.findViewById(R.id.popup_ok);
 
-        inputRows = (LinearLayout) popupLayout.findViewById(R.id.popup_inputrows);
+        LinearLayout inputRows = (LinearLayout) popupLayout.findViewById(R.id.popup_inputrows);
 
         final WindowManager windowManager = (WindowManager) NotificationService.getContext().getSystemService(Context.WINDOW_SERVICE);
 
@@ -122,7 +114,7 @@ public class InputPopup {
                     public void run() {
                         windowManager.removeView(popupLayout);
                         NotificationService.showingPopup = false;
-                        switch(NotificationService.getMode()) {
+                        switch (NotificationService.getMode()) {
                             case DUMMY_MODE:
                                 NotificationPreferences.addDummyDontBother();
                                 break;
@@ -175,7 +167,7 @@ public class InputPopup {
                     public void run() {
                         NotificationService.showingPopup = false;
                         windowManager.removeView(popupLayout);
-                        switch(NotificationService.getMode()) {
+                        switch (NotificationService.getMode()) {
                             case DUMMY_MODE:
                                 NotificationPreferences.addDummyOk();
                                 break;
@@ -234,10 +226,6 @@ public class InputPopup {
     private TextView title;
     private TextView desc;
 
-    private Button noneButton;
-    private Button mildButton;
-    private Button severeButton;
-
     private View createSymptomRow(final String key) {
         Symptom symptom = AppPreferences.symptoms.get(key);
 
@@ -259,9 +247,9 @@ public class InputPopup {
 
         View inputs = inflater.inflate(R.layout.symptomrow_input, null);
 
-        noneButton = (Button) inputs.findViewById(R.id.symptom_none);
-        mildButton = (Button) inputs.findViewById(R.id.symptom_mild);
-        severeButton = (Button) inputs.findViewById(R.id.symptom_severe);
+        Button noneButton = (Button) inputs.findViewById(R.id.symptom_none);
+        Button mildButton = (Button) inputs.findViewById(R.id.symptom_mild);
+        Button severeButton = (Button) inputs.findViewById(R.id.symptom_severe);
 
         noneButton.setOnClickListener(setSymptomButtonListener("none", b, key, container, inputs));
         mildButton.setOnClickListener(setSymptomButtonListener("mild", b, key, container, inputs));
@@ -418,7 +406,6 @@ public class InputPopup {
         List<String> oldSelected;
 
         oldSelected = Arrays.asList(factorValue.split(","));
-        Log.d("oldselected", oldSelected.toString());
         options = Arrays.asList(factor.values.split(","));
 
         dialogView = View.inflate(NotificationService.getContext(), R.layout.popup_factorrow_input_multiple, null);
