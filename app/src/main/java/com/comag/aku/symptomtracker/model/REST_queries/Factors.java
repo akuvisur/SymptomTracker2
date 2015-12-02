@@ -3,7 +3,7 @@ package com.comag.aku.symptomtracker.model.REST_queries;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.comag.aku.symptomtracker.Settings;
+import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.comag.aku.symptomtracker.model.APIConnector;
 import com.comag.aku.symptomtracker.objects.Factor;
@@ -39,7 +39,7 @@ public class Factors implements Callback<JsonObject> {
 
     @Override
     public void onFailure(Throwable t) {
-        Toast.makeText(Settings.currentContext, "Loading factors - No internet connection available?", Toast.LENGTH_SHORT).show();
+        Toast.makeText(AppHelpers.currentContext, "Loading factors - No internet connection available?", Toast.LENGTH_SHORT).show();
         Log.d("factors API", "failed to load, no internet connection?" +t);
     }
 }

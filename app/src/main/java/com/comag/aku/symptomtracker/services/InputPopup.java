@@ -2,7 +2,6 @@ package com.comag.aku.symptomtracker.services;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.AnimationDrawable;
@@ -27,13 +26,11 @@ import com.colintmiller.simplenosql.NoSQL;
 import com.colintmiller.simplenosql.NoSQLEntity;
 import com.colintmiller.simplenosql.RetrievalCallback;
 import com.comag.aku.symptomtracker.Launch;
-import com.comag.aku.symptomtracker.MainActivity;
 import com.comag.aku.symptomtracker.R;
-import com.comag.aku.symptomtracker.Settings;
+import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.comag.aku.symptomtracker.graphics.UIManager;
 import com.comag.aku.symptomtracker.graphics.elements.ObservedAnimation;
-import com.comag.aku.symptomtracker.model.ApiManager;
 import com.comag.aku.symptomtracker.model.DataObject;
 import com.comag.aku.symptomtracker.model.NoSQLStorage;
 import com.comag.aku.symptomtracker.model.data_storage.Values;
@@ -235,7 +232,7 @@ public class InputPopup {
         row = inflater.inflate(R.layout.popup_symptomrow, null);
 
         LinearLayout stateBar = (LinearLayout) row.findViewById(R.id.symptom_row_color);
-        stateBar.setBackgroundColor(Settings.generateServiceColor((int) (Math.random() * 10)));
+        stateBar.setBackgroundColor(AppHelpers.generateServiceColor((int) (Math.random() * 10)));
 
         LinearLayout container = (LinearLayout) row.findViewById(R.id.symptomrow_container);
 
@@ -272,7 +269,7 @@ public class InputPopup {
         row = inflater.inflate(R.layout.popup_factorrow, null);
 
         LinearLayout stateBar = (LinearLayout) row.findViewById(R.id.factor_row_color);
-        stateBar.setBackgroundColor(Settings.generateServiceColor((int) (Math.random() * 10)));
+        stateBar.setBackgroundColor(AppHelpers.generateServiceColor((int) (Math.random() * 10)));
 
         LinearLayout container = (LinearLayout) row.findViewById(R.id.factorrow_container);
 
@@ -332,7 +329,7 @@ public class InputPopup {
             input.setText(String.valueOf(value));
 
         } catch (NumberFormatException e) {
-            Log.d("generatedTrackedSelect", "bad number format for value");
+            Log.d("generatedTrackedSelect", "bad number format for value " + Values.fetch(factor.key).getValue());
         } catch (NullPointerException e2) {
             Log.d("generatedTrackedSelect", "some null pointer error");
         }
@@ -387,14 +384,14 @@ public class InputPopup {
         oldSelected = Values.fetchMultipleValues(factor.key);
         options = Arrays.asList(factor.values.split(","));
 
-        view = View.inflate(Settings.currentContext, R.layout.factorrow_input_multiple, null);
+        view = View.inflate(AppHelpers.currentContext, R.layout.factorrow_input_multiple, null);
         selection = (LinearLayout) view.findViewById(R.id.factor_multiple_input);
 
-        optionRows = new LinearLayout(Settings.currentContext);
+        optionRows = new LinearLayout(AppHelpers.currentContext);
         optionRows.setOrientation(LinearLayout.VERTICAL);
 
         for (String option : options) {
-            button = new ValueButton(Settings.currentContext, option);
+            button = new ValueButton(AppHelpers.currentContext, option);
             button.setId((factor.key + option).hashCode());
             button.setText(option);
             if (oldSelected.contains(option)) {
@@ -411,7 +408,7 @@ public class InputPopup {
         public ValueButton(Context context, final String value) {
             super(context);
             this._this = this;
-            this.setTextColor(ContextCompat.getColor(Settings.currentContext, R.color.black));
+            this.setTextColor(ContextCompat.getColor(AppHelpers.currentContext, R.color.black));
             this.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {

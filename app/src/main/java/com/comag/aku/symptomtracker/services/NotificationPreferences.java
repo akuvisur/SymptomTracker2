@@ -1,14 +1,8 @@
 package com.comag.aku.symptomtracker.services;
 
 import android.content.SharedPreferences;
-import android.util.Log;
-import android.widget.Toast;
 
-import com.comag.aku.symptomtracker.Settings;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
-import com.comag.aku.symptomtracker.model.NoSQLStorage;
-
-import java.util.HashMap;
 
 /**
  * Created by aku on 26/11/15.
@@ -55,10 +49,14 @@ public class NotificationPreferences {
         // ok counts as 1, 'dont bother' as 0 and if # of inputs < 20,
         // each missing input counts as 0.5
         double a = (okCount + (20-okCount-botherCount)*0.5) / 20;
+        //Log.d("pref", "a : " +a );
         // min/max propability window calculated over first 100 inputted responses
         // starting from range of 25% to 75% and going down to range of 5% to 95%
         double b =  (25 - ((Math.min(1.0, ((double) (okCount+botherCount)/100)))*20)) / 100;
+        //Log.d("pref", "b : " + b);
         // if a is outside the given accepted window, return a boundary value
+        a = a * 100;
+        b = b * 100;
         if (a < b) return (int) b;
         else if (a > (100-b)) return (int) (100-b);
         else return (int) a;

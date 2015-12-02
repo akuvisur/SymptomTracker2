@@ -4,13 +4,12 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.comag.aku.symptomtracker.Settings;
+import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.model.ApiManager;
 import com.comag.aku.symptomtracker.model.NoSQLStorage;
 import com.comag.aku.symptomtracker.objects.Factor;
 import com.comag.aku.symptomtracker.objects.Schema;
 import com.comag.aku.symptomtracker.objects.Symptom;
-import com.comag.aku.symptomtracker.services.NotificationPreferences;
 import com.comag.aku.symptomtracker.services.NotificationService;
 import com.google.gson.Gson;
 
@@ -44,9 +43,9 @@ public class AppPreferences {
     public static UserSettings userSettings;
 
     private static void init() {
-        if (Settings.currentContext != null) {
+        if (AppHelpers.currentContext != null) {
             if (sharedPrefs == null)
-                sharedPrefs = Settings.currentContext.getSharedPreferences(myTrackedData, Settings.currentContext.MODE_PRIVATE);
+                sharedPrefs = AppHelpers.currentContext.getSharedPreferences(myTrackedData, AppHelpers.currentContext.MODE_PRIVATE);
         }
         else {
             if (sharedPrefs == null)
@@ -63,25 +62,23 @@ public class AppPreferences {
         init();
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.putString("schema", gson.toJson(s.json));
-        Toast.makeText(Settings.currentActivity, "joined " + s.title, Toast.LENGTH_SHORT).show();
+        Toast.makeText(AppHelpers.currentActivity, "joined " + s.title, Toast.LENGTH_SHORT).show();
         editor.commit();
         schema = s;
-        if (Settings.DEBUG) NoSQLStorage.clear();
+        if (AppHelpers.DEBUG) NoSQLStorage.clear(schema.db_name);
     }
 
     public static void addUserSymptom(Symptom s) {
         Log.d("prefs", "adding user generated symptom: " + s.toString());
         generatedSymptoms.put(s.key, s);
         symptoms.put(s.key, s);
-        addSymptoms();
+        storeSymptomsToSharedPrefs();
     }
 
-    public static void addSymptoms() {
+    public static void storeSymptomsToSharedPrefs() {
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.putString("symptoms", gson.toJson(AppPreferences.symptoms));
-        Log.d("addSymptoms", gson.toJson(AppPreferences.symptoms));
         editor.putString("generated", gson.toJson(AppPreferences.generatedSymptoms));
-        Log.d("addGenerated", gson.toJson(AppPreferences.generatedSymptoms));
 
         editor.apply();
     }
@@ -199,9 +196,14 @@ public class AppPreferences {
 
     public static void clear() {
         init();
+        NoSQLStorage.clear(schema.db_name);
+
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.clear();
         editor.apply();
+
+        schema = null;
+
     }
 
     public static boolean appIsSetUp() {

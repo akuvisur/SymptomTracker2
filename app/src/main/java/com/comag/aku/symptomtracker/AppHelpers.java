@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 
 import com.comag.aku.symptomtracker.objects.Schema;
@@ -13,13 +12,14 @@ import com.comag.aku.symptomtracker.services.NotificationService;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
 /**
  * Created by aku on 26/10/15.
  */
-public class Settings {
+public class AppHelpers {
     public static final boolean DEBUG = false;
 
     public static Activity currentActivity;
@@ -107,22 +107,38 @@ public class Settings {
         }
     }
 
+    public static ArrayList<Integer> generateColorList() {
+        ArrayList<Integer> result = new ArrayList<>();
+        result.add(ContextCompat.getColor(NotificationService.getContext(), R.color.list1));
+        result.add(ContextCompat.getColor(NotificationService.getContext(), R.color.list2));
+        result.add(ContextCompat.getColor(NotificationService.getContext(), R.color.list3));
+        result.add(ContextCompat.getColor(NotificationService.getContext(), R.color.list4));
+        result.add(ContextCompat.getColor(NotificationService.getContext(), R.color.list5));
+        result.add(ContextCompat.getColor(NotificationService.getContext(), R.color.list6));
+        result.add(ContextCompat.getColor(NotificationService.getContext(), R.color.list7));
+        result.add(ContextCompat.getColor(NotificationService.getContext(), R.color.list8));
+        result.add(ContextCompat.getColor(NotificationService.getContext(), R.color.list9));
+        result.add(ContextCompat.getColor(NotificationService.getContext(), R.color.list10));
+        //Collections.shuffle(result);
+        return result;
+    }
+
     public static int generateFactorChartColor(int order) {
         switch (order) {
             case 0:
-                return ContextCompat.getColor(Settings.currentContext, R.color.Factor1);
+                return ContextCompat.getColor(AppHelpers.currentContext, R.color.Factor1);
             case 1:
-                return ContextCompat.getColor(Settings.currentContext, R.color.Factor2);
+                return ContextCompat.getColor(AppHelpers.currentContext, R.color.Factor2);
             case 2:
-                return ContextCompat.getColor(Settings.currentContext, R.color.Factor3);
+                return ContextCompat.getColor(AppHelpers.currentContext, R.color.Factor3);
             case 3:
-                return ContextCompat.getColor(Settings.currentContext, R.color.Factor4);
+                return ContextCompat.getColor(AppHelpers.currentContext, R.color.Factor4);
             case 4:
-                return ContextCompat.getColor(Settings.currentContext, R.color.Factor5);
+                return ContextCompat.getColor(AppHelpers.currentContext, R.color.Factor5);
             case 5:
-                return ContextCompat.getColor(Settings.currentContext, R.color.Factor6);
+                return ContextCompat.getColor(AppHelpers.currentContext, R.color.Factor6);
             default:
-                return ContextCompat.getColor(Settings.currentContext, R.color.Factor1);
+                return ContextCompat.getColor(AppHelpers.currentContext, R.color.Factor1);
         }
     }
 

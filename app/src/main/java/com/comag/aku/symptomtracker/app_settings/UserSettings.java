@@ -43,7 +43,7 @@ public class UserSettings {
 
     public int getPopupFrequency() {
         if (!popupsAutomated) return popupFrequency;
-        else return (int) (NotificationPreferences.getCurrentPreference()*100);
+        else return NotificationPreferences.getCurrentPreference();
     }
 
     public int getPopupInterval() {

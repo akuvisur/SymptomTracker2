@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="4dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text=""
+        android:id="@+id/settings_generated_name"
+        android:layout_alignBottom="@+id/settings_remove_generated"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/settings_remove_generated"
+        android:layout_alignParentTop="true"
+        android:singleLine="true"/>
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="80dp"
+        android:layout_height="36dp"
+        android:text="Remove"
+        android:id="@+id/settings_remove_generated"
+        android:layout_gravity="right"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:background="@color/colorPrimaryDark"
+        android:padding="4dp" />
+</RelativeLayout>

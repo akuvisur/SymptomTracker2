@@ -8,9 +8,8 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import com.comag.aku.symptomtracker.MainActivity;
+import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.R;
-import com.comag.aku.symptomtracker.Settings;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.comag.aku.symptomtracker.objects.Symptom;
 
@@ -27,7 +26,7 @@ public class NewSymptom {
     AlertDialog dialog;
 
     public void show(Activity a) {
-        View view = Settings.factory.inflate(R.layout.new_symptom, null);
+        View view = AppHelpers.factory.inflate(R.layout.new_symptom, null);
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(a);
 
         name = (EditText) view.findViewById(R.id.newsymptom_name);
@@ -55,7 +54,8 @@ public class NewSymptom {
                         desc.getText().toString(),
                         window
                 ));
-                Toast.makeText(Settings.currentContext, "Added new symptom to track: " + name.getText().toString(), Toast.LENGTH_LONG).show();
+                // API call to sync this to server as well?
+                Toast.makeText(AppHelpers.currentContext, "Added new symptom to track: " + name.getText().toString(), Toast.LENGTH_LONG).show();
                 dialog.dismiss();
             }
         });

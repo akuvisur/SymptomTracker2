@@ -40,6 +40,7 @@ import android.widget.Toast;
 import com.comag.aku.symptomtracker.graphics.LeaveStudy;
 import com.comag.aku.symptomtracker.graphics.NewSymptom;
 import com.comag.aku.symptomtracker.graphics.FactorDataViewer;
+import com.comag.aku.symptomtracker.graphics.SettingsGeneratedSymptomRow;
 import com.comag.aku.symptomtracker.graphics.listeners.BubbleSelectorListener;
 import com.comag.aku.symptomtracker.graphics.SymptomDataViewer;
 import com.comag.aku.symptomtracker.graphics.adapters.FactorRowAdapter;
@@ -54,6 +55,7 @@ import com.comag.aku.symptomtracker.objects.Factor;
 import com.comag.aku.symptomtracker.objects.ValueMap;
 import com.comag.aku.symptomtracker.objects.tracking.Condition;
 import com.comag.aku.symptomtracker.services.NotificationPreferences;
+import com.comag.aku.symptomtracker.services.NotificationService;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.BubbleChart;
@@ -81,9 +83,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Settings.currentActivity = this;
-        Settings.currentContext = getApplicationContext();
-        Settings.factory = LayoutInflater.from(this);
+        AppHelpers.currentActivity = this;
+        AppHelpers.currentContext = getApplicationContext();
+        AppHelpers.factory = LayoutInflater.from(this);
+        // restart the service if coming from launch.class
+        startService(new Intent(this, NotificationService.class));
     }
 
     @Override
@@ -111,8 +115,8 @@ public class MainActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
 
-        Settings.currentActivity = this;
-        Settings.currentContext = getApplicationContext();
+        AppHelpers.currentActivity = this;
+        AppHelpers.currentContext = getApplicationContext();
         Log.d("main", "launched main");
         if(tab == null) tab = "data";
         switch(tab) {
@@ -192,12 +196,15 @@ public class MainActivity extends AppCompatActivity {
     AlertDialog clockDialog;
     Snackbar settingsSnack;
 
+    private static HashMap<String, View> generatedSymptomRows = new HashMap<>();
+    private static LinearLayout generatedRowsContainer;
+
     private void showSettings() {
         setContentView(R.layout.settings);
         tab = "settings";
 
         Toolbar t = (Toolbar) findViewById(R.id.settingstoolbar);
-        t.setTitle("Settings");
+        t.setTitle("AppHelpers");
 
         AppPreferences.load();
 
@@ -208,6 +215,7 @@ public class MainActivity extends AppCompatActivity {
         notifTime = (TextView) findViewById(R.id.settings_notif_time);
         popupAutomated = (CheckBox) findViewById(R.id.settings_popup_automated);
         popupInterval = (EditText) findViewById(R.id.settings_popup_interval);
+        generatedRowsContainer = (LinearLayout) findViewById(R.id.settings_generated_symptoms_container);
 
         popupFreq.setEnabled(!AppPreferences.userSettings.isPopupsAutomated());
         popupFreqText.setText(String.valueOf(AppPreferences.userSettings.getPopupFrequency()));
@@ -238,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
                         notifTime.setText(String.valueOf(timePicker.getCurrentHour()));
                         notifTime.invalidate();
                         clockDialog.dismiss();
-                        Toast.makeText(Settings.currentContext, "Notification time changed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AppHelpers.currentContext, "Notification time changed", Toast.LENGTH_SHORT).show();
                         settingsSnack.dismiss();
                     }
                 });
@@ -261,12 +269,18 @@ public class MainActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 AppPreferences.setUserSetting(AppPreferences.POPUP_FREQUENCY, progress);
                 popupFreqText.setText(String.valueOf(progress));
-                Toast.makeText(Settings.currentContext, "Popup frequency changed to " + progress, Toast.LENGTH_SHORT).show();
+                Toast.makeText(AppHelpers.currentContext, "Popup frequency changed to " + progress, Toast.LENGTH_SHORT).show();
             }
 
-            @Override public void onStartTrackingTouch(SeekBar seekBar) {showSettingsHelp(AppPreferences.POPUP_INTERVAL);}
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                showSettingsHelp(AppPreferences.POPUP_INTERVAL);
+            }
 
-            @Override public void onStopTrackingTouch(SeekBar seekBar) {hideSettingsHelp();}
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                hideSettingsHelp();
+            }
         });
 
         popupAutomated.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -278,7 +292,7 @@ public class MainActivity extends AppCompatActivity {
                     popupFreqText.setText(String.valueOf((int) (NotificationPreferences.getCurrentPreference() * 100)));
                     popupFreq.setProgress((int) (NotificationPreferences.getCurrentPreference() * 100));
                 }
-                Toast.makeText(Settings.currentContext, "Popup automation changed to " + isChecked, Toast.LENGTH_SHORT).show();
+                Toast.makeText(AppHelpers.currentContext, "Popup automation changed to " + isChecked, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -301,11 +315,11 @@ public class MainActivity extends AppCompatActivity {
                         int interval = Integer.valueOf(popupInterval.getText().toString());
                         if (interval > 15000)
                             AppPreferences.setUserSetting(AppPreferences.POPUP_INTERVAL, interval);
-                        Toast.makeText(Settings.currentContext, "Popup interval changed to " + interval + " milliseconds", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AppHelpers.currentContext, "Popup interval changed to " + interval + " milliseconds", Toast.LENGTH_SHORT).show();
                     } catch (NumberFormatException e) {
                     }
-                    InputMethodManager inputMethodManager = (InputMethodManager) Settings.currentActivity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-                    inputMethodManager.hideSoftInputFromWindow(Settings.currentActivity.getCurrentFocus().getWindowToken(), 0);
+                    InputMethodManager inputMethodManager = (InputMethodManager) AppHelpers.currentActivity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    inputMethodManager.hideSoftInputFromWindow(AppHelpers.currentActivity.getCurrentFocus().getWindowToken(), 0);
                     hideSettingsHelp();
                     return true;
                 }
@@ -313,6 +327,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        for (String symKey : AppPreferences.generatedSymptoms.keySet()) {
+            SettingsGeneratedSymptomRow row = new SettingsGeneratedSymptomRow(symKey);
+            generatedRowsContainer.addView(row.get());
+            generatedSymptomRows.put(symKey, row.get());
+        }
+
+    }
+
+    public static void removeGeneratedRow(String key) {
+        generatedRowsContainer.removeView(generatedSymptomRows.get(key));
+        generatedSymptomRows.remove(key);
+        generatedRowsContainer.invalidate();
     }
 
     private boolean showSettingsHelp(String type) {
@@ -336,7 +362,7 @@ public class MainActivity extends AppCompatActivity {
                 ViewGroup.LayoutParams.FILL_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
         t.setTextSize(12f);
-        anim = AnimationUtils.loadAnimation(Settings.currentContext, R.anim.anim_in_right);
+        anim = AnimationUtils.loadAnimation(AppHelpers.currentContext, R.anim.anim_in_right);
         anim.setDuration(250);
         t.startAnimation(anim);
         settingsHelp.addView(t);
@@ -344,7 +370,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void hideSettingsHelp() {
-        anim = AnimationUtils.loadAnimation(Settings.currentContext, R.anim.anim_out_left);
+        anim = AnimationUtils.loadAnimation(AppHelpers.currentContext, R.anim.anim_out_left);
         anim.setDuration(250);
         settingsHelp.getChildAt(0).startAnimation(anim);
         new Handler().postDelayed(new Runnable() {
@@ -357,11 +383,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void addSymptom(View view) {
-        new NewSymptom().show(Settings.currentActivity);
+        new NewSymptom().show(AppHelpers.currentActivity);
     }
 
     public static void leaveStudy(View view) {
-        new LeaveStudy().show(Settings.currentActivity);
+        new LeaveStudy().show(AppHelpers.currentActivity);
     }
 
     public static LinearLayout scrollContainer;
@@ -436,13 +462,13 @@ public class MainActivity extends AppCompatActivity {
 
         symptomChart.setOnChartValueSelectedListener(new BubbleSelectorListener());
 
-        symptomChart.setOnTouchListener(new OnSwipeTouchListener(Settings.currentContext) {
+        symptomChart.setOnTouchListener(new OnSwipeTouchListener(AppHelpers.currentContext) {
             @Override
             public void onSwipeRight() {
-                anim = AnimationUtils.loadAnimation(Settings.currentContext, android.R.anim.slide_out_right);
+                anim = AnimationUtils.loadAnimation(AppHelpers.currentContext, android.R.anim.slide_out_right);
                 anim.setDuration(250);
                 symptomChart.startAnimation(anim);
-                Settings.offset(true);
+                AppHelpers.offset(true);
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -453,10 +479,10 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSwipeLeft() {
-                anim = AnimationUtils.loadAnimation(Settings.currentContext, R.anim.anim_out_left);
+                anim = AnimationUtils.loadAnimation(AppHelpers.currentContext, R.anim.anim_out_left);
                 anim.setDuration(250);
                 symptomChart.startAnimation(anim);
-                Settings.offset(false);
+                AppHelpers.offset(false);
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -469,7 +495,7 @@ public class MainActivity extends AppCompatActivity {
         setYAxisMinMax();
 
         XAxis x = symptomChart.getXAxis();
-        x.setGridColor(ContextCompat.getColor(Settings.currentContext, R.color.Symptom));
+        x.setGridColor(ContextCompat.getColor(AppHelpers.currentContext, R.color.Symptom));
         x.setLabelRotationAngle(60);
         x.setTextSize(8f);
 
@@ -478,7 +504,7 @@ public class MainActivity extends AppCompatActivity {
         legend.setWordWrapEnabled(true);
         legend.setForm(Legend.LegendForm.CIRCLE);
         legend.setTextSize(14f);
-        legend.setTypeface(Typeface.createFromAsset(Settings.currentContext.getAssets(), "font/Roboto-Regular.ttf"));
+        legend.setTypeface(Typeface.createFromAsset(AppHelpers.currentContext.getAssets(), "font/Roboto-Regular.ttf"));
 
         extraContainer = (LinearLayout) findViewById(R.id.data_extracontainer);
 
@@ -487,7 +513,7 @@ public class MainActivity extends AppCompatActivity {
         groupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                groupView = Settings.factory.inflate(R.layout.dataview_groupselector, null);
+                groupView = AppHelpers.factory.inflate(R.layout.dataview_groupselector, null);
                 if (extraContainer.getChildCount() > 0) {
                     extraContainer.removeAllViews();
                     SymptomDataViewer.showingSymptoms.clear();
@@ -581,19 +607,19 @@ public class MainActivity extends AppCompatActivity {
         y.setStartAtZero(false);
         y.setAxisMinValue(0.5f);
         y.setAxisMaxValue((float) (dataSymptoms.size() + 0.5));
-        y.setGridColor(ContextCompat.getColor(Settings.currentContext, R.color.Symptom));
+        y.setGridColor(ContextCompat.getColor(AppHelpers.currentContext, R.color.Symptom));
 
         y = symptomChart.getAxisRight();
         y.setDrawLabels(false);
         y.setStartAtZero(false);
         y.setAxisMinValue(0.5f);
         y.setAxisMaxValue((float) (dataSymptoms.size() + 0.5));
-        y.setGridColor(ContextCompat.getColor(Settings.currentContext, R.color.Symptom));
+        y.setGridColor(ContextCompat.getColor(AppHelpers.currentContext, R.color.Symptom));
     }
 
     // change the symptom chart size based on number of visible elements
     private static void setSymptomChartSize() {
-        Resources r = Settings.currentContext.getResources();
+        Resources r = AppHelpers.currentContext.getResources();
         float heightInPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 150 + (50 * dataSymptoms.size()), r.getDisplayMetrics());
         BubbleChart.LayoutParams p = symptomChart.getLayoutParams();
         p.height = (int) heightInPx;
@@ -603,7 +629,7 @@ public class MainActivity extends AppCompatActivity {
     private static Animation chartAnim;
     private static void animateChart() {
         symptomChart.animateXY(750, 750, Easing.EasingOption.EaseInQuart, Easing.EasingOption.EaseOutQuart);
-        chartAnim = AnimationUtils.loadAnimation(Settings.currentContext, android.R.anim.fade_in);
+        chartAnim = AnimationUtils.loadAnimation(AppHelpers.currentContext, android.R.anim.fade_in);
         chartAnim.setDuration(250);
         symptomChart.startAnimation(chartAnim);
     }
@@ -612,19 +638,19 @@ public class MainActivity extends AppCompatActivity {
         selectedGroup = buttonid;
         if (buttonid == R.id.data_selector_day) {
             groupButton.setText("12 hours");
-            Settings.setGroup(Calendar.HOUR_OF_DAY);
+            AppHelpers.setGroup(Calendar.HOUR_OF_DAY);
         }
         else if (buttonid == R.id.data_selector_week) {
             groupButton.setText("7 days");
-            Settings.setGroup(Calendar.DAY_OF_YEAR);
+            AppHelpers.setGroup(Calendar.DAY_OF_YEAR);
         }
         else if (buttonid == R.id.data_selector_month) {
             groupButton.setText("4 weeks");
-            Settings.setGroup(Calendar.WEEK_OF_YEAR);
+            AppHelpers.setGroup(Calendar.WEEK_OF_YEAR);
         }
         else if (buttonid == R.id.data_selector_year) {
             groupButton.setText("6 months");
-            Settings.setGroup(Calendar.MONTH);
+            AppHelpers.setGroup(Calendar.MONTH);
         }
     }
 
@@ -655,7 +681,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void clearExtraRow() {
-        anim = AnimationUtils.loadAnimation(Settings.currentContext, android.R.anim.slide_out_right);
+        anim = AnimationUtils.loadAnimation(AppHelpers.currentContext, android.R.anim.slide_out_right);
         anim.setDuration(250);
         extraContainer.getChildAt(0).startAnimation(anim);
         new Handler().postDelayed(new Runnable() {
@@ -673,12 +699,12 @@ public class MainActivity extends AppCompatActivity {
     // get values back from other intents (camera)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == Settings.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            ValueMap m = Values.fetch(Settings.curPictureKey);
-            m.setPicturePath(Settings.curPicturePath);
-            NoSQLStorage.storeSingle(new Condition(Settings.curPictureKey), m);
+        if (requestCode == AppHelpers.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            ValueMap m = Values.fetch(AppHelpers.curPictureKey);
+            m.setPicturePath(AppHelpers.curPicturePath);
+            NoSQLStorage.storeSingle(new Condition(AppHelpers.curPictureKey), m);
 
-            Toast.makeText(Settings.currentContext, "Added new image", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AppHelpers.currentContext, "Added new image", Toast.LENGTH_SHORT).show();
             // loading takes a few (50-100) milliseconds and is threaded..
             NoSQLStorage.loadValues(tab);
             new Handler().postDelayed(new Runnable() {

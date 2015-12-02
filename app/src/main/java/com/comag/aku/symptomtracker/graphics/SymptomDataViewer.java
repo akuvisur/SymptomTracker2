@@ -1,6 +1,5 @@
 package com.comag.aku.symptomtracker.graphics;
 
-import android.graphics.Color;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -9,9 +8,9 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 
+import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.MainActivity;
 import com.comag.aku.symptomtracker.R;
-import com.comag.aku.symptomtracker.Settings;
 import com.comag.aku.symptomtracker.graphics.chart_formatters.SymptomLineFormatter;
 import com.comag.aku.symptomtracker.graphics.chart_formatters.XAxisTimeFormatter;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
@@ -95,43 +94,43 @@ public class SymptomDataViewer {
         c.setTimeInMillis(System.currentTimeMillis());
         c.set(Calendar.MINUTE, 0);
         TreeMap<Integer, String> result = new TreeMap<>();
-        switch (Settings.calTime) {
+        switch (AppHelpers.calTime) {
             // last 12 hours
             case Calendar.HOUR_OF_DAY:
                 // in chunks of 12 hours
-                c.add(Calendar.HOUR, -Settings.dayOffset*12);
-                result.put(11, Settings.hourFormat.format(c.getTime()));
+                c.add(Calendar.HOUR, -AppHelpers.dayOffset*12);
+                result.put(11, AppHelpers.hourFormat.format(c.getTime()));
                 for (int hour : new ArrayList<>(Arrays.asList(1,2,3,4,5,6,7,8,9,10,11))) {
                     // latest is on the right, so start from last index and remove hours
                     c.add(Calendar.HOUR_OF_DAY, -1);
-                    result.put(11-hour, Settings.hourFormat.format(c.getTime()));
+                    result.put(11-hour, AppHelpers.hourFormat.format(c.getTime()));
                 }
                 break;
             // last 7 days
             case Calendar.DAY_OF_YEAR:
-                c.add(Calendar.DAY_OF_YEAR, -Settings.weekOffset*7);
-                result.put(6, Settings.dayFormat.format(c.getTime()));
+                c.add(Calendar.DAY_OF_YEAR, -AppHelpers.weekOffset*7);
+                result.put(6, AppHelpers.dayFormat.format(c.getTime()));
                 for (int day : new ArrayList<>(Arrays.asList(1,2,3,4,5,6))) {
                     c.add(Calendar.DAY_OF_YEAR, -1);
-                    result.put(6 - day, Settings.dayFormat.format(c.getTime()));
+                    result.put(6 - day, AppHelpers.dayFormat.format(c.getTime()));
                 }
                 break;
             // last 4 weeks
             case Calendar.WEEK_OF_YEAR:
-                c.add(Calendar.WEEK_OF_YEAR, -Settings.monthOffset*4);
-                result.put(3, Settings.weekFormat.format(c.getTime()));
+                c.add(Calendar.WEEK_OF_YEAR, -AppHelpers.monthOffset*4);
+                result.put(3, AppHelpers.weekFormat.format(c.getTime()));
                 for (int week : new ArrayList<>(Arrays.asList(1,2,3))) {
                     c.add(Calendar.WEEK_OF_YEAR, -1);
-                    result.put(3-week, Settings.weekFormat.format(c.getTime()));
+                    result.put(3-week, AppHelpers.weekFormat.format(c.getTime()));
                 }
                 break;
             // last 6 month
             case Calendar.MONTH:
-                c.add(Calendar.YEAR, -Settings.yearOffset);
-                result.put(11, Settings.monthFormat.format(c.getTime()));
+                c.add(Calendar.YEAR, -AppHelpers.yearOffset);
+                result.put(11, AppHelpers.monthFormat.format(c.getTime()));
                 for (int month : new ArrayList<>(Arrays.asList(1,2,3,4,5,6,7,8,9,10,11))) {
                     c.add(Calendar.MONTH, -1);
-                    result.put(11-month, Settings.monthFormat.format(c.getTime()));
+                    result.put(11-month, AppHelpers.monthFormat.format(c.getTime()));
                 }
                 break;
 
@@ -155,14 +154,14 @@ public class SymptomDataViewer {
             if (!rows.keySet().contains(value.key)) {
                 rows.put(value.key, new ArrayList<BubbleEntry>());
             }
-            switch (Settings.calTime) {
+            switch (AppHelpers.calTime) {
                 case Calendar.HOUR_OF_DAY:
                     c.setTimeInMillis(System.currentTimeMillis());
                     int curday = c.get(Calendar.DAY_OF_YEAR);
                     c.setTimeInMillis(value.timestamp);
                     c.set(Calendar.MINUTE, 0);
                     if (c.get(Calendar.DAY_OF_YEAR) != curday) break;
-                    timeslot = fetchTimeSlot(Settings.hourFormat.format(c.getTime()));
+                    timeslot = fetchTimeSlot(AppHelpers.hourFormat.format(c.getTime()));
                     if (timeslot >= 0) rows.get(value.key).add(
                             new BubbleEntry(timeslot,
                                     symptomNames.get(value.key),
@@ -171,7 +170,7 @@ public class SymptomDataViewer {
                     break;
                 case Calendar.DAY_OF_YEAR:
                     c.setTimeInMillis(value.timestamp);
-                    timeslot = fetchTimeSlot(Settings.dayFormat.format(c.getTime()));
+                    timeslot = fetchTimeSlot(AppHelpers.dayFormat.format(c.getTime()));
                     if (timeslot >= 0) rows.get(value.key).add(
                         new BubbleEntry(timeslot,
                             symptomNames.get(value.key),
@@ -180,7 +179,7 @@ public class SymptomDataViewer {
                     break;
                 case Calendar.WEEK_OF_YEAR:
                     c.setTimeInMillis(value.timestamp);
-                    timeslot = fetchTimeSlot(Settings.weekFormat.format(c.getTime()));
+                    timeslot = fetchTimeSlot(AppHelpers.weekFormat.format(c.getTime()));
                     if (timeslot >= 0)
                         rows.get(value.key).add(
                             new BubbleEntry(timeslot,
@@ -190,7 +189,7 @@ public class SymptomDataViewer {
                     break;
                 case Calendar.MONTH:
                     c.setTimeInMillis(value.timestamp);
-                    timeslot = fetchTimeSlot(Settings.monthFormat.format(c.getTime()));
+                    timeslot = fetchTimeSlot(AppHelpers.monthFormat.format(c.getTime()));
                     if (timeslot >= 0)
                         rows.get(value.key).add(
                             new BubbleEntry(timeslot,
@@ -210,15 +209,18 @@ public class SymptomDataViewer {
 
         for (String label : rows.keySet()) {
             row = new ModifiedBubbleDataSet(rows.get(label), Symptom.keyToName(label));
-            chartSymptomColors.put(label, Settings.randomizeListColor(rowIndex));
-            row.setColor(Settings.randomizeListColor(rowIndex), 130);
-            row.setHighLightColor(ContextCompat.getColor(Settings.currentContext, R.color.colorPrimaryDark));
+            chartSymptomColors.put(label, AppHelpers.randomizeListColor(rowIndex));
+            row.setColor(AppHelpers.randomizeListColor(rowIndex), 130);
+            row.setHighLightColor(ContextCompat.getColor(AppHelpers.currentContext, R.color.colorPrimaryDark));
             // dont draw text values for entries
             row.setDrawValues(false);
             if (MainActivity.dataSymptoms.contains(label)) {
                 data.add(row);
                 rowIndex++;
             }
+        }
+        for (BubbleDataSet ds : data) {
+            Log.d("bubblesize", "yvals: " + ds.getYVals() + " name: " + ds.getLabel());
         }
         symptomChartData = new BubbleData(xLabels, data);
         //symptomChartData.setValueFormatter(new ChartSymptomValueFormatter());
@@ -269,16 +271,16 @@ public class SymptomDataViewer {
     public static void showSymptomInfo(final ConditionMap value) {
         if (!showingSymptoms.contains(value.key)) {
             showingSymptoms.add(value.key);
-            final View symInfo = Settings.factory.inflate(R.layout.symptom_detail, null);
+            final View symInfo = AppHelpers.factory.inflate(R.layout.symptom_detail, null);
             background = (LinearLayout) symInfo.findViewById(R.id.symptom_detail_background);
             background.setBackgroundColor(chartSymptomColors.get(value.key));
 
             symptomDetailContainers.put(value.key, (LinearLayout) symInfo.findViewById(R.id.symptom_detail_extracontainer));
 
-            symInfo.setOnTouchListener(new OnSwipeTouchListener(Settings.currentContext) {
+            symInfo.setOnTouchListener(new OnSwipeTouchListener(AppHelpers.currentContext) {
                 @Override
                 public void onSwipeRight() {
-                    detailAnim = AnimationUtils.loadAnimation(Settings.currentContext, android.R.anim.slide_out_right);
+                    detailAnim = AnimationUtils.loadAnimation(AppHelpers.currentContext, android.R.anim.slide_out_right);
                     detailAnim.setDuration(250);
                     symInfo.startAnimation(detailAnim);
                     new Handler().postDelayed(new Runnable() {
@@ -294,7 +296,7 @@ public class SymptomDataViewer {
 
                 @Override
                 public void onSwipeLeft() {
-                    detailAnim = AnimationUtils.loadAnimation(Settings.currentContext, R.anim.anim_out_left);
+                    detailAnim = AnimationUtils.loadAnimation(AppHelpers.currentContext, R.anim.anim_out_left);
                     detailAnim.setDuration(250);
                     symInfo.startAnimation(detailAnim);
                     new Handler().postDelayed(new Runnable() {
@@ -312,7 +314,7 @@ public class SymptomDataViewer {
             LineChart lc = (LineChart) symInfo.findViewById(R.id.symptom_detail_line);
             lc.setOnTouchListener(null);
             lc.animateX(1500, Easing.EasingOption.EaseInQuad);
-            lc.setGridBackgroundColor(ContextCompat.getColor(Settings.currentContext, android.R.color.transparent));
+            lc.setGridBackgroundColor(ContextCompat.getColor(AppHelpers.currentContext, android.R.color.transparent));
             lc.setDescription(Symptom.keyToName(value.key) + ": average over 14 days");
             lc.setDescriptionColor(chartSymptomColors.get(value.key));
             lc.setDescriptionPosition(450, 25);
@@ -320,7 +322,7 @@ public class SymptomDataViewer {
             y = lc.getAxisLeft();
             y.setValueFormatter(new SymptomLineFormatter());
             y.setTextSize(9f);
-            y.setTextColor(ContextCompat.getColor(Settings.currentContext, R.color.Symptom));
+            y.setTextColor(ContextCompat.getColor(AppHelpers.currentContext, R.color.Symptom));
             y.setSpaceTop(5f);
             y.setAxisMinValue(0f);
             y.setAxisMaxValue(3.15f);
@@ -339,7 +341,7 @@ public class SymptomDataViewer {
             symptomLine.put(value.key, lc);
 
             symptomBar = (BarChart) symInfo.findViewById(R.id.symptom_detail_bar);
-            symptomBar.setGridBackgroundColor(ContextCompat.getColor(Settings.currentContext, android.R.color.transparent));
+            symptomBar.setGridBackgroundColor(ContextCompat.getColor(AppHelpers.currentContext, android.R.color.transparent));
 
             symptomBar.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -395,7 +397,7 @@ public class SymptomDataViewer {
         // set items
         for (int x = 0; x < 14; x++) {
             boolean found = false;
-            xVals.add(Settings.dayFormat.format(cal.getTime()));
+            xVals.add(AppHelpers.dayFormat.format(cal.getTime()));
             cal.add(Calendar.DAY_OF_YEAR, 1);
             for (Condition c : DatabaseStorage.values.keySet()) {
                 if (!c.key.equals(value.key)) continue;
@@ -435,13 +437,13 @@ public class SymptomDataViewer {
         ArrayList<LineDataSet> values = new ArrayList<>();
         LineDataSet l = new LineDataSet(yVals, "");
         l.setDrawValues(false);
-        l.setColor(ContextCompat.getColor(Settings.currentContext, R.color.Symptom_lighter));
-        l.setCircleColor(ContextCompat.getColor(Settings.currentContext, R.color.Symptom));
+        l.setColor(ContextCompat.getColor(AppHelpers.currentContext, R.color.Symptom_lighter));
+        l.setCircleColor(ContextCompat.getColor(AppHelpers.currentContext, R.color.Symptom));
 
         LineDataSet highlight = new LineDataSet(yHighlight, "");
         highlight.setDrawValues(false);
-        highlight.setColor(ContextCompat.getColor(Settings.currentContext, android.R.color.transparent));
-        highlight.setCircleColor(ContextCompat.getColor(Settings.currentContext, R.color.Symptom));
+        highlight.setColor(ContextCompat.getColor(AppHelpers.currentContext, android.R.color.transparent));
+        highlight.setCircleColor(ContextCompat.getColor(AppHelpers.currentContext, R.color.Symptom));
         highlight.setCircleSize(6f);
 
         values.add(l);
@@ -479,9 +481,9 @@ public class SymptomDataViewer {
         BarDataSet p = new BarDataSet(yVals, "");
 
         ArrayList<Integer> colors = new ArrayList<>();
-        colors.add(ContextCompat.getColor(Settings.currentContext, R.color.None));
-        colors.add(ContextCompat.getColor(Settings.currentContext, R.color.Mild));
-        colors.add(ContextCompat.getColor(Settings.currentContext, R.color.Severe));
+        colors.add(ContextCompat.getColor(AppHelpers.currentContext, R.color.None));
+        colors.add(ContextCompat.getColor(AppHelpers.currentContext, R.color.Mild));
+        colors.add(ContextCompat.getColor(AppHelpers.currentContext, R.color.Severe));
         p.setColors(colors);
         p.setDrawValues(false);
 
@@ -510,7 +512,7 @@ public class SymptomDataViewer {
             HashMap<Integer, Float> severeCount = new HashMap<>();
             int timeOffset = 1;
 
-            BarChart detail = new BarChart(Settings.currentContext);
+            BarChart detail = new BarChart(AppHelpers.currentContext);
             switch (AppPreferences.symptoms.get(value.key).rep_window) {
                 case "hour":
                     repWindow = Calendar.HOUR_OF_DAY;
@@ -588,9 +590,9 @@ public class SymptomDataViewer {
 
             BarDataSet set = new BarDataSet(entries, "");
             List<Integer> colors = new ArrayList<>();
-            colors.add(ContextCompat.getColor(Settings.currentContext, R.color.None));
-            colors.add(ContextCompat.getColor(Settings.currentContext, R.color.Mild));
-            colors.add(ContextCompat.getColor(Settings.currentContext, R.color.Severe));
+            colors.add(ContextCompat.getColor(AppHelpers.currentContext, R.color.None));
+            colors.add(ContextCompat.getColor(AppHelpers.currentContext, R.color.Mild));
+            colors.add(ContextCompat.getColor(AppHelpers.currentContext, R.color.Severe));
 
             set.setColors(colors);
             set.setStackLabels(new String[]{"None", "Mild", "Severe"});
@@ -606,7 +608,7 @@ public class SymptomDataViewer {
             detail.setData(data);
             detail.animateXY(1000, 1000);
             detail.setDescription("");
-            detail.setGridBackgroundColor(ContextCompat.getColor(Settings.currentContext, android.R.color.white));
+            detail.setGridBackgroundColor(ContextCompat.getColor(AppHelpers.currentContext, android.R.color.white));
             detail.setMinimumHeight(300);
             detail.setOnTouchListener(null);
 

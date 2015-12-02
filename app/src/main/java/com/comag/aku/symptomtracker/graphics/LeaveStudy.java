@@ -8,10 +8,10 @@ import android.content.Intent;
 import android.os.Handler;
 import android.widget.Toast;
 
+import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.Launch;
-import com.comag.aku.symptomtracker.MainActivity;
-import com.comag.aku.symptomtracker.Settings;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
+import com.comag.aku.symptomtracker.services.NotificationService;
 
 /**
  * Created by aku on 01/12/15.
@@ -33,11 +33,12 @@ public class LeaveStudy {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         AppPreferences.clear();
+                        AppHelpers.currentActivity.stopService(new Intent(AppHelpers.currentActivity, NotificationService.class));
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                Settings.currentActivity.startActivity(new Intent(Settings.currentActivity, Launch.class));
-                                Toast.makeText(Settings.currentContext, "Cleared settings", Toast.LENGTH_LONG).show();
+                                AppHelpers.currentActivity.startActivity(new Intent(AppHelpers.currentActivity, Launch.class));
+                                Toast.makeText(AppHelpers.currentContext, "Cleared settings", Toast.LENGTH_LONG).show();
                             }
                         }, 1000);
                     }

@@ -3,8 +3,8 @@ package com.comag.aku.symptomtracker.model.REST_queries;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.Launch;
-import com.comag.aku.symptomtracker.Settings;
 import com.comag.aku.symptomtracker.model.APIConnector;
 import com.comag.aku.symptomtracker.model.DatabaseStorage;
 import com.comag.aku.symptomtracker.objects.Schema;
@@ -37,11 +37,11 @@ public class Schemas implements Callback<JsonObject> {
             Launch.visibleSchemas.put(s.key, s);
         }
 
-        Toast.makeText(Settings.currentContext, "Loaded " + Launch.allSchemas.size() + " schemas from repository", Toast.LENGTH_LONG).show();
+        Toast.makeText(AppHelpers.currentContext, "Loaded " + Launch.allSchemas.size() + " schemas from repository", Toast.LENGTH_LONG).show();
         ((ArrayAdapter) Launch.schemaView.getAdapter()).notifyDataSetChanged();
     }
     @Override
     public void onFailure(Throwable t) {
-        Toast.makeText(Settings.currentContext, "Failed to load schemas from repository. No internet connection?", Toast.LENGTH_LONG).show();
+        Toast.makeText(AppHelpers.currentContext, "Failed to load schemas from repository. No internet connection?", Toast.LENGTH_LONG).show();
     }
 }

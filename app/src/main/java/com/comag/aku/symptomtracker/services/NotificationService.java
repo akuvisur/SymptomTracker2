@@ -93,7 +93,9 @@ public class NotificationService extends IntentService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        // if app not set up, no need for the service to run
         if (!AppPreferences.appIsSetUp()) return START_NOT_STICKY;
+        // otherwise load the prefs etc..
         if (!AppPreferences.hasLoaded()) AppPreferences.load();
         switch (mode) {
             case DUMMY_MODE:
@@ -107,16 +109,16 @@ public class NotificationService extends IntentService {
     }
 
     private void postOnUnlock() {
-        if (Math.random() < NotificationPreferences.getCurrentPreference()) new InputPopup().show();
+        if ((Math.random()*100) < NotificationPreferences.getCurrentPreference()) new InputPopup().show();
     }
 
     private void emitDummyMode() {
-        if (Math.random() < NotificationPreferences.getCurrentPreference()) {
+        if ((Math.random() * 100) < NotificationPreferences.getCurrentPreference()) {
             if (!mainRunning() && !showingPopup && screenStatus == 1 && mode.equals(NotificationMode.DUMMY_MODE)) {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        //Log.d("postnew", "was not running - launch!");
+                        Log.d("postnew", "was not running - launch!");
                         emitNotification();
                         new InputPopup().show();
                         showingPopup = true;
@@ -127,7 +129,7 @@ public class NotificationService extends IntentService {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        //Log.d("postnew", "was running");
+                        Log.d("postnew", "was running");
                         emitDummyMode();
                     }
                 }, AppPreferences.userSettings.getPopupInterval());
@@ -138,7 +140,7 @@ public class NotificationService extends IntentService {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    //Log.d("postnew", "user didnt liek!");
+                    Log.d("postnew", "user didnt liek!");
                     emitDummyMode();
                 }
             }, AppPreferences.userSettings.getPopupInterval());

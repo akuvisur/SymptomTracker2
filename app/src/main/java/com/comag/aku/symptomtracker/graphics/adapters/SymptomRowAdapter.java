@@ -32,7 +32,7 @@ import android.widget.TextView;
 
 import com.comag.aku.symptomtracker.MainActivity;
 import com.comag.aku.symptomtracker.R;
-import com.comag.aku.symptomtracker.Settings;
+import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.graphics.UIManager;
 import com.comag.aku.symptomtracker.graphics.elements.ObservedAnimation;
 import com.comag.aku.symptomtracker.model.NoSQLStorage;
@@ -120,7 +120,7 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
         if (position == 0) firstVisibleElementFound = false;
 
         View rowView;
-        LayoutInflater inflater = (LayoutInflater) Settings.currentContext
+        LayoutInflater inflater = (LayoutInflater) AppHelpers.currentContext
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         curSymptom = objects.get(position);
@@ -147,7 +147,7 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
 
         title = (TextView) rowView.findViewById(R.id.symptom_title);
         title.setText(curSymptom.name);
-        title.setTextColor(ContextCompat.getColor(Settings.currentContext, R.color.black));
+        title.setTextColor(ContextCompat.getColor(AppHelpers.currentContext, R.color.black));
 
         desc = (TextView) rowView.findViewById(R.id.symptom_desc);
         desc.setText(curSymptom.desc);
@@ -166,13 +166,13 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
 
         switch (value.getValue()) {
             case "missing":
-                stateButton.setBackground(ContextCompat.getDrawable(Settings.currentContext, R.drawable.roundgrey));
+                stateButton.setBackground(ContextCompat.getDrawable(AppHelpers.currentContext, R.drawable.roundgrey));
                 stateButton.setText("Missing");
                 break;
             case "none":
                 if (UIManager.hasFinishedAnim(new ButtonKey(curSymptom.key, "none"))) {
                     // set drawable to static
-                    stateButton.setBackground(ContextCompat.getDrawable(Settings.currentContext, R.drawable.round_none_checkmark));
+                    stateButton.setBackground(ContextCompat.getDrawable(AppHelpers.currentContext, R.drawable.round_none_checkmark));
                 }
                 else {
                     stateButton.setBackgroundResource(R.drawable.checkmark_anim_none);
@@ -182,14 +182,14 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                     stateButton.setBackground(checkAnimation);
                     checkAnimation.start();
                 }
-                stateBar.setBackgroundColor(ContextCompat.getColor(Settings.currentContext, R.color.None));
+                stateBar.setBackgroundColor(ContextCompat.getColor(AppHelpers.currentContext, R.color.None));
                 stateButton.setText("");
                 break;
             case "mild":
                 // if an animation already finished for this symptom and this state, use a static instead
                 if (UIManager.hasFinishedAnim(new ButtonKey(curSymptom.key, "mild"))) {
                     // set drawable to static
-                    stateButton.setBackground(ContextCompat.getDrawable(Settings.currentContext, R.drawable.round_mild_checkmark));
+                    stateButton.setBackground(ContextCompat.getDrawable(AppHelpers.currentContext, R.drawable.round_mild_checkmark));
                 }
                 else {
                     stateButton.setBackgroundResource(R.drawable.checkmark_anim_mild);
@@ -199,13 +199,13 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                     stateButton.setBackground(checkAnimation);
                     checkAnimation.start();
                 }
-                stateBar.setBackgroundColor(ContextCompat.getColor(Settings.currentContext, R.color.Mild));
+                stateBar.setBackgroundColor(ContextCompat.getColor(AppHelpers.currentContext, R.color.Mild));
                 stateButton.setText("");
                 break;
             case "severe":
                 if (UIManager.hasFinishedAnim(new ButtonKey(curSymptom.key, "severe"))) {
                     // set drawable to static
-                    stateButton.setBackground(ContextCompat.getDrawable(Settings.currentContext, R.drawable.round_severe_checkmark));
+                    stateButton.setBackground(ContextCompat.getDrawable(AppHelpers.currentContext, R.drawable.round_severe_checkmark));
                 }
                 else {
                     stateButton.setBackgroundResource(R.drawable.checkmark_anim_severe);
@@ -215,11 +215,11 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                     stateButton.setBackground(checkAnimation);
                     checkAnimation.start();
                 }
-                stateBar.setBackgroundColor(ContextCompat.getColor(Settings.currentContext, R.color.Severe));
+                stateBar.setBackgroundColor(ContextCompat.getColor(AppHelpers.currentContext, R.color.Severe));
                 stateButton.setText("");
                 break;
             default:
-                stateButton.setBackground(ContextCompat.getDrawable(Settings.currentContext, R.drawable.roundgrey));
+                stateButton.setBackground(ContextCompat.getDrawable(AppHelpers.currentContext, R.drawable.roundgrey));
         }
 
         extraRow = inflater.inflate(R.layout.extrarow, parent, false);
@@ -240,7 +240,7 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
         }
 
         if (state.equals("input")) {
-            inputElement = Settings.factory.inflate(R.layout.symptomrow_input, null);
+            inputElement = AppHelpers.factory.inflate(R.layout.symptomrow_input, null);
 
             noneButton = (Button) inputElement.findViewById(R.id.symptom_none);
             noneButton.setOnClickListener(noneButtonListeners.get(curSymptom.key));
@@ -251,14 +251,14 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
             severeButton = (Button) inputElement.findViewById(R.id.symptom_severe);
             severeButton.setOnClickListener(severeButtonListeners.get(curSymptom.key));
 
-            Animation anim = AnimationUtils.loadAnimation(Settings.currentContext, R.anim.anim_in_right);
+            Animation anim = AnimationUtils.loadAnimation(AppHelpers.currentContext, R.anim.anim_in_right);
             inputElement.startAnimation(anim);
 
             inputElements.put(curSymptom.key, inputElement);
             container.addView(inputElement);
         }
         else if (UIManager.getSymptomState(curSymptom.key).equals("done")) {
-            addElement = Settings.factory.inflate(R.layout.symptomrow_add, null);
+            addElement = AppHelpers.factory.inflate(R.layout.symptomrow_add, null);
 
             commentButton = (TextView) addElement.findViewById(R.id.add_comment);
             commentButton.setOnClickListener(commentButtonListeners.get(curSymptom.key));
@@ -268,7 +268,7 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
             cameraButton.setOnClickListener(cameraButtonListeners.get(curSymptom.key));
             if (value.hasPicture()) { cameraButton.setText("Replace picture");}
 
-            Animation anim = AnimationUtils.loadAnimation(Settings.currentContext, R.anim.anim_in_right);
+            Animation anim = AnimationUtils.loadAnimation(AppHelpers.currentContext, R.anim.anim_in_right);
             addElement.startAnimation(anim);
             addElements.put(curSymptom.key, addElement);
             container.addView(addElement);
@@ -308,12 +308,12 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                 v.setBackgroundResource(R.color.hilight);
                 v.invalidate();
                 if (UIManager.getSymptomState(symptom.key).equals("input")) {
-                    anim = AnimationUtils.loadAnimation(Settings.currentContext, android.R.anim.slide_out_right);
+                    anim = AnimationUtils.loadAnimation(AppHelpers.currentContext, android.R.anim.slide_out_right);
                     anim.setDuration(250);
                     inputElements.get(symptom.key).startAnimation(anim);
                 }
                 if (UIManager.getSymptomState(symptom.key).equals("done")) {
-                    anim = AnimationUtils.loadAnimation(Settings.currentContext, android.R.anim.slide_out_right);
+                    anim = AnimationUtils.loadAnimation(AppHelpers.currentContext, android.R.anim.slide_out_right);
                     anim.setDuration(250);
                     addElements.get(symptom.key).startAnimation(anim);
                 }
@@ -353,12 +353,12 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
         @Override
         public void onClick(View v) {
             if (UIManager.getSymptomState(symptom.key).equals("input")) {
-                anim = AnimationUtils.loadAnimation(Settings.currentContext, android.R.anim.slide_out_right);
+                anim = AnimationUtils.loadAnimation(AppHelpers.currentContext, android.R.anim.slide_out_right);
                 anim.setDuration(250);
                 inputElements.get(symptom.key).startAnimation(anim);
             }
             if (UIManager.getSymptomState(symptom.key).equals("done")) {
-                anim = AnimationUtils.loadAnimation(Settings.currentContext, android.R.anim.slide_out_right);
+                anim = AnimationUtils.loadAnimation(AppHelpers.currentContext, android.R.anim.slide_out_right);
                 anim.setDuration(250);
                 addElements.get(symptom.key).startAnimation(anim);
             }
@@ -408,7 +408,7 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                     public void run() {
                         NoSQLStorage.storeSingle(new Condition(symptom.key), new ValueMap("none"));
                         anim = AnimationUtils.loadAnimation(
-                                Settings.currentContext, android.R.anim.slide_out_right
+                                AppHelpers.currentContext, android.R.anim.slide_out_right
                         );
                         anim.setDuration(250);
                         rows.get(symptom.key).startAnimation(anim);
@@ -459,7 +459,7 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                     public void run() {
                         NoSQLStorage.storeSingle(new Condition(symptom.key), new ValueMap("mild"));
                         anim = AnimationUtils.loadAnimation(
-                                Settings.currentContext, android.R.anim.slide_out_right
+                                AppHelpers.currentContext, android.R.anim.slide_out_right
                         );
                         anim.setDuration(250);
                         rows.get(symptom.key).startAnimation(anim);
@@ -508,7 +508,7 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                     public void run() {
                         NoSQLStorage.storeSingle(new Condition(symptom.key), new ValueMap("severe"));
                         anim = AnimationUtils.loadAnimation(
-                                Settings.currentContext, android.R.anim.slide_out_right
+                                AppHelpers.currentContext, android.R.anim.slide_out_right
                         );
                         anim.setDuration(250);
                         rows.get(symptom.key).startAnimation(anim);
@@ -542,10 +542,10 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
 
         @Override
         public void onClick(View v) {
-            view = View.inflate(Settings.currentContext, R.layout.comment, null);
+            view = View.inflate(AppHelpers.currentContext, R.layout.comment, null);
             text = (EditText) view.findViewById(R.id.comment_text);
             text.setText(Values.fetch(symptom.key).getComment());
-            alert = new AlertDialog.Builder(Settings.currentActivity)
+            alert = new AlertDialog.Builder(AppHelpers.currentActivity)
                     .setView(view)
                     .setIcon(null)
                     .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -579,21 +579,21 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
         @Override
         public void onClick(View v) {
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (takePictureIntent.resolveActivity(Settings.currentContext.getPackageManager()) != null) {
+            if (takePictureIntent.resolveActivity(AppHelpers.currentContext.getPackageManager()) != null) {
                 File photoFile = null;
                 try {
-                    photoFile = Settings.createImageFile(symptom.key);
+                    photoFile = AppHelpers.createImageFile(symptom.key);
                 } catch (IOException ex) {
                     Log.d("error creating file", ex.toString());
                     // Error occurred while creating the File
                 }
                 // Continue only if the File was successfully created
                 if (photoFile != null) {
-                    Settings.curPicturePath = photoFile.getAbsolutePath();
-                    Settings.curPictureKey = symptom.key;
+                    AppHelpers.curPicturePath = photoFile.getAbsolutePath();
+                    AppHelpers.curPictureKey = symptom.key;
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
                             Uri.fromFile(photoFile));
-                    Settings.currentActivity.startActivityForResult(takePictureIntent, Settings.REQUEST_IMAGE_CAPTURE);
+                    AppHelpers.currentActivity.startActivityForResult(takePictureIntent, AppHelpers.REQUEST_IMAGE_CAPTURE);
                 }
                 else {
                     Snackbar.make(extraCameraButton, "Could not access storage to save image", Snackbar.LENGTH_LONG).setAction("Action", null).show();
@@ -619,13 +619,13 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
 
         @Override
         public void onClick(View v) {
-            view = View.inflate(Settings.currentContext, R.layout.imageviewer, null);
+            view = View.inflate(AppHelpers.currentContext, R.layout.imageviewer, null);
             f = new File(Values.fetch(symptom.key).getPicturePath());
 
             if(f.exists()){
                 image = (ImageView) view.findViewById(R.id.featureImage);
 
-                alert = new AlertDialog.Builder(Settings.currentActivity)
+                alert = new AlertDialog.Builder(AppHelpers.currentActivity)
                         .setView(view)
                         .setIcon(null)
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {

@@ -20,7 +20,6 @@ import com.comag.aku.symptomtracker.model.ApiManager;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.comag.aku.symptomtracker.model.DatabaseStorage;
 import com.comag.aku.symptomtracker.objects.Schema;
-import com.comag.aku.symptomtracker.services.NotificationService;
 
 import java.util.TreeMap;
 
@@ -30,42 +29,26 @@ public class Launch extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Settings.currentContext = getApplicationContext();
-        Settings.currentActivity = this;
+        AppHelpers.currentContext = getApplicationContext();
+        AppHelpers.currentActivity = this;
+    }
 
-        startService(new Intent(this, NotificationService.class));
+    @Override
+    public void onResume() {
+        super.onResume();
+        AppHelpers.currentContext = getApplicationContext();
+        AppHelpers.currentActivity = this;
 
-        if (Settings.DEBUG) AppPreferences.clear();
+        if (AppHelpers.DEBUG) AppPreferences.clear();
         else {
             AppPreferences.load();
             if (AppPreferences.getSchema() == null) launch(null);
             else {
                 ApiManager.getFactorsForSchema();
                 ApiManager.getSymptomsForSchema();
+                AppHelpers.currentActivity.startActivity(new Intent(AppHelpers.currentActivity, MainActivity.class));
             }
         }
-
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Settings.currentContext = getApplicationContext();
-        Settings.currentActivity = this;
-
-        if (Settings.DEBUG) {
-            setContentView(R.layout.debug_launch);
-            //Settings.currentActivity.startActivity(new Intent(Settings.currentActivity, MainActivity.class));
-        }
-        else {
-            if(AppPreferences.getSchema() == null) {
-                launch(null);
-            }
-            else {
-                Settings.currentActivity.startActivity(new Intent(Settings.currentActivity, MainActivity.class));
-            }
-        }
-
     }
 
     public static ListView schemaView;
@@ -158,7 +141,7 @@ public class Launch extends AppCompatActivity {
 
     private AlertDialog.Builder builder;
     public void emitNotification(View view) {
-        builder = new AlertDialog.Builder(Settings.currentActivity);
+        builder = new AlertDialog.Builder(AppHelpers.currentActivity);
         builder.setView(R.layout.symptomrow);
         builder.setTitle("Add a symptom");
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -182,18 +165,18 @@ public class Launch extends AppCompatActivity {
     }
 
     public static void proceed() {
-        new AlertDialog.Builder(Settings.currentActivity)
+        new AlertDialog.Builder(AppHelpers.currentActivity)
                 .setTitle("Join study")
-                .setMessage(Settings.parseSchema(DatabaseStorage.schemaList.get(selectedSchemaIndex)))
+                .setMessage(AppHelpers.parseSchema(DatabaseStorage.schemaList.get(selectedSchemaIndex)))
                 .setIcon(R.drawable.info_color)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        Toast.makeText(Settings.currentActivity, "Loading schema information..", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AppHelpers.currentActivity, "Loading schema information..", Toast.LENGTH_SHORT).show();
                         // proceed to new action etc
                         AppPreferences.join(DatabaseStorage.schemaList.get(selectedSchemaIndex));
                         ApiManager.getSymptomsForSchema();
                         ApiManager.getFactorsForSchema();
-                        Settings.currentActivity.startActivity(new Intent(Settings.currentActivity, MainActivity.class));
+                        AppHelpers.currentActivity.startActivity(new Intent(AppHelpers.currentActivity, MainActivity.class));
                     }})
                 .setNegativeButton(android.R.string.no, null).show();
     }

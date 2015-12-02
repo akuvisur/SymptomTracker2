@@ -54,7 +54,10 @@ public class ValueMap {
                 case "severe":
                     return 3f;
                 default:
-                    return Float.valueOf(value);
+                    try {
+                        return Float.valueOf(value);
+                    }
+                    catch (NumberFormatException e){return 0f;}
             }
         }
         else return 0f;

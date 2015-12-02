@@ -4,13 +4,13 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.LinearLayout;
 
+import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.MainActivity;
 import com.comag.aku.symptomtracker.R;
-import com.comag.aku.symptomtracker.Settings;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.comag.aku.symptomtracker.graphics.FactorDataViewer;
+import com.comag.aku.symptomtracker.graphics.FlowLayout;
 import com.comag.aku.symptomtracker.objects.Factor;
 import com.comag.aku.symptomtracker.objects.Symptom;
 
@@ -19,18 +19,18 @@ import com.comag.aku.symptomtracker.objects.Symptom;
  */
 public class CheckBoxSelector {
     public static View getSymptomSelector() {
-        View view = Settings.factory.inflate(R.layout.empty_horizontal_linear, null);
+        View view = AppHelpers.factory.inflate(R.layout.empty_horizontal_linear, null);
 
-        LinearLayout container = (LinearLayout) view.findViewById(R.id.container);
+        FlowLayout container = (FlowLayout) view.findViewById(R.id.container);
         //container.removeAllViews();
 
         CheckBox c;
         for (String symptom : AppPreferences.symptoms.keySet()) {
-            c = new CheckBox(Settings.currentContext);
+            c = new CheckBox(AppHelpers.currentContext);
             c.setOnClickListener(new SymptomKeyListener(symptom, c));
             c.setText(Symptom.keyToName(symptom));
             c.setTextSize(12);
-            c.setTextColor(ContextCompat.getColor(Settings.currentContext, R.color.black));
+            c.setTextColor(ContextCompat.getColor(AppHelpers.currentContext, R.color.black));
             c.setChecked(MainActivity.dataSymptoms.contains(symptom));
             container.addView(c);
         }
@@ -39,18 +39,18 @@ public class CheckBoxSelector {
     }
 
     public static View getFactorSelector() {
-        View view = Settings.factory.inflate(R.layout.empty_horizontal_linear, null);
+        View view = AppHelpers.factory.inflate(R.layout.empty_horizontal_linear, null);
 
-        LinearLayout container = (LinearLayout) view.findViewById(R.id.container);
+        FlowLayout container = (FlowLayout) view.findViewById(R.id.container);
         //container.removeAllViews();
 
         CheckBox c;
         for (String factor : AppPreferences.factors.keySet()) {
-            c = new CheckBox(Settings.currentContext);
+            c = new CheckBox(AppHelpers.currentContext);
             c.setOnClickListener(new FactorKeyListener(factor, c));
             c.setText(Factor.keyToName(factor));
             c.setTextSize(12);
-            c.setTextColor(ContextCompat.getColor(Settings.currentContext, R.color.black));
+            c.setTextColor(ContextCompat.getColor(AppHelpers.currentContext, R.color.black));
             c.setChecked(MainActivity.dataFactors.contains(factor));
             container.addView(c);
         }

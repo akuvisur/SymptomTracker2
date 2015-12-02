@@ -1,6 +1,6 @@
 package com.comag.aku.symptomtracker.objects.tracking;
 
-import com.comag.aku.symptomtracker.Settings;
+import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 
 import java.util.Calendar;
@@ -24,11 +24,11 @@ public class Condition {
     public final long timestamp;
 
     public Condition(String key) {
-        day = Settings.cal.get(Calendar.DAY_OF_YEAR);
-        hour = Settings.cal.get(Calendar.HOUR_OF_DAY);
-        week = Settings.cal.get(Calendar.WEEK_OF_YEAR);
-        month = Settings.cal.get(Calendar.MONTH);
-        year = Settings.cal.get(Calendar.YEAR);
+        day = AppHelpers.cal.get(Calendar.DAY_OF_YEAR);
+        hour = AppHelpers.cal.get(Calendar.HOUR_OF_DAY);
+        week = AppHelpers.cal.get(Calendar.WEEK_OF_YEAR);
+        month = AppHelpers.cal.get(Calendar.MONTH);
+        year = AppHelpers.cal.get(Calendar.YEAR);
         this.key = key;
 
         if (key.contains("symptom_")) {
@@ -111,7 +111,7 @@ public class Condition {
     }
 
     public boolean isYear() {
-        return Settings.cal.get(Calendar.YEAR) == year;
+        return AppHelpers.cal.get(Calendar.YEAR) == year;
     }
 
     public boolean isMonth(int month) {
@@ -130,7 +130,7 @@ public class Condition {
     // compare given hour to this conditions hour
     public boolean isHour(int hour) {
         //Log.d("isHour()", String.valueOf(hour) + " compared to conditions " + this.hour);
-        return (isYear() && this.day == Settings.cal.get(Calendar.DAY_OF_YEAR) && this.hour == hour);
+        return (isYear() && this.day == AppHelpers.cal.get(Calendar.DAY_OF_YEAR) && this.hour == hour);
     }
 
     public boolean isCurrent() {
@@ -140,13 +140,13 @@ public class Condition {
         //Log.d("Condition:rep_window", rep_window);
         switch (rep_window) {
             case "hour":
-                return isHour(Settings.cal.get(Calendar.HOUR_OF_DAY));
+                return isHour(AppHelpers.cal.get(Calendar.HOUR_OF_DAY));
             case "day":
-                return isDay(Settings.cal.get(Calendar.DAY_OF_YEAR));
+                return isDay(AppHelpers.cal.get(Calendar.DAY_OF_YEAR));
             case "week":
-                return isWeek(Settings.cal.get(Calendar.WEEK_OF_YEAR));
+                return isWeek(AppHelpers.cal.get(Calendar.WEEK_OF_YEAR));
             case "month":
-                return isMonth(Settings.cal.get(Calendar.MONTH));
+                return isMonth(AppHelpers.cal.get(Calendar.MONTH));
             default:
                 return false;
         }

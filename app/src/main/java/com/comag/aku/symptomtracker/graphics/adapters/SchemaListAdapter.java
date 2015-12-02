@@ -10,9 +10,9 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.Launch;
 import com.comag.aku.symptomtracker.R;
-import com.comag.aku.symptomtracker.Settings;
 import com.comag.aku.symptomtracker.model.DatabaseStorage;
 import com.comag.aku.symptomtracker.objects.Schema;
 
@@ -41,7 +41,7 @@ public class SchemaListAdapter extends ArrayAdapter<Schema> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View rowView;
-        LayoutInflater inflater = (LayoutInflater) Settings.currentContext
+        LayoutInflater inflater = (LayoutInflater) AppHelpers.currentContext
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if (Launch.visibleSchemas.values().contains(DatabaseStorage.schemaList.get(position))) {
             if (Launch.selectedSchemaIndex == null || position != Launch.selectedSchemaIndex) {
@@ -56,7 +56,7 @@ public class SchemaListAdapter extends ArrayAdapter<Schema> {
                 factors.setText(schemas.get(position).factors.size() + " factors");
 
                 //row = (LinearLayout) rowView.findViewById(R.id.schema_row);
-                //row.setBackgroundColor(Settings.randomizeListColor(position));
+                //row.setBackgroundColor(AppHelpers.randomizeListColor(position));
 
                 return rowView;
             } else {
@@ -73,7 +73,7 @@ public class SchemaListAdapter extends ArrayAdapter<Schema> {
                 factors = (TextView) rowView.findViewById(R.id.schema_factors);
                 factors.setText(schemas.get(position).factors.size() + " factors");
                 //row = (LinearLayout) rowView.findViewById(R.id.schema_row);
-                //row.setBackgroundColor(Settings.randomizeListColor(position));
+                //row.setBackgroundColor(AppHelpers.randomizeListColor(position));
 
                 join = (Button) rowView.findViewById(R.id.schema_selected_join);
                 if (buttClick == null) {

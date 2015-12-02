@@ -6,7 +6,7 @@ import com.colintmiller.simplenosql.NoSQL;
 import com.colintmiller.simplenosql.NoSQLEntity;
 import com.colintmiller.simplenosql.RetrievalCallback;
 import com.comag.aku.symptomtracker.MainActivity;
-import com.comag.aku.symptomtracker.Settings;
+import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.comag.aku.symptomtracker.graphics.adapters.FactorRowAdapter;
 import com.comag.aku.symptomtracker.graphics.adapters.SymptomRowAdapter;
@@ -21,15 +21,15 @@ import java.util.List;
  */
 public class NoSQLStorage {
 
-    public static void clear() {
-        NoSQL.with(Settings.currentContext).using(DataObject.class)
-                .bucketId(AppPreferences.getSchema().db_name)
+    public static void clear(String db_name) {
+        NoSQL.with(AppHelpers.currentContext).using(DataObject.class)
+                .bucketId(db_name)
                 .delete();
     }
 
     public static void drop(Condition c) {
         DataObject o = new DataObject(c, Values.values.get(c));
-        NoSQL.with(Settings.currentContext).using(DataObject.class)
+        NoSQL.with(AppHelpers.currentContext).using(DataObject.class)
                 .bucketId(AppPreferences.getSchema().db_name)
                 .entityId(o.getId())
                 .delete();
@@ -38,8 +38,8 @@ public class NoSQLStorage {
     public static void storeSingle(Condition c, ValueMap v) {
         Log.d("NoSQL", "Storing: " + v.toRenderableString());
         Log.d("NoSQL", "time is : " + c.timestamp);
-        Settings.cal.setTimeInMillis(c.timestamp);
-        Log.d("NoSQL", "date: " + Settings.dayFormat.format(Settings.cal.getTime()));
+        AppHelpers.cal.setTimeInMillis(c.timestamp);
+        Log.d("NoSQL", "date: " + AppHelpers.dayFormat.format(AppHelpers.cal.getTime()));
         Condition removed = null;
         searchExisting:
         for (Condition existing : Values.values.keySet()) {
@@ -54,7 +54,7 @@ public class NoSQLStorage {
         DataObject o = new DataObject(c, v);
         NoSQLEntity<DataObject> entity = new NoSQLEntity<>(AppPreferences.getSchema().db_name, o.getId());
         entity.setData(o);
-        NoSQL.with(Settings.currentContext).using(DataObject.class).save(entity);
+        NoSQL.with(AppHelpers.currentContext).using(DataObject.class).save(entity);
         Values.put(o.c, o.v);
         //loadValues(MainActivity.tab);
     }
@@ -62,7 +62,7 @@ public class NoSQLStorage {
     public static void loadValues(final String tabName) {
         final long start = System.currentTimeMillis();
         Values.values.clear();
-        NoSQL.with(Settings.currentContext).using(DataObject.class)
+        NoSQL.with(AppHelpers.currentContext).using(DataObject.class)
             .bucketId(AppPreferences.getSchema().db_name)
             .retrieve(new RetrievalCallback<DataObject>() {
                 public void retrievedResults(List<NoSQLEntity<DataObject>> entities) {
@@ -83,7 +83,7 @@ public class NoSQLStorage {
 
     public static void loadAllValues() {
         Values.values.clear();
-        NoSQL.with(Settings.currentContext).using(DataObject.class)
+        NoSQL.with(AppHelpers.currentContext).using(DataObject.class)
             .bucketId(AppPreferences.getSchema().db_name)
             .retrieve(new RetrievalCallback<DataObject>() {
                 public void retrievedResults(List<NoSQLEntity<DataObject>> entities) {

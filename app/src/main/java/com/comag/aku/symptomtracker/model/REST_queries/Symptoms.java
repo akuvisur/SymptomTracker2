@@ -1,9 +1,7 @@
 package com.comag.aku.symptomtracker.model.REST_queries;
 
 import android.util.Log;
-import android.widget.Toast;
 
-import com.comag.aku.symptomtracker.Settings;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.comag.aku.symptomtracker.model.APIConnector;
 import com.comag.aku.symptomtracker.objects.Symptom;
@@ -34,12 +32,12 @@ public class Symptoms implements Callback<JsonObject> {
             Log.d("symptoms", "added " + s);
         }
         Log.d("symptoms", "loaded from POST");
-        AppPreferences.addSymptoms();
+        AppPreferences.storeSymptomsToSharedPrefs();
     }
 
     @Override
     public void onFailure(Throwable t) {
-        //Toast.makeText(Settings.currentContext, "Loading factors - No internet connection available?", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(AppHelpers.currentContext, "Loading factors - No internet connection available?", Toast.LENGTH_SHORT).show();
         Log.d("symptoms API", "failed to load, no internet connection?" +t);
     }
 }

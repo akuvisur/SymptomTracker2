@@ -2,15 +2,11 @@ package com.comag.aku.symptomtracker.model.data_storage;
 
 import android.util.Log;
 
-import com.comag.aku.symptomtracker.Settings;
 import com.comag.aku.symptomtracker.model.NoSQLStorage;
-import com.comag.aku.symptomtracker.objects.Factor;
-import com.comag.aku.symptomtracker.objects.Symptom;
 import com.comag.aku.symptomtracker.objects.ValueMap;
 import com.comag.aku.symptomtracker.objects.tracking.Condition;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package com.comag.aku.symptomtracker.objects.tracking;
 
-import com.comag.aku.symptomtracker.Settings;
+import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.objects.ValueMap;
 
 import java.util.ArrayList;
@@ -41,39 +41,39 @@ public class ConditionMap {
         if (window == null) {return false;}
         else {
             // equals depends on the selected dataviewer grouping variable
-            switch(Settings.calTime) {
+            switch(AppHelpers.calTime) {
                 case Calendar.HOUR_OF_DAY:
                     cal.setTimeInMillis(c.timestamp);
-                    int oHour = cal.get(Settings.calTime);
+                    int oHour = cal.get(AppHelpers.calTime);
                     cal.setTimeInMillis(timestamp);
-                    return (cal.get(Settings.calTime) == oHour)
+                    return (cal.get(AppHelpers.calTime) == oHour)
                             && key.equals(c.key)
                             && year.equals(c.year)
                             && day.equals(c.day);
 
                 case Calendar.DAY_OF_YEAR:
                     cal.setTimeInMillis(c.timestamp);
-                    int oDay = cal.get(Settings.calTime);
+                    int oDay = cal.get(AppHelpers.calTime);
                     cal.setTimeInMillis(timestamp);
-                    return (cal.get(Settings.calTime) == oDay)
+                    return (cal.get(AppHelpers.calTime) == oDay)
                             && key.equals(c.key)
                             && year.equals(c.year);
 
                 case Calendar.WEEK_OF_YEAR:
                     cal.setTimeInMillis(c.timestamp);
-                    int oWeek = cal.get(Settings.calTime);
+                    int oWeek = cal.get(AppHelpers.calTime);
                     //Log.d("week", String.valueOf(oWeek));
                     cal.setTimeInMillis(timestamp);
                     //Log.d("other week", String.valueOf(cal.get(calTime)));
-                    return (cal.get(Settings.calTime) == oWeek) && key.equals(c.key) && year.equals(c.year);
+                    return (cal.get(AppHelpers.calTime) == oWeek) && key.equals(c.key) && year.equals(c.year);
 
                 case Calendar.MONTH:
                     cal.setTimeInMillis(c.timestamp);
-                    int oMonth = cal.get(Settings.calTime);
+                    int oMonth = cal.get(AppHelpers.calTime);
                     //Log.d("month", String.valueOf(oMonth));
                     cal.setTimeInMillis(timestamp);
                     //Log.d("other month", String.valueOf(cal.get(calTime)));
-                    return (cal.get(Settings.calTime) == oMonth) && key.equals(c.key) && year.equals(c.year);
+                    return (cal.get(AppHelpers.calTime) == oMonth) && key.equals(c.key) && year.equals(c.year);
 
                 // i guess something went wrong..
                 default:
