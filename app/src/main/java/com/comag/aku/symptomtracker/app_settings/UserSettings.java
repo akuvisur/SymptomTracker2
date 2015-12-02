@@ -15,22 +15,18 @@ public class UserSettings {
 
     public void setPopupsAutomated(Boolean automated) {
         popupsAutomated = automated;
-        AppPreferences.setUserSetting(AppPreferences.POPUP_AUTOMATED, automated);
     }
 
     public void setNotificationHour(int hour) {
         notificationHour = hour;
-        AppPreferences.setUserSetting(AppPreferences.NOTIFICATION_HOUR, hour);
     }
 
     public void setPopupFrequency(int freq) {
         popupFrequency = freq;
-        AppPreferences.setUserSetting(AppPreferences.POPUP_FREQUENCY, freq);
     }
 
     public void setPopupInterval(int interval) {
         popupInterval = interval;
-        AppPreferences.setUserSetting(AppPreferences.POPUP_INTERVAL, interval);
     }
 
     public boolean isPopupsAutomated() {

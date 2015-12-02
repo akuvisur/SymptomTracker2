@@ -28,6 +28,7 @@ import android.widget.TextView;
 import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.MainActivity;
 import com.comag.aku.symptomtracker.R;
+import com.comag.aku.symptomtracker.graphics.FlowLayout;
 import com.comag.aku.symptomtracker.graphics.UIManager;
 import com.comag.aku.symptomtracker.model.NoSQLStorage;
 import com.comag.aku.symptomtracker.model.data_storage.Values;
@@ -310,7 +311,7 @@ public class FactorRowAdapter extends ArrayAdapter<Factor> {
             return true;
         }
 
-        private LinearLayout selection;
+        private FlowLayout selection;
         private View view;
         private AlertDialog.Builder alert;
         private AlertDialog dialog;
@@ -326,10 +327,7 @@ public class FactorRowAdapter extends ArrayAdapter<Factor> {
             options = Arrays.asList(factor.values.split(","));
 
             view = View.inflate(AppHelpers.currentContext, R.layout.factorrow_input_multiple, null);
-            selection = (LinearLayout) view.findViewById(R.id.factor_multiple_input);
-
-            optionRows = new LinearLayout(AppHelpers.currentContext);
-            optionRows.setOrientation(LinearLayout.VERTICAL);
+            selection = (FlowLayout) view.findViewById(R.id.factor_multiple_input);
 
             for (String option : options) {
                 button = new ValueButton(AppHelpers.currentContext, option);
@@ -339,10 +337,8 @@ public class FactorRowAdapter extends ArrayAdapter<Factor> {
                     button.setChecked(true);
                     selected.add(option);
                 }
-                optionRows.addView(button);
+                selection.addView(button);
             }
-
-            selection.addView(optionRows);
 
             alert = new AlertDialog.Builder(AppHelpers.currentActivity)
                     .setView(view)
@@ -458,7 +454,7 @@ public class FactorRowAdapter extends ArrayAdapter<Factor> {
             }, 250);
         }
 
-        private LinearLayout selection;
+        private FlowLayout selection;
         private View view;
         private AlertDialog.Builder alert;
         private AlertDialog dialog;
@@ -476,7 +472,7 @@ public class FactorRowAdapter extends ArrayAdapter<Factor> {
 
             view = View.inflate(AppHelpers.currentContext, R.layout.factorrow_input_multiple, null);
 
-            selection = (LinearLayout) view.findViewById(R.id.factor_multiple_input);
+            selection = (FlowLayout) view.findViewById(R.id.factor_multiple_input);
 
             optionRows = new LinearLayout(AppHelpers.currentContext);
             optionRows.setOrientation(LinearLayout.VERTICAL);

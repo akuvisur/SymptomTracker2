@@ -1,7 +1,9 @@
 package com.comag.aku.symptomtracker.services;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.AnimationDrawable;
@@ -26,9 +28,11 @@ import com.colintmiller.simplenosql.NoSQL;
 import com.colintmiller.simplenosql.NoSQLEntity;
 import com.colintmiller.simplenosql.RetrievalCallback;
 import com.comag.aku.symptomtracker.Launch;
+import com.comag.aku.symptomtracker.MainActivity;
 import com.comag.aku.symptomtracker.R;
 import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
+import com.comag.aku.symptomtracker.graphics.FlowLayout;
 import com.comag.aku.symptomtracker.graphics.UIManager;
 import com.comag.aku.symptomtracker.graphics.elements.ObservedAnimation;
 import com.comag.aku.symptomtracker.model.DataObject;
@@ -75,6 +79,7 @@ public class InputPopup {
             NotificationService.showingPopup = false;
             return false;
         }
+        NotificationService.showingPopup = true;
 
         inflater = (LayoutInflater) NotificationService.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         popupLayout = inflater.inflate(R.layout.popup, null);
@@ -111,7 +116,7 @@ public class InputPopup {
                 anim = AnimationUtils.loadAnimation(NotificationService.getContext(), R.anim.anim_out_left);
                 anim.setDuration(250);
                 popupLayout.startAnimation(anim);
-                Toast.makeText(NotificationService.getContext(), "I will try to bother you less frequently", Toast.LENGTH_SHORT).show();
+                Toast.makeText(NotificationService.getContext(), "I will try to bother you less frequently.", Toast.LENGTH_SHORT).show();
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -189,8 +194,10 @@ public class InputPopup {
     }
 
     ArrayList<String> missingKeys;
+    private static String factorValue;
     private void getMissingInputs() {
         missingKeys = new ArrayList<>();
+        factorValue = "";
         for (String key : AppPreferences.factors.keySet()) missingKeys.add(key);
         for (String key : AppPreferences.symptoms.keySet()) missingKeys.add(key);
         NoSQL.with(NotificationService.getContext()).using(DataObject.class)
@@ -205,13 +212,18 @@ public class InputPopup {
                         }
                         if (missingKeys.isEmpty()) {
                             // sometimes randomly show daily factor inputs to keep them up to date during the day
-                            if ((new Random(System.currentTimeMillis()).nextInt(100) < 15) && !AppPreferences.factors.isEmpty()) {
+                            if ((new Random(System.currentTimeMillis()).nextInt(100) < 115) && !AppPreferences.factors.isEmpty()) {
                                 ArrayList<String> factors = new ArrayList<>();
                                 for (String key : AppPreferences.factors.keySet()) {
                                     if (AppPreferences.factors.get(key).rep_window.equals("day")) factors.add(key);
                                 }
                                 Collections.shuffle(factors);
                                 missingKeys.add(factors.get(0));
+                                for (int i = 0; i < entities.size(); i++) {
+                                    if (entities.get(i).getData().c.isCurrent() && entities.get(i).getData().c.key.equals(missingKeys.get(0))) {
+                                        factorValue = entities.get(i).getData().v.getValue();
+                                    }
+                                }
                             }
                         }
                         emit(missingKeys);
@@ -257,21 +269,22 @@ public class InputPopup {
 
         container.addView(inputs);
 
-        row.setBackground(ContextCompat.getDrawable(NotificationService.getContext(), R.drawable.roundedwhite));
+        //row.setBackground(ContextCompat.getDrawable(NotificationService.getContext(), R.drawable.roundedwhite));
 
         return row;
     }
 
-    public static HashMap<String, TextView> valueViews = new HashMap<>();
+    public static HashMap<String, Button> valueViews = new HashMap<>();
+    Button inputButton;
     private View CreateFactorRow(String key) {
-        Factor factor = AppPreferences.factors.get(key);
+        final Factor factor = AppPreferences.factors.get(key);
 
         row = inflater.inflate(R.layout.popup_factorrow, null);
 
         LinearLayout stateBar = (LinearLayout) row.findViewById(R.id.factor_row_color);
         stateBar.setBackgroundColor(AppHelpers.generateServiceColor((int) (Math.random() * 10)));
 
-        LinearLayout container = (LinearLayout) row.findViewById(R.id.factorrow_container);
+        final LinearLayout container = (LinearLayout) row.findViewById(R.id.factorrow_container);
 
         title = (TextView) row.findViewById(R.id.factor_title);
         desc = (TextView) row.findViewById(R.id.factor_desc);
@@ -281,29 +294,43 @@ public class InputPopup {
         title.setText(factor.name);
         desc.setText(factor.desc);
 
-        TextView input = (TextView) row.findViewById(R.id.factor_input);
-        valueViews.put(key, input);
+        inputButton = (Button) row.findViewById(R.id.factor_input);
+        valueViews.put(key, inputButton);
+        if (factorValue.length() > 0) {
+            try {
+                Integer i = Integer.valueOf(factorValue);
+                inputButton.setText(i.toString());
+            }
+            catch (NumberFormatException e) {
+                inputButton.setBackground(ContextCompat.getDrawable(NotificationService.getContext(), R.drawable.checkmark_primary));
+                inputButton.setText("");
+            }
+        }
 
-        View inputs;
+        final View inputs;
         switch (factor.input) {
             case "tracked":
                 inputs = inflater.inflate(R.layout.factorrow_input_range, null);
-                generateTrackedSelect(container, inputs, input, factor);
+                generateTrackedSelect(container, inputs, inputButton, factor);
                 container.addView(inputs);
                 break;
             case "multiple":
                 inputs = inflater.inflate(R.layout.factorrow_input_multiple, null);
-                generateMultipleSelect(container, inputs, input, factor);
-                container.addView(inputs);
+                inputButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        generateMultipleSelect(container, inputs, inputButton, factor);
+                    }
+                });
                 break;
         }
 
-        row.setBackground(ContextCompat.getDrawable(NotificationService.getContext(), R.drawable.roundedwhite));
+        //row.setBackground(ContextCompat.getDrawable(NotificationService.getContext(), R.drawable.roundedwhite));
 
         return row;
     }
 
-    private void generateTrackedSelect(LinearLayout container, View inputs, TextView input, Factor factor) {
+    private void generateTrackedSelect(LinearLayout container, View inputs, Button input, Factor factor) {
         SeekBar rangeBar = (SeekBar) inputs.findViewById(R.id.factor_input_range);
         rangeBar.setMax(Integer.valueOf(factor.range_max));
 
@@ -332,6 +359,15 @@ public class InputPopup {
             Log.d("generatedTrackedSelect", "bad number format for value " + Values.fetch(factor.key).getValue());
         } catch (NullPointerException e2) {
             Log.d("generatedTrackedSelect", "some null pointer error");
+        }
+
+        if (factorValue.length() > 0) {
+            try {
+                rangeBar.setProgress(Integer.valueOf(factorValue));
+                rangeText.setText(factorValue);
+            } catch (NumberFormatException e) {
+                Log.d("generatedTrackedSelect", "bad number format for value " + factorValue);
+            }
         }
     }
 
@@ -371,36 +407,82 @@ public class InputPopup {
     }
 
     List<String> selected;
-    private void generateMultipleSelect(LinearLayout container, View inputs, TextView valueView, final Factor factor) {
-        LinearLayout selection;
-        View view;
-        AlertDialog.Builder alert;
-        AlertDialog dialog;
+    View dialogView;
+    Button dialogOk;
+    Button dialogCancel;
+    private void generateMultipleSelect(LinearLayout container, View inputs, final TextView valueView, final Factor factor) {
+        selected = new ArrayList<>();
+        FlowLayout selection;
         List<String> options;
-        LinearLayout optionRows;
         ValueButton button;
         List<String> oldSelected;
 
-        oldSelected = Values.fetchMultipleValues(factor.key);
+        oldSelected = Arrays.asList(factorValue.split(","));
+        Log.d("oldselected", oldSelected.toString());
         options = Arrays.asList(factor.values.split(","));
 
-        view = View.inflate(AppHelpers.currentContext, R.layout.factorrow_input_multiple, null);
-        selection = (LinearLayout) view.findViewById(R.id.factor_multiple_input);
+        dialogView = View.inflate(NotificationService.getContext(), R.layout.popup_factorrow_input_multiple, null);
+        selection = (FlowLayout) dialogView.findViewById(R.id.factor_multiple_input);
 
-        optionRows = new LinearLayout(AppHelpers.currentContext);
-        optionRows.setOrientation(LinearLayout.VERTICAL);
+        // zz... the values are a list.toString() so each new toString() adds more whitespace between commas
+        ArrayList<String> strippedOld = new ArrayList<>();
+        for (int i = 0; i < oldSelected.size(); i++) {
+            String strippy = oldSelected.get(i).trim();
+            strippedOld.add(strippy);
+        }
 
         for (String option : options) {
-            button = new ValueButton(AppHelpers.currentContext, option);
-            button.setId((factor.key + option).hashCode());
+            button = new ValueButton(NotificationService.getContext(), option);
             button.setText(option);
-            if (oldSelected.contains(option)) {
+            if (strippedOld.contains(option)) {
                 button.setChecked(true);
                 selected.add(option);
             }
-            optionRows.addView(button);
+            selection.addView(button);
         }
-        selection.addView(optionRows);
+
+        final WindowManager windowManager = (WindowManager) NotificationService.getContext().getSystemService(Context.WINDOW_SERVICE);
+
+        final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_PHONE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                PixelFormat.OPAQUE);
+
+        params.windowAnimations = android.R.style.Animation_Dialog;
+
+        params.gravity = Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL;
+
+        dialogOk = (Button) dialogView.findViewById(R.id.dialog_ok);
+        dialogCancel = (Button) dialogView.findViewById(R.id.dialog_cancel);
+
+        dialogOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Values.addMultipleValues(new Condition(factor.key), selected);
+                valueView.setBackground(ContextCompat.getDrawable(NotificationService.getContext(), R.drawable.checkmark_primary));
+                valueView.setText("");
+                valueView.invalidate();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        NoSQLStorage.storeSingle(new Condition(factor.key), new ValueMap(selected));
+                    }
+                }, 350);
+                windowManager.removeView(dialogView);
+            }
+        });
+        dialogCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                windowManager.removeView(dialogView);
+            }
+        });
+
+        dialogView.setBackgroundColor(ContextCompat.getColor(NotificationService.getContext(), R.color.white));
+
+        windowManager.addView(dialogView, params);
     }
 
     private class ValueButton extends CheckBox {
@@ -408,7 +490,7 @@ public class InputPopup {
         public ValueButton(Context context, final String value) {
             super(context);
             this._this = this;
-            this.setTextColor(ContextCompat.getColor(AppHelpers.currentContext, R.color.black));
+            this.setTextColor(ContextCompat.getColor(NotificationService.getContext(), R.color.black));
             this.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {

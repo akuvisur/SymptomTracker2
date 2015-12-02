@@ -23,7 +23,7 @@
         tools:replace="android:icon, android:theme">
         <activity
             android:name=".Launch"
-            android:label="@string/app_name"
+            android:label= "@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,7 +32,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity"
-            android:label="SymptomTracker"
+            android:label="Symptom Tracker"
             android:theme="@style/AppTheme">
         </activity>
         <service android:name=".services.NotificationService"/>

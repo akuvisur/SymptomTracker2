@@ -15,8 +15,7 @@
         android:textColor="@color/white"
         android:gravity="start" />
 
-    <LinearLayout
-        android:orientation="vertical"
+    <com.comag.aku.symptomtracker.graphics.FlowLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"

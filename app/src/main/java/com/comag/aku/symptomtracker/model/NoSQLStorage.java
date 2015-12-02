@@ -13,6 +13,7 @@ import com.comag.aku.symptomtracker.graphics.adapters.SymptomRowAdapter;
 import com.comag.aku.symptomtracker.model.data_storage.Values;
 import com.comag.aku.symptomtracker.objects.ValueMap;
 import com.comag.aku.symptomtracker.objects.tracking.Condition;
+import com.comag.aku.symptomtracker.services.NotificationService;
 
 import java.util.List;
 
@@ -66,17 +67,17 @@ public class NoSQLStorage {
             .bucketId(AppPreferences.getSchema().db_name)
             .retrieve(new RetrievalCallback<DataObject>() {
                 public void retrievedResults(List<NoSQLEntity<DataObject>> entities) {
-                // Display results or something
-                for (int i = 0; i < entities.size(); i++) {
-                    if (entities.get(i).getData().c.isCurrent()) {
-                        Values.values.put(entities.get(i).getData().c, entities.get(i).getData().v);
+                    // Display results or something
+                    for (int i = 0; i < entities.size(); i++) {
+                        if (entities.get(i).getData().c.isCurrent()) {
+                            Values.values.put(entities.get(i).getData().c, entities.get(i).getData().v);
+                        }
                     }
-                }
-                if (tabName.equals("symptoms"))
-                    ((SymptomRowAdapter) MainActivity.symptom_list.getAdapter()).notifyDataSetChanged();
-                else if (tabName.equals("factors"))
-                    ((FactorRowAdapter) MainActivity.factor_list.getAdapter()).notifyDataSetChanged();
-                Log.d("log", "load took: " + String.valueOf(System.currentTimeMillis() - start));
+                    if (tabName.equals("symptoms"))
+                        ((SymptomRowAdapter) MainActivity.symptom_list.getAdapter()).notifyDataSetChanged();
+                    else if (tabName.equals("factors"))
+                        ((FactorRowAdapter) MainActivity.factor_list.getAdapter()).notifyDataSetChanged();
+                    Log.d("log", "load took: " + String.valueOf(System.currentTimeMillis() - start));
                 }
             });
     }
@@ -96,6 +97,23 @@ public class NoSQLStorage {
                     }
                 }
             });
+    }
+
+    public static void serviceLoad() {
+        Values.values.clear();
+        NoSQL.with(NotificationService.getContext()).using(DataObject.class)
+                .bucketId(AppPreferences.getSchema().db_name)
+                .retrieve(new RetrievalCallback<DataObject>() {
+                    public void retrievedResults(List<NoSQLEntity<DataObject>> entities) {
+                        if (entities.size() > 0) {
+                            for (int i = 0; i < entities.size(); i++) {
+                                DatabaseStorage.values.put(entities.get(i).getData().c, entities.get(i).getData().v);
+                                //Log.d("noSQLData", entities.get(i).getData().c.toRenderableString() + " , value: " + entities.get(i).getData().v.toRenderableString());
+                            }
+                        }
+                    }
+                });
+
     }
 
 }

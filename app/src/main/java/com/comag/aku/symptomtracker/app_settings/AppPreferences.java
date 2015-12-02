@@ -164,21 +164,26 @@ public class AppPreferences {
             case NOTIFICATION_HOUR:
                 int hour = (int) value;
                 editor.putInt(setting, hour);
+                userSettings.setNotificationHour(hour);
                 break;
             case POPUP_FREQUENCY:
                 int freq = (int) value;
                 editor.putInt(setting, freq);
+                userSettings.setPopupFrequency(freq);
                 break;
             case POPUP_AUTOMATED:
                 boolean automated = (boolean) value;
                 editor.putBoolean(setting, automated);
+                userSettings.setPopupsAutomated(automated);
                 break;
             case POPUP_INTERVAL:
                 int interval = (int) value;
                 editor.putInt(setting, interval);
+                userSettings.setPopupInterval(interval);
             default:
                 break;
         }
+
         editor.apply();
     }
 

@@ -2,9 +2,15 @@ package com.comag.aku.symptomtracker.model.data_storage;
 
 import android.util.Log;
 
+import com.colintmiller.simplenosql.NoSQL;
+import com.colintmiller.simplenosql.NoSQLEntity;
+import com.colintmiller.simplenosql.RetrievalCallback;
+import com.comag.aku.symptomtracker.app_settings.AppPreferences;
+import com.comag.aku.symptomtracker.model.DataObject;
 import com.comag.aku.symptomtracker.model.NoSQLStorage;
 import com.comag.aku.symptomtracker.objects.ValueMap;
 import com.comag.aku.symptomtracker.objects.tracking.Condition;
+import com.comag.aku.symptomtracker.services.NotificationService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,11 +80,13 @@ public class Values {
     // get values for factor with 'multiple' input type
     public static List<String> fetchMultipleValues(String key) {
         List<String> result = new ArrayList<>();
+        Condition current = new Condition(key);
         for (Condition c : values.keySet()) {
-            if (c.equals(new Condition(key))) {
+            if (c.equals(current)) {
                 String[] s = values.get(c).getValue().split(",");
                 for (int i = 0; i < s.length; i++) {
-                    result.add(s[i]);
+                    String value = s[i].trim();
+                    result.add(value);
                 }
             }
         }

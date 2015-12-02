@@ -225,6 +225,8 @@ public class MainActivity extends AppCompatActivity {
 
         notifTime.setText(String.valueOf(AppPreferences.userSettings.getNotificationHour()));
 
+        popupInterval.setText(String.valueOf(AppPreferences.userSettings.getPopupInterval() / 6000));
+
         notifTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -296,8 +298,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        popupInterval.setText(String.valueOf(AppPreferences.userSettings.getPopupInterval()));
-
         popupInterval.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -312,10 +312,10 @@ public class MainActivity extends AppCompatActivity {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     try {
-                        int interval = Integer.valueOf(popupInterval.getText().toString());
+                        int interval = Integer.valueOf(popupInterval.getText().toString()) * 6000;
                         if (interval > 15000)
                             AppPreferences.setUserSetting(AppPreferences.POPUP_INTERVAL, interval);
-                        Toast.makeText(AppHelpers.currentContext, "Popup interval changed to " + interval + " milliseconds", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AppHelpers.currentContext, "Popup interval changed to " + interval/6000 + " minutes", Toast.LENGTH_SHORT).show();
                     } catch (NumberFormatException e) {
                     }
                     InputMethodManager inputMethodManager = (InputMethodManager) AppHelpers.currentActivity.getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -335,11 +335,16 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public static void removeGeneratedRow(String key) {
-        generatedRowsContainer.removeView(generatedSymptomRows.get(key));
-        generatedSymptomRows.remove(key);
+    public static void updateGeneratedSymptoms() {
+        generatedRowsContainer.removeAllViews();
+        for (String symKey : AppPreferences.generatedSymptoms.keySet()) {
+            SettingsGeneratedSymptomRow row = new SettingsGeneratedSymptomRow(symKey);
+            generatedRowsContainer.addView(row.get());
+            generatedSymptomRows.put(symKey, row.get());
+        }
         generatedRowsContainer.invalidate();
     }
+
 
     private boolean showSettingsHelp(String type) {
         settingsHelp.removeAllViews();
@@ -372,7 +377,7 @@ public class MainActivity extends AppCompatActivity {
     private void hideSettingsHelp() {
         anim = AnimationUtils.loadAnimation(AppHelpers.currentContext, R.anim.anim_out_left);
         anim.setDuration(250);
-        settingsHelp.getChildAt(0).startAnimation(anim);
+        if (settingsHelp.getChildCount() > 0) settingsHelp.getChildAt(0).startAnimation(anim);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -422,7 +427,7 @@ public class MainActivity extends AppCompatActivity {
         for (String symptom : AppPreferences.symptoms.keySet()) {
             if (!dataSymptoms.contains(symptom)) dataSymptoms.add(symptom);}
         for (String factor : AppPreferences.factors.keySet()) {
-            if (!dataFactors.contains(factor))dataFactors.add(factor);}
+            if (!dataFactors.contains(factor)) dataFactors.add(factor);}
 
         scrollContainer = (LinearLayout) findViewById(R.id.data_scrollview);
 

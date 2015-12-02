@@ -11,6 +11,7 @@ import com.comag.aku.symptomtracker.MainActivity;
 import com.comag.aku.symptomtracker.R;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.comag.aku.symptomtracker.objects.Factor;
+import com.comag.aku.symptomtracker.objects.Symptom;
 
 /**
  * Created by aku on 02/12/15.
@@ -30,7 +31,7 @@ public class SettingsGeneratedSymptomRow {
         View result = AppHelpers.factory.inflate(R.layout.generated_row, null);
         removeButton = (Button) result.findViewById(R.id.settings_remove_generated);
         name = (TextView) result.findViewById(R.id.settings_generated_name);
-        name.setText(Factor.keyToName(key));
+        name.setText(Symptom.keyToName(key));
         removeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,7 +50,7 @@ public class SettingsGeneratedSymptomRow {
                         AppPreferences.symptoms.remove(key);
                         AppPreferences.generatedSymptoms.remove(key);
                         AppPreferences.storeSymptomsToSharedPrefs();
-                        MainActivity.removeGeneratedRow(key);
+                        MainActivity.updateGeneratedSymptoms();
                         dialog.dismiss();
                     }
                 });

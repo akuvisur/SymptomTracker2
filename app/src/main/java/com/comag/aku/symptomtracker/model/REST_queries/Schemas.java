@@ -1,5 +1,6 @@
 package com.comag.aku.symptomtracker.model.REST_queries;
 
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -42,6 +43,7 @@ public class Schemas implements Callback<JsonObject> {
     }
     @Override
     public void onFailure(Throwable t) {
+        t.printStackTrace();
         Toast.makeText(AppHelpers.currentContext, "Failed to load schemas from repository. No internet connection?", Toast.LENGTH_LONG).show();
     }
 }
