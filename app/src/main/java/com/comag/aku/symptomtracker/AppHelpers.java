@@ -26,6 +26,8 @@ public class AppHelpers {
     public static Context currentContext;
     public static LayoutInflater factory;
 
+    public static int MINUTE_IN_MILLISECONDS = 60000;
+
     public static Calendar cal = Calendar.getInstance();
 
     public final static String APIURL = "http://kala1928.ddns.net:10001";
@@ -46,6 +48,7 @@ public class AppHelpers {
     public static int dayOffset = 0;
     public static int weekOffset = 0;
     public static int monthOffset = 0;
+    public static boolean showingPopup = false;
 
     public static int randomizeListColor(int position) {
         int n = position % 10;

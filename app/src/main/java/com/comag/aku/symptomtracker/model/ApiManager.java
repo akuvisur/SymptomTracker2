@@ -11,7 +11,6 @@ import org.json.JSONArray;
  * Created by aku on 28/10/15.
  */
 public class ApiManager {
-    static JSONArray resp = new JSONArray();
     private static Schemas s;
     private static Symptoms sy;
     private static Factors fa;

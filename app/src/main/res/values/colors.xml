@@ -21,12 +21,12 @@
     <color name="list8">#82FFB4</color>
 
     <!-- Symptom colors -->
-    <color name="None">#C4D0D0</color>
-    <color name="None_stroke">#ACBDBD</color>
-    <color name="Mild">#FEE476</color>
-    <color name="Mild_stroke">#FFDC4F</color>
-    <color name="Severe">#F36F3C</color>
-    <color name="Severe_stroke">#F68F67</color>
+    <color name="None">#d6f5f5</color>
+    <color name="None_stroke">#adebeb</color>
+    <color name="Mild">#99e5e5</color>
+    <color name="Mild_stroke">#61dfdf</color>
+    <color name="Severe">#2eb7b7</color>
+    <color name="Severe_stroke">#248e8e</color>
 
     <color name="Missing">#FFFFFF</color>
 

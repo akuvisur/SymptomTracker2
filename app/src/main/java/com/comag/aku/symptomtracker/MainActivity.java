@@ -48,8 +48,11 @@ import com.comag.aku.symptomtracker.graphics.listeners.OnSwipeTouchListener;
 import com.comag.aku.symptomtracker.graphics.adapters.SymptomRowAdapter;
 import com.comag.aku.symptomtracker.graphics.elements.CheckBoxSelector;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
+import com.comag.aku.symptomtracker.model.APIConnector;
+import com.comag.aku.symptomtracker.model.ApiManager;
 import com.comag.aku.symptomtracker.model.DatabaseStorage;
 import com.comag.aku.symptomtracker.model.NoSQLStorage;
+import com.comag.aku.symptomtracker.model.REST_queries.Factors;
 import com.comag.aku.symptomtracker.model.data_storage.Values;
 import com.comag.aku.symptomtracker.objects.Factor;
 import com.comag.aku.symptomtracker.objects.ValueMap;
@@ -75,8 +78,6 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
     public static String tab;
 
-    public static boolean running = false;
-
     public static Boolean onlyShowMissingSymptoms = false;
     public static Boolean onlyShowMissingFactors = false;
 
@@ -86,6 +87,14 @@ public class MainActivity extends AppCompatActivity {
         AppHelpers.currentActivity = this;
         AppHelpers.currentContext = getApplicationContext();
         AppHelpers.factory = LayoutInflater.from(this);
+
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                ApiManager.getSymptomsForSchema();
+                ApiManager.getFactorsForSchema();
+            }
+        });
         // restart the service if coming from launch.class
         startService(new Intent(this, NotificationService.class));
     }
@@ -225,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
 
         notifTime.setText(String.valueOf(AppPreferences.userSettings.getNotificationHour()));
 
-        popupInterval.setText(String.valueOf(AppPreferences.userSettings.getPopupInterval() / 6000));
+        popupInterval.setText(String.valueOf(AppPreferences.userSettings.getPopupInterval() / AppHelpers.MINUTE_IN_MILLISECONDS));
 
         notifTime.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -271,16 +280,16 @@ public class MainActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 AppPreferences.setUserSetting(AppPreferences.POPUP_FREQUENCY, progress);
                 popupFreqText.setText(String.valueOf(progress));
-                Toast.makeText(AppHelpers.currentContext, "Popup frequency changed to " + progress, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                showSettingsHelp(AppPreferences.POPUP_INTERVAL);
+                showSettingsHelp(AppPreferences.POPUP_FREQUENCY);
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+                Toast.makeText(AppHelpers.currentContext, "Popup frequency changed to " + AppPreferences.userSettings.getPopupFrequency() + ".", Toast.LENGTH_SHORT).show();
                 hideSettingsHelp();
             }
         });
@@ -291,10 +300,10 @@ public class MainActivity extends AppCompatActivity {
                 AppPreferences.setUserSetting(AppPreferences.POPUP_AUTOMATED, isChecked);
                 popupFreq.setEnabled(!isChecked);
                 if (isChecked) {
-                    popupFreqText.setText(String.valueOf(NotificationPreferences.getCurrentPreference() * 100));
-                    popupFreq.setProgress(NotificationPreferences.getCurrentPreference() * 100);
+                    popupFreqText.setText(String.valueOf(NotificationPreferences.getCurrentPreference()));
+                    popupFreq.setProgress(NotificationPreferences.getCurrentPreference());
                 }
-                Toast.makeText(AppHelpers.currentContext, "Popup automation changed to " + isChecked, Toast.LENGTH_SHORT).show();
+                Toast.makeText(AppHelpers.currentContext, "Popup automation changed to " + isChecked + ".", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -302,7 +311,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
-                    showSettingsHelp(AppPreferences.POPUP_FREQUENCY);
+                    showSettingsHelp(AppPreferences.POPUP_INTERVAL);
                 }
                 return false;
             }
@@ -312,10 +321,12 @@ public class MainActivity extends AppCompatActivity {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     try {
-                        int interval = Integer.valueOf(popupInterval.getText().toString()) * 6000;
-                        if (interval > 15000)
+                        int interval = Integer.valueOf(popupInterval.getText().toString()) * AppHelpers.MINUTE_IN_MILLISECONDS;
+                        if (interval > AppHelpers.MINUTE_IN_MILLISECONDS) {
                             AppPreferences.setUserSetting(AppPreferences.POPUP_INTERVAL, interval);
-                        Toast.makeText(AppHelpers.currentContext, "Popup interval changed to " + interval/6000 + " minutes", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AppHelpers.currentContext, "Popup interval changed to " + interval / AppHelpers.MINUTE_IN_MILLISECONDS + " minutes.", Toast.LENGTH_SHORT).show();
+                        }
+                        else Toast.makeText(AppHelpers.currentContext, "Too brief interval.", Toast.LENGTH_SHORT).show();
                     } catch (NumberFormatException e) {
                     }
                     InputMethodManager inputMethodManager = (InputMethodManager) AppHelpers.currentActivity.getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -352,7 +363,6 @@ public class MainActivity extends AppCompatActivity {
         t.setPadding(8,8,8,8);
         switch (type) {
             case AppPreferences.NOTIFICATION_HOUR:
-                t.setText(R.string.help_notification_hour);
                 settingsSnack = Snackbar.make(settingsHelp, R.string.help_notification_hour, Snackbar.LENGTH_INDEFINITE);
                 settingsSnack.show();
                 return false;
@@ -360,7 +370,8 @@ public class MainActivity extends AppCompatActivity {
                 t.setText(R.string.help_popup_interval);
                 break;
             case AppPreferences.POPUP_FREQUENCY:
-                t.setText(R.string.help_popup_frequency);
+                settingsSnack = Snackbar.make(settingsHelp, R.string.help_popup_frequency, Snackbar.LENGTH_LONG);
+                settingsSnack.show();
                 break;
         }
         t.setLayoutParams(new ViewGroup.LayoutParams(
@@ -375,6 +386,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void hideSettingsHelp() {
+        if (settingsSnack != null) settingsSnack.dismiss();
         anim = AnimationUtils.loadAnimation(AppHelpers.currentContext, R.anim.anim_out_left);
         anim.setDuration(250);
         if (settingsHelp.getChildCount() > 0) settingsHelp.getChildAt(0).startAnimation(anim);
@@ -456,7 +468,6 @@ public class MainActivity extends AppCompatActivity {
 
         symptomChart.setDragEnabled(true);
         symptomChart.setScaleEnabled(true);
-        symptomChart.setPinchZoom(true);
 
         symptomChart.setDescription("");
         setSymptomChartSize();

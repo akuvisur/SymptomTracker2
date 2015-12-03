@@ -1,5 +1,6 @@
 package com.comag.aku.symptomtracker.graphics;
 
+import android.graphics.Typeface;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +15,7 @@ import com.comag.aku.symptomtracker.objects.Factor;
 import com.comag.aku.symptomtracker.objects.tracking.Condition;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.CombinedChart;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -43,6 +45,7 @@ public class FactorDataViewer {
 
     private static XAxis x;
     private static YAxis y;
+    private static Legend legend;
 
     public static View generateFactorCombinedChart(String key, int order) {
         View view = AppHelpers.factory.inflate(R.layout.data_factor_combochart, null);
@@ -75,6 +78,10 @@ public class FactorDataViewer {
         // disable right side y-values
         y = b.getAxisRight();
         y.setEnabled(false);
+
+        legend = b.getLegend();
+        legend.setTypeface(Typeface.createFromAsset(AppHelpers.currentContext.getAssets(), "font/Roboto-Regular.ttf"));
+        legend.setWordWrapEnabled(true);
 
         chartOrder.put(key, order);
 
@@ -109,42 +116,50 @@ public class FactorDataViewer {
         y = b.getAxisRight();
         y.setEnabled(false);
 
+        legend = b.getLegend();
+        legend.setWordWrapEnabled(true);
+        legend.setTypeface(Typeface.createFromAsset(AppHelpers.currentContext.getAssets(), "font/Roboto-Regular.ttf"));
+
         chartOrder.put(key, order);
 
         return view;
     }
 
-
+    // for multiple factors
+    // shown as stack bar chart with values always summing to 1
     public static BarData generateFactorBarChartData(String key, int order) {
         Calendar cal = Calendar.getInstance();
         timeSlots = generateTimeSlots();
         HashMap<Integer, ArrayList<String>> values = new HashMap<>();
-        String cTime = "";
+        String conditionTime = "";
         for (Condition c : DatabaseStorage.values.keySet()) {
             if (c.key.equals(key)) {
                 cal.setTimeInMillis(c.timestamp);
                 switch (AppHelpers.calTime) {
                     case Calendar.HOUR_OF_DAY:
                         cal.set(Calendar.MINUTE, 0);
-                        cTime = AppHelpers.hourFormat.format(cal.getTime());
+                        conditionTime = AppHelpers.hourFormat.format(cal.getTime());
                         break;
                     case Calendar.DAY_OF_YEAR:
-                        cTime = AppHelpers.dayFormat.format(cal.getTime());
+                        conditionTime = AppHelpers.dayFormat.format(cal.getTime());
                         break;
                     case Calendar.WEEK_OF_YEAR:
-                        cTime = AppHelpers.weekFormat.format(cal.getTime());
+                        conditionTime = AppHelpers.weekFormat.format(cal.getTime());
                         break;
                     case Calendar.MONTH:
-                        cTime = AppHelpers.monthFormat.format(cal.getTime());
+                        conditionTime = AppHelpers.monthFormat.format(cal.getTime());
                         break;
                 }
-                for (Integer timeslot : timeSlots.keySet()) {
-                    if (timeSlots.get(timeslot).equals(cTime)) {
-                        if (values.containsKey(timeslot)) values.get(timeslot).add(DatabaseStorage.values.get(c).getValue());
-                        else {
-                            ArrayList<String> newEntry = new ArrayList<>();
-                            newEntry.add(DatabaseStorage.values.get(c).getValue());
-                            values.put(timeslot, newEntry);
+                if (timeSlots.values().contains(conditionTime)) {
+                    for (Integer timeslot : timeSlots.keySet()) {
+                        if (timeSlots.get(timeslot).equals(conditionTime)) {
+                            if (values.containsKey(timeslot))
+                                values.get(timeslot).add(DatabaseStorage.values.get(c).getValue());
+                            else {
+                                ArrayList<String> newEntry = new ArrayList<>();
+                                newEntry.add(DatabaseStorage.values.get(c).getValue());
+                                values.put(timeslot, newEntry);
+                            }
                         }
                     }
                 }
@@ -341,13 +356,6 @@ public class FactorDataViewer {
         }
 
         return result;
-    }
-
-    private static Integer fetchTimeSlot(String dateAsString) {
-        for (Integer index : timeSlots.keySet()) {
-            if (timeSlots.get(index).equals(dateAsString)) return index;
-        }
-        return -1;
     }
 
     private static float calculateAverage(List<Float> marks) {

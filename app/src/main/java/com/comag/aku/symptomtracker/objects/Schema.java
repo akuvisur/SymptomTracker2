@@ -27,21 +27,10 @@ public class Schema {
     public List<String> symptoms;
     public String schema_type;
 
-    public Schema(String author, String title, String desc, String dbname, List<String> factors, List<String> symptoms, String type, String key) {
-        this.author = author;
-        this.title = title;
-        this.desc = desc;
-        this.db_name = dbname;
-        this.factors = factors;
-        this.symptoms = symptoms;
-        this.schema_type = type;
-        this.key = key;
-    }
-
     public Schema(JsonObject o) {
         this.json = o;
-        factors = new ArrayList<String>();
-        symptoms = new ArrayList<String>();
+        factors = new ArrayList<>();
+        symptoms = new ArrayList<>();
         this.author = o.get("author").getAsString();
         this.title = o.get("title").getAsString();
         this.desc = o.get("desc").getAsString();

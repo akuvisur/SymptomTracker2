@@ -68,10 +68,10 @@ public class InputPopup {
         if (keys.isEmpty()) {
             Log.d("popup", "nothing to show!");
             // randomly prompt factor check ups
-            NotificationService.showingPopup = false;
+            AppHelpers.showingPopup = false;
             return false;
         }
-        NotificationService.showingPopup = true;
+        AppHelpers.showingPopup = true;
 
         inflater = (LayoutInflater) NotificationService.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         popupLayout = inflater.inflate(R.layout.popup, null);
@@ -113,7 +113,7 @@ public class InputPopup {
                     @Override
                     public void run() {
                         windowManager.removeView(popupLayout);
-                        NotificationService.showingPopup = false;
+                        AppHelpers.showingPopup = false;
                         switch (NotificationService.getMode()) {
                             case DUMMY_MODE:
                                 NotificationPreferences.addDummyDontBother();
@@ -138,7 +138,7 @@ public class InputPopup {
                     @Override
                     public void run() {
                         windowManager.removeView(popupLayout);
-                        NotificationService.showingPopup = false;
+                        AppHelpers.showingPopup = false;
                         Intent intent = new Intent(NotificationService.getContext(), Launch.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         NotificationService.getContext().startActivity(intent);
@@ -165,7 +165,7 @@ public class InputPopup {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        NotificationService.showingPopup = false;
+                        AppHelpers.showingPopup = false;
                         windowManager.removeView(popupLayout);
                         switch (NotificationService.getMode()) {
                             case DUMMY_MODE:

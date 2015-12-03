@@ -29,15 +29,13 @@ public class Symptoms implements Callback<JsonObject> {
         for (int i = 0; i < a.getAsJsonArray().size(); i++) {
             Symptom s = new Symptom(a.getAsJsonArray().get(i).getAsJsonObject());
             AppPreferences.symptoms.put(s.key, s);
-            Log.d("symptoms", "added " + s);
+            //Log.d("symptoms", "added " + s);
         }
-        Log.d("symptoms", "loaded from POST");
         AppPreferences.storeSymptomsToSharedPrefs();
     }
 
     @Override
     public void onFailure(Throwable t) {
-        //Toast.makeText(AppHelpers.currentContext, "Loading factors - No internet connection available?", Toast.LENGTH_SHORT).show();
         Log.d("symptoms API", "failed to load, no internet connection?" +t);
     }
 }

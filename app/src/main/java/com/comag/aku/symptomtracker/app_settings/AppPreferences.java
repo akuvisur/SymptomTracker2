@@ -64,7 +64,7 @@ public class AppPreferences {
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.putString("schema", gson.toJson(s.json));
         Toast.makeText(AppHelpers.currentActivity, "joined " + s.title, Toast.LENGTH_SHORT).show();
-        editor.commit();
+        editor.apply();
         schema = s;
         if (AppHelpers.DEBUG) NoSQLStorage.clear(schema.db_name);
     }
@@ -110,10 +110,9 @@ public class AppPreferences {
                 Iterator<String> keys = o.keys();
                 while (keys.hasNext()) {
                     String key = keys.next();
-                    Log.d("loading", "normal symptoms " + o.getJSONObject(key));
+                    //Log.d("loading", "normal symptoms " + o.getJSONObject(key));
                     // use the gson serializer to generate a JsonObject for Symptom constructor
                     symptoms.put(o.getJSONObject(key).getString("key"), gson.fromJson(o.getJSONObject(key).toString(), Symptom.class));
-                    //Log.d("prefs", "added to symptoms");
                 }
             }
             catch (JSONException e) {e.printStackTrace();}
@@ -123,15 +122,13 @@ public class AppPreferences {
                 Iterator<String> keys = o.keys();
                 while (keys.hasNext()) {
                     String key = keys.next();
-                    Log.d("loading", "generated symptoms " + o.getJSONObject(key));
+                    //Log.d("loading", "generated symptoms " + o.getJSONObject(key));
                     // use the gson serializer to generate a JsonObject for Symptom constructor
                     symptoms.put(o.getJSONObject(key).getString("key"), gson.fromJson(o.getJSONObject(key).toString(), Symptom.class));
                     generatedSymptoms.put(o.getJSONObject(key).getString("key"), gson.fromJson(o.getJSONObject(key).toString(), Symptom.class));
-                    //Log.d("prefs", "added to symptoms");
                 }
             }
             catch (JSONException e) {e.printStackTrace();}
-            //Log.d("symptoms map", symptoms.toString());
 
             try {
                 JSONObject o = new JSONObject(sharedPrefs.getString("factors", "{}"));
@@ -146,7 +143,6 @@ public class AppPreferences {
             catch (JSONException e) {e.printStackTrace();}
         }
         if (symptoms.isEmpty()) {
-            Log.d("prefs", "symptoms are empty");
             ApiManager.getSymptomsForSchema();
         }
 

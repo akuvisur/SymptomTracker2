@@ -31,15 +31,13 @@ public class Factors implements Callback<JsonObject> {
         for (int i = 0; i < a.getAsJsonArray().size(); i++) {
             Factor f = new Factor(a.getAsJsonArray().get(i).getAsJsonObject());
             AppPreferences.factors.put(f.key, f);
-            Log.d("factors", "added " + f);
+            //Log.d("factors", "added " + f);
         }
-        Log.d("factors", "loaded from POST");
         AppPreferences.addFactors();
     }
 
     @Override
     public void onFailure(Throwable t) {
-        Toast.makeText(AppHelpers.currentContext, "Loading factors - No internet connection available?", Toast.LENGTH_SHORT).show();
-        Log.d("factors API", "failed to load, no internet connection?" +t);
+        //Toast.makeText(AppHelpers.currentContext, "Loading factors - No internet connection available?", Toast.LENGTH_SHORT).show();
     }
 }
