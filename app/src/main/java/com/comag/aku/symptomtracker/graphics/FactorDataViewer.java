@@ -88,6 +88,8 @@ public class FactorDataViewer {
         return view;
     }
 
+
+    static HashMap<String, BarChart> multipleCharts = new HashMap<>();
     public static View generateFactorBarChart(String key, int order) {
         View view = AppHelpers.factory.inflate(R.layout.data_factor_barchart, null);
         BarChart b = (BarChart) view.findViewById(R.id.data_factorchart);
@@ -121,6 +123,8 @@ public class FactorDataViewer {
         legend.setTypeface(Typeface.createFromAsset(AppHelpers.currentContext.getAssets(), "font/Roboto-Regular.ttf"));
 
         chartOrder.put(key, order);
+
+        multipleCharts.put(key, b);
 
         return view;
     }
@@ -183,12 +187,21 @@ public class FactorDataViewer {
             }
         }
         Collections.sort(entryNames);
-        Log.d("entrynames", entryNames.toString());
+        String[] labels = new String[entryNames.size()];
+        int i = 0;
+        for (String name : entryNames) {
+            labels[i] = name;
+            i++;
+        }
+
+        ArrayList<String> xVals = new ArrayList<>();
+        for (String time : timeSlots.values()) xVals.add(time);
+
+        BarData factorBarData = new BarData(xVals);
+        barEntries = new ArrayList<>();
 
         for (Integer index : values.keySet()) {
-            barEntries = new ArrayList<>();
             ArrayList<String> point = values.get(index);
-
             // construct a normalized stacked bar entry for each column
             for (String pointValues : point) {
                 entryValues = new ArrayList<>();
@@ -197,42 +210,28 @@ public class FactorDataViewer {
                     entryValues.add(value);
                 }
                 float[] xVal = new float[entryNames.size()];
-                float fractionValue = 1;
                 for (int nameIndex = 0; nameIndex < entryNames.size(); nameIndex++) {
                     if (entryValues.contains(entryNames.get(nameIndex))) {
                         xVal[nameIndex] = 1f / entryValues.size();
-                        fractionValue++;
-                        Log.d("value", "found " + fractionValue + " : " + entryValues.size());
                     }
                     else {
-                        Log.d("value", "not found 0");
                         xVal[nameIndex] = 0f;
                     }
                 }
                 BarEntry entry = new BarEntry(xVal, index);
-                Log.d("new entry", entry.toString() + " val: " + entry.getVal());
                 barEntries.add(entry);
             }
-        }
 
+        }
         BarDataSet b = new BarDataSet(barEntries, "");
         b.setDrawValues(false);
-        b.setColors(AppHelpers.generateColorList());
-        String[] labels = new String[entryNames.size()];
-        int i = 0;
-        for (String name : entryNames) {
-            labels[i] = name;
-            i++;
-        }
+
+        b.setColors(AppHelpers.generateColorList(entryNames.size()));
         b.setStackLabels(labels);
-
-        ArrayList<String> xVals = new ArrayList<>();
-        for (String time : timeSlots.values()) xVals.add(time);
-
-        BarData factorBarData = new BarData(xVals);
         factorBarData.addDataSet(b);
 
         return factorBarData;
+
     }
 
     public static CombinedData generateFactorComboChartData(String key, int order) {

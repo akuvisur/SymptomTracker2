@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.MainActivity;
 import com.comag.aku.symptomtracker.R;
+import com.comag.aku.symptomtracker.analytics.AnalyticsApplication;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.comag.aku.symptomtracker.objects.Symptom;
 
@@ -55,6 +56,9 @@ public class NewSymptom {
                         desc.getText().toString(),
                         window
                 ));
+
+                AnalyticsApplication.sendEvent("add", "add_symptom", name.getText().toString(), null);
+
                 // API call to sync this to server as well?
                 Toast.makeText(AppHelpers.currentContext, "Added new symptom to track: " + name.getText().toString(), Toast.LENGTH_LONG).show();
                 MainActivity.updateGeneratedSymptoms();

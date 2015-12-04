@@ -37,6 +37,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.comag.aku.symptomtracker.analytics.AnalyticsApplication;
 import com.comag.aku.symptomtracker.graphics.LeaveStudy;
 import com.comag.aku.symptomtracker.graphics.NewSymptom;
 import com.comag.aku.symptomtracker.graphics.FactorDataViewer;
@@ -67,6 +68,8 @@ import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -80,6 +83,8 @@ public class MainActivity extends AppCompatActivity {
 
     public static Boolean onlyShowMissingSymptoms = false;
     public static Boolean onlyShowMissingFactors = false;
+
+    private Tracker mTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +100,10 @@ public class MainActivity extends AppCompatActivity {
                 ApiManager.getFactorsForSchema();
             }
         });
+        // Obtain the shared Google Analytics Tracker instance.
+        AnalyticsApplication application = (AnalyticsApplication) getApplication();
+        mTracker = application.getDefaultTracker();
+
         // restart the service if coming from launch.class
         startService(new Intent(this, NotificationService.class));
     }
@@ -153,6 +162,11 @@ public class MainActivity extends AppCompatActivity {
     public static Switch symptomSwitch;
     private void showSymptoms() {
         tab = "symptoms";
+
+        Log.i("Analytics", "Setting screen name: " + tab);
+        mTracker.setScreenName("Image~" + tab);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
         NoSQLStorage.loadValues(tab);
         setContentView(R.layout.symptoms);
 
@@ -177,6 +191,11 @@ public class MainActivity extends AppCompatActivity {
     public static Switch factorSwitch;
     private void showFactors() {
         tab = "factors";
+
+        Log.i("Analytics", "Setting screen name: " + tab);
+        mTracker.setScreenName("Image~" + tab);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
         NoSQLStorage.loadValues(tab);
         setContentView(R.layout.factors);
 
@@ -211,6 +230,10 @@ public class MainActivity extends AppCompatActivity {
     private void showSettings() {
         setContentView(R.layout.settings);
         tab = "settings";
+
+        Log.i("Analytics", "Setting screen name: " + tab);
+        mTracker.setScreenName("Image~" + tab);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
         Toolbar t = (Toolbar) findViewById(R.id.settingstoolbar);
         t.setTitle("AppHelpers");
@@ -433,6 +456,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.dataview);
         tab = "data";
 
+        Log.i("Analytics", "Setting screen name: " + tab);
+        mTracker.setScreenName("Image~" + tab);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
         for (String symptom : AppPreferences.symptoms.keySet()) {
             if (!dataSymptoms.contains(symptom)) dataSymptoms.add(symptom);}
         for (String factor : AppPreferences.factors.keySet()) {
@@ -650,18 +677,22 @@ public class MainActivity extends AppCompatActivity {
         if (buttonid == R.id.data_selector_day) {
             groupButton.setText("12 hours");
             AppHelpers.setGroup(Calendar.HOUR_OF_DAY);
+            AnalyticsApplication.sendEvent("dataview", "change_grouping", "day", null);
         }
         else if (buttonid == R.id.data_selector_week) {
             groupButton.setText("7 days");
             AppHelpers.setGroup(Calendar.DAY_OF_YEAR);
+            AnalyticsApplication.sendEvent("dataview", "change_grouping", "week", null);
         }
         else if (buttonid == R.id.data_selector_month) {
             groupButton.setText("4 weeks");
             AppHelpers.setGroup(Calendar.WEEK_OF_YEAR);
+            AnalyticsApplication.sendEvent("dataview", "change_grouping", "month", null);
         }
         else if (buttonid == R.id.data_selector_year) {
             groupButton.setText("6 months");
             AppHelpers.setGroup(Calendar.MONTH);
+            AnalyticsApplication.sendEvent("dataview", "change_grouping", "year", null);
         }
     }
 

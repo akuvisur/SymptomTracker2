@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.Launch;
+import com.comag.aku.symptomtracker.analytics.AnalyticsApplication;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.comag.aku.symptomtracker.services.NotificationService;
 
@@ -31,6 +32,7 @@ public class LeaveStudy {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        AnalyticsApplication.sendEvent("general", "leave_study", AppPreferences.schema.title, null);
                         AppPreferences.clear();
                         AppHelpers.currentActivity.stopService(new Intent(AppHelpers.currentActivity, NotificationService.class));
                         new Handler().postDelayed(new Runnable() {
@@ -40,6 +42,7 @@ public class LeaveStudy {
                                 Toast.makeText(AppHelpers.currentContext, "Cleared settings", Toast.LENGTH_LONG).show();
                             }
                         }, 1000);
+
                     }
                 });
         Dialog dialog = dialogBuilder.create();

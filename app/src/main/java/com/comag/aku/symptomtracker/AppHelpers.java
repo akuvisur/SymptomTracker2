@@ -110,19 +110,12 @@ public class AppHelpers {
         }
     }
 
-    public static ArrayList<Integer> generateColorList() {
-        ArrayList<Integer> result = new ArrayList<>();
-        result.add(ContextCompat.getColor(NotificationService.getContext(), R.color.list1));
-        result.add(ContextCompat.getColor(NotificationService.getContext(), R.color.list2));
-        result.add(ContextCompat.getColor(NotificationService.getContext(), R.color.list3));
-        result.add(ContextCompat.getColor(NotificationService.getContext(), R.color.list4));
-        result.add(ContextCompat.getColor(NotificationService.getContext(), R.color.list5));
-        result.add(ContextCompat.getColor(NotificationService.getContext(), R.color.list6));
-        result.add(ContextCompat.getColor(NotificationService.getContext(), R.color.list7));
-        result.add(ContextCompat.getColor(NotificationService.getContext(), R.color.list8));
-        result.add(ContextCompat.getColor(NotificationService.getContext(), R.color.list9));
-        result.add(ContextCompat.getColor(NotificationService.getContext(), R.color.list10));
-        //Collections.shuffle(result);
+    public static int[] generateColorList(int size) {
+        int[] result = new int[size];
+
+        for (int i = 0; i < size; i++) {
+            result[i] = generateServiceColor(i);
+        }
         return result;
     }
 
