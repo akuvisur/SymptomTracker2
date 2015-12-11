@@ -1,9 +1,13 @@
 package com.comag.aku.symptomtracker.graphics.adapters;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Handler;
 import android.provider.MediaStore;
@@ -21,6 +25,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -61,6 +66,7 @@ public class FactorRowAdapter extends ArrayAdapter<Factor> {
     HashMap<String, View.OnClickListener> okButtonListeners;
     HashMap<String, View.OnClickListener> commentButtonListeners;
     HashMap<String, View.OnClickListener> cameraButtonListeners;
+    HashMap<String, View.OnClickListener> viewButtonListeners;
     HashMap<String, SeekBar.OnSeekBarChangeListener> rangeInputListeners;
 
     HashMap<String, View> inputElements;
@@ -76,6 +82,7 @@ public class FactorRowAdapter extends ArrayAdapter<Factor> {
         okButtonListeners = new HashMap<>();
         commentButtonListeners = new HashMap<>();
         cameraButtonListeners = new HashMap<>();
+        viewButtonListeners = new HashMap<>();
         rangeInputListeners = new HashMap<>();
 
         inputElements = new HashMap<>();
@@ -153,6 +160,7 @@ public class FactorRowAdapter extends ArrayAdapter<Factor> {
 
         if (value.hasPicture()) {
             extraCameraButton = (ImageButton) extraRow.findViewById(R.id.has_image);
+            extraCameraButton.setOnClickListener(viewButtonListeners.get(curFactor.key));
             extraCameraButton.setVisibility(View.VISIBLE);
         }
 
@@ -232,6 +240,7 @@ public class FactorRowAdapter extends ArrayAdapter<Factor> {
             okButtonListeners.put(f.key, new OkButtonListener(f));
             commentButtonListeners.put(f.key, new CommentButtonListener(f));
             cameraButtonListeners.put(f.key, new CameraButtonListener(f));
+            viewButtonListeners.put(f.key, new ViewButtonListener(f));
             rangeInputListeners.put(f.key, new RangeBarListener(f));
         }
     }
@@ -674,4 +683,75 @@ public class FactorRowAdapter extends ArrayAdapter<Factor> {
         }
     }
 
+
+    private class ViewButtonListener implements View.OnClickListener {
+        private Factor factor;
+
+        private ImageView image;
+        private Bitmap bm;
+        private View view;
+
+        private File f;
+
+        private AlertDialog.Builder alert;
+        private Dialog dialog;
+
+        public ViewButtonListener(Factor f) { this.factor = f;}
+
+        @Override
+        public void onClick(View v) {
+            view = View.inflate(AppHelpers.currentContext, R.layout.imageviewer, null);
+            f = new File(Values.fetch(factor.key).getPicturePath());
+
+            if(f.exists()){
+                image = (ImageView) view.findViewById(R.id.featureImage);
+
+                alert = new AlertDialog.Builder(AppHelpers.currentActivity)
+                        .setView(view)
+                        .setIcon(null)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {}
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+                int targetW = image.getMeasuredWidth();
+                int targetH = image.getMeasuredHeight();
+
+                BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+                bmOptions.inJustDecodeBounds = true;
+                BitmapFactory.decodeFile(Values.fetch(factor.key).getPicturePath(), bmOptions);
+
+                int photoW = bmOptions.outWidth;
+                int photoH = bmOptions.outHeight;
+
+                Log.d("math.min", photoW + " / " + targetW + " : " + photoH + " / " + targetH);
+                int scaleFactor = Math.min(photoW/600, photoH/800);
+
+                bmOptions.inJustDecodeBounds = false;
+                bmOptions.inSampleSize = scaleFactor;
+                bmOptions.inPurgeable = true;
+                bm = BitmapFactory.decodeFile(Values.fetch(factor.key).getPicturePath(), bmOptions);
+
+                if (photoW > photoH) {
+                    Matrix matrix = new Matrix();
+                    matrix.postRotate(90);
+                    bm = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
+                }
+
+                image.setImageBitmap(bm);
+
+                dialog = alert.create();
+                dialog.show();
+            }
+            else {
+                Log.d("Image", "No image found!");
+            }
+        }
+
+    }
 }

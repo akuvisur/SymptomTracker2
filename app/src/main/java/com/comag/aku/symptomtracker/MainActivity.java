@@ -37,6 +37,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.aware.Aware;
 import com.comag.aku.symptomtracker.analytics.AnalyticsApplication;
 import com.comag.aku.symptomtracker.graphics.LeaveStudy;
 import com.comag.aku.symptomtracker.graphics.NewSymptom;
@@ -92,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
         AppHelpers.currentActivity = this;
         AppHelpers.currentContext = getApplicationContext();
         AppHelpers.factory = LayoutInflater.from(this);
+        AppHelpers.package_name = getPackageName();
 
         new Handler().post(new Runnable() {
             @Override
@@ -223,6 +225,7 @@ public class MainActivity extends AppCompatActivity {
     EditText popupInterval;
     AlertDialog clockDialog;
     Snackbar settingsSnack;
+    CheckBox dataSync;
 
     private static HashMap<String, View> generatedSymptomRows = new HashMap<>();
     private static LinearLayout generatedRowsContainer;
@@ -248,6 +251,7 @@ public class MainActivity extends AppCompatActivity {
         popupAutomated = (CheckBox) findViewById(R.id.settings_popup_automated);
         popupInterval = (EditText) findViewById(R.id.settings_popup_interval);
         generatedRowsContainer = (LinearLayout) findViewById(R.id.settings_generated_symptoms_container);
+        dataSync = (CheckBox) findViewById(R.id.settings_datasync);
 
         popupFreq.setEnabled(!AppPreferences.userSettings.isPopupsAutomated());
         popupFreqText.setText(String.valueOf(AppPreferences.userSettings.getPopupFrequency()));
@@ -258,6 +262,8 @@ public class MainActivity extends AppCompatActivity {
         notifTime.setText(String.valueOf(AppPreferences.userSettings.getNotificationHour()));
 
         popupInterval.setText(String.valueOf(AppPreferences.userSettings.getPopupInterval() / AppHelpers.MINUTE_IN_MILLISECONDS));
+
+        dataSync.setChecked(AppPreferences.userSettings.dataSyncEnabled());
 
         notifTime.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -339,6 +345,7 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
         popupInterval.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -348,8 +355,8 @@ public class MainActivity extends AppCompatActivity {
                         if (interval > AppHelpers.MINUTE_IN_MILLISECONDS) {
                             AppPreferences.setUserSetting(AppPreferences.POPUP_INTERVAL, interval);
                             Toast.makeText(AppHelpers.currentContext, "Popup interval changed to " + interval / AppHelpers.MINUTE_IN_MILLISECONDS + " minutes.", Toast.LENGTH_SHORT).show();
-                        }
-                        else Toast.makeText(AppHelpers.currentContext, "Too brief interval.", Toast.LENGTH_SHORT).show();
+                        } else
+                            Toast.makeText(AppHelpers.currentContext, "Too brief interval.", Toast.LENGTH_SHORT).show();
                     } catch (NumberFormatException e) {
                     }
                     InputMethodManager inputMethodManager = (InputMethodManager) AppHelpers.currentActivity.getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -358,6 +365,20 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 }
                 return false;
+            }
+        });
+
+        dataSync.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Toast.makeText(AppHelpers.currentContext, "Enabling data sync...", Toast.LENGTH_SHORT).show();
+                    Aware.joinStudy(AppHelpers.currentContext, AppPreferences.schema.aware_study_url);
+                }
+                else {
+                    Toast.makeText(AppHelpers.currentContext, "Disabling data sync...", Toast.LENGTH_SHORT).show();
+                    Aware.reset(AppHelpers.currentContext);
+                }
             }
         });
 

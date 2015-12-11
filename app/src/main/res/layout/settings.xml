@@ -38,7 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Preferred notification hour:"
-                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textAppearance="?android:attr/textAppearanceMedium"
                 android:id="@+id/textView" />
 
             <TextView
@@ -47,7 +47,7 @@
                 android:id="@+id/settings_notif_time"
                 android:layout_gravity="right"
                 android:text="18:00"
-                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true"
                 android:paddingEnd="10dp"/>
@@ -70,7 +70,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Popup frequency:"
-                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textAppearance="?android:attr/textAppearanceMedium"
                 android:id="@+id/textView2" />
 
             <TextView
@@ -147,6 +147,7 @@
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
             android:background="@android:color/darker_gray"/>
+
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -155,6 +156,40 @@
 
 
         </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:animateLayoutChanges="true"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sync data to repository:"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:id="@+id/textView55" />
+
+            <CheckBox android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/settings_datasync"
+                android:paddingLeft="4dp"
+                android:checked="true"
+                android:layout_alignBottom="@+id/textView55"
+                android:layout_toEndOf="@+id/textView55">
+
+            </CheckBox>
+
+        </RelativeLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@android:color/darker_gray"/>
 
         <RelativeLayout
             android:layout_width="fill_parent"

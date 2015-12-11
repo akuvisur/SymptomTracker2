@@ -16,6 +16,7 @@ import com.aware.Screen;
 import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.MainActivity;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
+import com.comag.aku.symptomtracker.data_syncronization.Plugin;
 import com.comag.aku.symptomtracker.model.NoSQLStorage;
 
 import java.util.Calendar;
@@ -83,6 +84,10 @@ public class NotificationService extends IntentService {
         registerReceiver(s, i);
 
         NoSQLStorage.serviceLoad();
+
+        // launch data storage and sync service
+        Intent plugin = new Intent(this, Plugin.class);
+        startService(plugin);
     }
 
     @Override

@@ -20,6 +20,8 @@ import java.util.Date;
  * Created by aku on 26/10/15.
  */
 public class AppHelpers {
+    public static String package_name;
+
     public static final boolean DEBUG = false;
 
     public static Activity currentActivity;

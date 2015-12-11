@@ -8,6 +8,7 @@ import com.colintmiller.simplenosql.RetrievalCallback;
 import com.comag.aku.symptomtracker.MainActivity;
 import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
+import com.comag.aku.symptomtracker.data_syncronization.SyncronizationController;
 import com.comag.aku.symptomtracker.graphics.adapters.FactorRowAdapter;
 import com.comag.aku.symptomtracker.graphics.adapters.SymptomRowAdapter;
 import com.comag.aku.symptomtracker.model.data_storage.Values;
@@ -37,10 +38,10 @@ public class NoSQLStorage {
     }
 
     public static void storeSingle(Condition c, ValueMap v) {
-        Log.d("NoSQL", "Storing: " + v.toRenderableString());
-        Log.d("NoSQL", "time is : " + c.timestamp);
+        //Log.d("NoSQL", "Storing: " + v.toRenderableString());
+        //Log.d("NoSQL", "time is : " + c.timestamp);
         AppHelpers.cal.setTimeInMillis(c.timestamp);
-        Log.d("NoSQL", "date: " + AppHelpers.dayFormat.format(AppHelpers.cal.getTime()));
+        //Log.d("NoSQL", "date: " + AppHelpers.dayFormat.format(AppHelpers.cal.getTime()));
         Condition removed = null;
         searchExisting:
         for (Condition existing : Values.values.keySet()) {
@@ -57,6 +58,8 @@ public class NoSQLStorage {
         entity.setData(o);
         NoSQL.with(AppHelpers.currentContext).using(DataObject.class).save(entity);
         Values.put(o.c, o.v);
+
+        SyncronizationController.storeAdverseEvent(c, v);
         //loadValues(MainActivity.tab);
     }
 

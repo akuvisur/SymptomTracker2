@@ -26,6 +26,7 @@ public class Schema {
     public List<String> factors;
     public List<String> symptoms;
     public String schema_type;
+    public String aware_study_url;
 
     public Schema(JsonObject o) {
         this.json = o;
@@ -37,6 +38,7 @@ public class Schema {
         this.db_name = o.get("db_name").getAsString();
         this.schema_type = o.get("schema_type").getAsString();
         this.key = o.get("key").getAsString();
+        this.aware_study_url = o.get("aware_study_url").getAsString();
 
         Log.d("schema", "schema: " + o.toString());
         try {

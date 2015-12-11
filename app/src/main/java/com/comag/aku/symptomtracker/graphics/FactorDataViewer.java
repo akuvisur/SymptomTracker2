@@ -170,7 +170,6 @@ public class FactorDataViewer {
             }
         }
 
-        ArrayList<BarEntry> barEntries = new ArrayList<>();
         ArrayList<String> entryNames = new ArrayList<>();
         ArrayList<String> entryValues;
 
@@ -198,7 +197,7 @@ public class FactorDataViewer {
         for (String time : timeSlots.values()) xVals.add(time);
 
         BarData factorBarData = new BarData(xVals);
-        barEntries = new ArrayList<>();
+        ArrayList<BarEntry> barEntries = new ArrayList<>();
 
         for (Integer index : values.keySet()) {
             ArrayList<String> point = values.get(index);

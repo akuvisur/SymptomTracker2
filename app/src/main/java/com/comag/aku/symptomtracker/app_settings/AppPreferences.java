@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.aware.Aware;
 import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.model.ApiManager;
 import com.comag.aku.symptomtracker.model.NoSQLStorage;
@@ -32,6 +33,7 @@ public class AppPreferences {
     final public static String POPUP_INTERVAL = "popup_interval";
     final public static String POPUP_AUTOMATED = "popup_automated";
     final public static String POPUP_FREQUENCY = "popup_freq";
+    final public static String DATASYNC_ENABLED = "datasync";
 
     private static Gson gson = new Gson();
     private static SharedPreferences sharedPrefs;
@@ -65,7 +67,11 @@ public class AppPreferences {
         editor.putString("schema", gson.toJson(s.json));
         Toast.makeText(AppHelpers.currentActivity, "joined " + s.title, Toast.LENGTH_SHORT).show();
         editor.apply();
+
+        if (s.aware_study_url != null) Aware.joinStudy(AppHelpers.currentContext, s.aware_study_url);
+
         schema = s;
+
         if (AppHelpers.DEBUG) NoSQLStorage.clear(schema.db_name);
     }
 

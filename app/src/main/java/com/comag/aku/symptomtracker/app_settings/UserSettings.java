@@ -1,5 +1,9 @@
 package com.comag.aku.symptomtracker.app_settings;
 
+import android.util.Log;
+
+import com.aware.Aware;
+import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.services.NotificationPreferences;
 import com.comag.aku.symptomtracker.services.NotificationService;
 import com.google.android.gms.cast.CastRemoteDisplayLocalService;
@@ -44,6 +48,15 @@ public class UserSettings {
 
     public int getPopupInterval() {
         return popupInterval;
+    }
+
+    public boolean dataSyncEnabled() {
+        Log.d("study url", AppPreferences.schema.aware_study_url);
+        if (AppPreferences.schema.aware_study_url != null && Aware.getSetting(NotificationService.getContext(), Aware.STUDY_ID).length() > 0) {
+            Log.d("settings", "joined study");
+            Aware.joinStudy(NotificationService.getContext(), AppPreferences.schema.aware_study_url);
+        }
+        return (Aware.getSetting(NotificationService.getContext(), Aware.STUDY_ID).length() > 0);
     }
 
 }

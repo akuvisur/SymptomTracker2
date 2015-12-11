@@ -28,6 +28,7 @@ import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.Launch;
 import com.comag.aku.symptomtracker.R;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
+import com.comag.aku.symptomtracker.data_syncronization.SyncronizationController;
 import com.comag.aku.symptomtracker.graphics.FlowLayout;
 import com.comag.aku.symptomtracker.graphics.UIManager;
 import com.comag.aku.symptomtracker.graphics.elements.ObservedAnimation;
@@ -109,6 +110,9 @@ public class InputPopup {
                 anim.setDuration(250);
                 popupLayout.startAnimation(anim);
                 Toast.makeText(NotificationService.getContext(), "I will try to bother you less frequently.", Toast.LENGTH_SHORT).show();
+
+                SyncronizationController.storeNotificationResponse("no", "popup", ContextService.getContext());
+
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -142,6 +146,9 @@ public class InputPopup {
                         Intent intent = new Intent(NotificationService.getContext(), Launch.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         NotificationService.getContext().startActivity(intent);
+
+                        SyncronizationController.storeNotificationResponse("app", "popup", ContextService.getContext());
+
                         switch (NotificationService.getMode()) {
                             case DUMMY_MODE:
                                 NotificationPreferences.addDummyOk();
@@ -162,6 +169,8 @@ public class InputPopup {
                 anim.setDuration(250);
                 popupLayout.startAnimation(anim);
                 Toast.makeText(NotificationService.getContext(), "Inputted values saved.", Toast.LENGTH_SHORT).show();
+                SyncronizationController.storeNotificationResponse("ok", "popup", ContextService.getContext());
+
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -371,7 +380,9 @@ public class InputPopup {
             public void onStartTrackingTouch(SeekBar seekBar) {}
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                Toast.makeText(NotificationService.getContext(), "Remember to click the checkmark to finalize inputting.", Toast.LENGTH_SHORT);
+            }
         };
     }
 

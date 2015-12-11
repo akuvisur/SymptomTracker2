@@ -6,12 +6,12 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <user-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
-    <uses-feature android:name="android.hardware.camera"
-        android:required="true" />
+    <uses-feature android:name="android.hardware.camera" android:required="true" />
+
     <!-- for showing popups to the user -->
-    <uses-permission
-        android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <!-- for service to not launch notifications while activity is running -->
     <uses-permission android:name="android.permission.GET_TASKS" />
 
@@ -38,9 +38,18 @@
             android:theme="@style/AppTheme">
         </activity>
         <service android:name=".services.NotificationService"/>
+        <service android:name=".data_syncronization.Plugin"/>
 
 
-    <!-- AWARE providers -->
+    <!-- Plugin's own provider -->
+    <provider
+        android:authorities="com.comag.aku.symptomtracker.provider"
+        android:name=".data_syncronization.SyncProvider"
+        android:exported="true"
+        android:readPermission="com.aware.READ_CONTEXT_DATA"
+        android:writePermission="com.aware.WRITE_CONTEXT_DATA"/>
+
+        <!-- AWARE providers -->
     <provider
         android:name="com.aware.providers.Scheduler_Provider"
         android:authorities="${applicationId}.provider.scheduler"
