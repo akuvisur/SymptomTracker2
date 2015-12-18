@@ -16,6 +16,7 @@ public class UserSettings {
     int notificationHour = 18;
     int popupFrequency = 50;
     int popupInterval = NotificationService.NOTIFICATION_DELAY_MS;
+    String userId = "";
 
     public void setPopupsAutomated(Boolean automated) {
         popupsAutomated = automated;
@@ -31,6 +32,10 @@ public class UserSettings {
 
     public void setPopupInterval(int interval) {
         popupInterval = interval;
+    }
+
+    public void setUserId(String id) {
+        userId = id;
     }
 
     public boolean isPopupsAutomated() {
@@ -58,5 +63,7 @@ public class UserSettings {
         }
         return (Aware.getSetting(NotificationService.getContext(), Aware.STUDY_ID).length() > 0);
     }
+
+    public String getUserId() { return userId; }
 
 }

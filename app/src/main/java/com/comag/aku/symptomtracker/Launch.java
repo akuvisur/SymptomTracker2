@@ -8,9 +8,11 @@ import android.support.design.widget.Snackbar;
 import android.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -139,45 +141,26 @@ public class Launch extends AppCompatActivity {
         }
     }
 
-    public void emitNotification(View view) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(AppHelpers.currentActivity);
-        builder.setView(R.layout.symptomrow);
-        builder.setTitle("Add a symptom");
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Log.d("alert", "ok");
-            }
-        });
-        builder.setNegativeButton("Dont bother me", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Log.d("alert", "dont bother");
-            }
-        });
-        AlertDialog d = builder.create();
-        d.show();
-    }
-
-    public void emitPopup(View view) {
-
-    }
-
     public static void proceed() {
-        new AlertDialog.Builder(AppHelpers.currentActivity)
-                .setTitle("Join study")
-                .setMessage(AppHelpers.parseSchema(DatabaseStorage.schemaList.get(selectedSchemaIndex)))
-                .setIcon(R.drawable.info_color)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        Toast.makeText(AppHelpers.currentActivity, "Loading schema information..", Toast.LENGTH_SHORT).show();
-                        // proceed to new action etc
-                        AppPreferences.join(DatabaseStorage.schemaList.get(selectedSchemaIndex));
-                        ApiManager.getSymptomsForSchema();
-                        ApiManager.getFactorsForSchema();
-                        AppHelpers.currentActivity.startActivity(new Intent(AppHelpers.currentActivity, MainActivity.class));
-                    }})
-                .setNegativeButton(android.R.string.no, null).show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(AppHelpers.currentActivity);
+        builder.setTitle("Give your user ID:");
+        builder.setMessage(AppHelpers.parseSchema(DatabaseStorage.schemaList.get(selectedSchemaIndex)));
+        // Set up the input
+        final EditText input = new EditText(AppHelpers.currentActivity);
+        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+            Toast.makeText(AppHelpers.currentActivity, "Loading schema information..", Toast.LENGTH_SHORT).show();
+            // proceed to new action etc
+            AppPreferences.join(DatabaseStorage.schemaList.get(selectedSchemaIndex));
+            ApiManager.getSymptomsForSchema();
+            ApiManager.getFactorsForSchema();
+            AppHelpers.currentActivity.startActivity(new Intent(AppHelpers.currentActivity, MainActivity.class));
+        }});
+        builder.setNegativeButton(android.R.string.no, null).show();
     }
 
 }

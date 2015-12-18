@@ -21,7 +21,7 @@ public class Plugin extends Aware_Plugin {
         Aware.setSetting(this, Aware_Preferences.DEBUG_FLAG, "true");
 
         Aware.startPlugin(this, "com.comag.aku.symptomtracker");
-        Log.d("AWARE", "Created and started Symptom Tracker as plugin");
+        //Log.d("AWARE", "Created and started Symptom Tracker as plugin");
 
         DATABASE_TABLES = SyncProvider.DATABASE_TABLES;
         TABLES_FIELDS = SyncProvider.TABLES_FIELDS;

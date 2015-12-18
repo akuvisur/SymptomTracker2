@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.aware.Aware;
 import com.aware.Aware_Preferences;
 import com.aware.Screen;
+import com.aware.providers.Aware_Provider;
 import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.MainActivity;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
@@ -48,6 +49,8 @@ public class NotificationService extends IntentService {
                 case "ACTION_AWARE_SCREEN_LOCKED":
                     screenStatus = 0;
                     AppHelpers.showingPopup = false;
+                    // prevent duplicate popups
+                    InputPopup.hidePopup();
                     break;
                 case "ACTION_AWARE_SCREEN_UNLOCKED":
                     postOnUnlock();

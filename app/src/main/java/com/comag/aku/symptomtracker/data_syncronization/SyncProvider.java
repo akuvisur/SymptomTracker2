@@ -26,7 +26,7 @@ import java.util.HashMap;
  */
 public class SyncProvider extends ContentProvider {
     public static String AUTHORITY = "com.comag.aku.symptomtracker.provider";
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
 
     private static final int ADVERSE_EVENTS = 1;
     private static final int ADVERSE_EVENTS_TYPE = 2;
@@ -40,6 +40,7 @@ public class SyncProvider extends ContentProvider {
             AdverseEventData._ID + " integer primary key autoincrement," +
                     AdverseEventData.TIMESTAMP + " real default 0," +
                     AdverseEventData.DEVICE_ID + " text default ''," +
+                    AdverseEventData.USER_ID + " text default ''," +
                     AdverseEventData.TRACKABLE_TYPE + " text default ''," +
                     AdverseEventData.TRACKABLE_KEY + " text default ''," +
                     AdverseEventData.TRACKABLE_FREQUENCY + " text default ''," +
@@ -52,6 +53,7 @@ public class SyncProvider extends ContentProvider {
             NotificationEventData._ID + " integer primary key autoincrement," +
                     NotificationEventData.TIMESTAMP + " real default 0," +
                     NotificationEventData.DEVICE_ID + " text default ''," +
+                    NotificationEventData.USER_ID + " text default ''," +
                     NotificationEventData.NOTIFICATION_TYPE + " text default ''," +
                     NotificationEventData.VALUE + " text default ''," +
                     NotificationEventData.CONTEXT + " text default '{}'," +
@@ -101,6 +103,7 @@ public class SyncProvider extends ContentProvider {
         eventMap.put(AdverseEventData._ID, AdverseEventData._ID);
         eventMap.put(AdverseEventData.TIMESTAMP, AdverseEventData.TIMESTAMP);
         eventMap.put(AdverseEventData.DEVICE_ID, AdverseEventData.DEVICE_ID);
+        eventMap.put(AdverseEventData.USER_ID, AdverseEventData.USER_ID);
         eventMap.put(AdverseEventData.TRACKABLE_TYPE, AdverseEventData.TRACKABLE_TYPE);
         eventMap.put(AdverseEventData.TRACKABLE_KEY, AdverseEventData.TRACKABLE_KEY);
         eventMap.put(AdverseEventData.TRACKABLE_FREQUENCY, AdverseEventData.TRACKABLE_FREQUENCY);
@@ -113,6 +116,7 @@ public class SyncProvider extends ContentProvider {
         notificationMap.put(NotificationEventData._ID, NotificationEventData._ID);
         notificationMap.put(NotificationEventData.TIMESTAMP, NotificationEventData.TIMESTAMP);
         notificationMap.put(NotificationEventData.DEVICE_ID, NotificationEventData.DEVICE_ID);
+        notificationMap.put(NotificationEventData.USER_ID, NotificationEventData.USER_ID);
         notificationMap.put(NotificationEventData.NOTIFICATION_TYPE, NotificationEventData.NOTIFICATION_TYPE);
         notificationMap.put(NotificationEventData.VALUE, NotificationEventData.VALUE);
         notificationMap.put(NotificationEventData.CONTEXT, NotificationEventData.CONTEXT);
@@ -269,6 +273,7 @@ public class SyncProvider extends ContentProvider {
         public static final String _ID = "_id";
         public static final String TIMESTAMP = "timestamp";
         public static final String DEVICE_ID = "device_id";
+        public static final String USER_ID = "user_id";
         public static final String TRACKABLE_TYPE = "trackable_type";
         public static final String TRACKABLE_KEY = "trackable_key";
         public static final String TRACKABLE_FREQUENCY = "trackable_frequency";
@@ -302,6 +307,7 @@ public class SyncProvider extends ContentProvider {
         public static final String _ID = "_id";
         public static final String TIMESTAMP = "timestamp";
         public static final String DEVICE_ID = "device_id";
+        public static final String USER_ID = "user_id";
         public static final String NOTIFICATION_TYPE = "notification_type";
         public static final String VALUE = "value";
         public static final String CONTEXT = "context";

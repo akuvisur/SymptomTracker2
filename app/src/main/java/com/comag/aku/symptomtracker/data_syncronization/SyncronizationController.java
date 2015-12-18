@@ -29,6 +29,7 @@ public class SyncronizationController {
 
         c.put(SyncProvider.AdverseEventData.TIMESTAMP, cond.timestamp);
         c.put(SyncProvider.AdverseEventData.DEVICE_ID, Settings.Secure.getString(NotificationService.getContext().getContentResolver(), Settings.Secure.ANDROID_ID));
+        c.put(SyncProvider.AdverseEventData.USER_ID, AppPreferences.userSettings.getUserId());
         c.put(SyncProvider.AdverseEventData.TRACKABLE_KEY, cond.key);
         if (cond.key.contains("symptom_")) {
             c.put(SyncProvider.AdverseEventData.TRACKABLE_FREQUENCY, AppPreferences.symptoms.get(cond.key).rep_window);
@@ -102,6 +103,7 @@ public class SyncronizationController {
         ContentValues c = new ContentValues();
         c.put(SyncProvider.NotificationEventData.TIMESTAMP, System.currentTimeMillis());
         c.put(SyncProvider.NotificationEventData.DEVICE_ID, Settings.Secure.getString(NotificationService.getContext().getContentResolver(), Settings.Secure.ANDROID_ID));
+        c.put(SyncProvider.NotificationEventData.USER_ID, AppPreferences.userSettings.getUserId());
         c.put(SyncProvider.NotificationEventData.VALUE, value);
         c.put(SyncProvider.NotificationEventData.NOTIFICATION_TYPE, type);
         c.put(SyncProvider.NotificationEventData.CONTEXT, context);

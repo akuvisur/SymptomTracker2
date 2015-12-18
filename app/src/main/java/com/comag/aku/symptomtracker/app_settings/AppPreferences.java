@@ -34,6 +34,7 @@ public class AppPreferences {
     final public static String POPUP_AUTOMATED = "popup_automated";
     final public static String POPUP_FREQUENCY = "popup_freq";
     final public static String DATASYNC_ENABLED = "datasync";
+    final public static String USER_ID = "user_id";
 
     private static Gson gson = new Gson();
     private static SharedPreferences sharedPrefs;
@@ -157,6 +158,7 @@ public class AppPreferences {
         userSettings.setPopupFrequency(sharedPrefs.getInt(POPUP_FREQUENCY, 50));
         userSettings.setPopupsAutomated(sharedPrefs.getBoolean(POPUP_AUTOMATED, true));
         userSettings.setPopupInterval(sharedPrefs.getInt(POPUP_INTERVAL, NotificationService.NOTIFICATION_DELAY_MS));
+        userSettings.setUserId(sharedPrefs.getString(USER_ID, ""));
 
         return true;
     }
