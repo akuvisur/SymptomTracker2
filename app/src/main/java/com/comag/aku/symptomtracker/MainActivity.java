@@ -50,19 +50,17 @@ import com.comag.aku.symptomtracker.graphics.listeners.OnSwipeTouchListener;
 import com.comag.aku.symptomtracker.graphics.adapters.SymptomRowAdapter;
 import com.comag.aku.symptomtracker.graphics.elements.CheckBoxSelector;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
-import com.comag.aku.symptomtracker.model.APIConnector;
 import com.comag.aku.symptomtracker.model.ApiManager;
 import com.comag.aku.symptomtracker.model.DatabaseStorage;
 import com.comag.aku.symptomtracker.model.NoSQLStorage;
-import com.comag.aku.symptomtracker.model.REST_queries.Factors;
 import com.comag.aku.symptomtracker.model.data_storage.Values;
 import com.comag.aku.symptomtracker.objects.Factor;
 import com.comag.aku.symptomtracker.objects.ValueMap;
 import com.comag.aku.symptomtracker.objects.tracking.Condition;
+import com.comag.aku.symptomtracker.services.UserContextService;
 import com.comag.aku.symptomtracker.services.NotificationPreferences;
 import com.comag.aku.symptomtracker.services.NotificationService;
 import com.github.mikephil.charting.animation.Easing;
-import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.BubbleChart;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.CombinedChart;
@@ -106,8 +104,17 @@ public class MainActivity extends AppCompatActivity {
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         mTracker = application.getDefaultTracker();
 
+        // start aware
+        Intent aware = new Intent(this, Aware.class);
+        startService(aware);
+
         // restart the service if coming from launch.class
+        Log.d("main", "starting contextservice");
+        startService(new Intent(this, UserContextService.class));
+
+        Log.d("main", "starting notificationservice");
         startService(new Intent(this, NotificationService.class));
+
     }
 
     @Override

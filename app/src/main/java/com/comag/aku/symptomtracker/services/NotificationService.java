@@ -73,10 +73,6 @@ public class NotificationService extends IntentService {
         Log.d("service", "created");
         context = this;
 
-        Intent aware = new Intent(this, Aware.class);
-        startService(aware);
-        //Activate Accelerometer
-        Aware.setSetting(this, Aware_Preferences.STATUS_SCREEN, true);
         //Apply settings
         Aware.startSensor(this, Aware_Preferences.STATUS_SCREEN);
 
@@ -166,7 +162,12 @@ public class NotificationService extends IntentService {
 
         if (s != null) unregisterReceiver(s);
         Intent aware = new Intent(this, Aware.class);
-        stopService(aware);
+        try {
+            stopService(aware);
+        }
+        catch (Exception e) {
+            Log.d("NotiService", "onDestroy(): could not stopService(aware)");
+        }
     }
 
     private void emitNotification() {

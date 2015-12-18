@@ -116,7 +116,7 @@ public class InputPopup {
                 popupLayout.startAnimation(anim);
                 Toast.makeText(NotificationService.getContext(), "I will try to bother you less frequently.", Toast.LENGTH_SHORT).show();
 
-                SyncronizationController.storeNotificationResponse("no", "popup", ContextService.getContext());
+                SyncronizationController.storeNotificationResponse("no", "popup", UserContextService.getUserContext());
 
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -152,7 +152,7 @@ public class InputPopup {
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         NotificationService.getContext().startActivity(intent);
 
-                        SyncronizationController.storeNotificationResponse("app", "popup", ContextService.getContext());
+                        SyncronizationController.storeNotificationResponse("app", "popup", UserContextService.getUserContext());
 
                         switch (NotificationService.getMode()) {
                             case DUMMY_MODE:
@@ -174,7 +174,7 @@ public class InputPopup {
                 anim.setDuration(250);
                 popupLayout.startAnimation(anim);
                 Toast.makeText(NotificationService.getContext(), "Inputted values saved.", Toast.LENGTH_SHORT).show();
-                SyncronizationController.storeNotificationResponse("ok", "popup", ContextService.getContext());
+                SyncronizationController.storeNotificationResponse("ok", "popup", UserContextService.getUserContext());
 
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -271,7 +271,7 @@ public class InputPopup {
 
         container.addView(inputs);
 
-        //row.setBackground(ContextCompat.getDrawable(NotificationService.getContext(), R.drawable.roundedwhite));
+        //row.setBackground(ContextCompat.getDrawable(NotificationService.getUserContext(), R.drawable.roundedwhite));
 
         return row;
     }
@@ -327,7 +327,7 @@ public class InputPopup {
                 break;
         }
 
-        //row.setBackground(ContextCompat.getDrawable(NotificationService.getContext(), R.drawable.roundedwhite));
+        //row.setBackground(ContextCompat.getDrawable(NotificationService.getUserContext(), R.drawable.roundedwhite));
 
         return row;
     }

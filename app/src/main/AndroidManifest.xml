@@ -38,6 +38,7 @@
             android:theme="@style/AppTheme">
         </activity>
         <service android:name=".services.NotificationService"/>
+        <service android:name=".services.UserContextService"/>
         <service android:name=".data_syncronization.Plugin"/>
 
 
