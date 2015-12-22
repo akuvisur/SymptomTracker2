@@ -57,6 +57,7 @@ import com.comag.aku.symptomtracker.model.data_storage.Values;
 import com.comag.aku.symptomtracker.objects.Factor;
 import com.comag.aku.symptomtracker.objects.ValueMap;
 import com.comag.aku.symptomtracker.objects.tracking.Condition;
+import com.comag.aku.symptomtracker.services.ApplicationMonitor;
 import com.comag.aku.symptomtracker.services.UserContextService;
 import com.comag.aku.symptomtracker.services.NotificationPreferences;
 import com.comag.aku.symptomtracker.services.NotificationService;
@@ -114,6 +115,8 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d("main", "starting notificationservice");
         startService(new Intent(this, NotificationService.class));
+
+        startService(new Intent(this, ApplicationMonitor.class));
 
     }
 

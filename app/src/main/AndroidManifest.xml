@@ -40,6 +40,12 @@
         <service android:name=".services.NotificationService"/>
         <service android:name=".services.UserContextService"/>
         <service android:name=".data_syncronization.Plugin"/>
+        <service android:name=".services.ApplicationMonitor"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService"/>
+            </intent-filter>
+        </service>
 
 
     <!-- Plugin's own provider -->
@@ -275,6 +281,13 @@
         android:writePermission="com.aware.WRITE_CONTEXT_DATA"
         >
     </provider>
+
+    <provider
+        android:name="com.aware.plugin.google.activity_recognition.Google_AR_Provider"
+        android:authorities="${applicationId}.provider.gar"
+        android:exported="true"
+        android:readPermission="com.aware.READ_CONTEXT_DATA"
+        android:writePermission="com.aware.WRITE_CONTEXT_DATA" />
 
     </application>
 </manifest>

@@ -6,8 +6,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 
 import com.aware.Applications;
@@ -15,12 +16,15 @@ import com.aware.Aware;
 import com.aware.Aware_Preferences;
 import com.aware.Battery;
 import com.aware.Communication;
-import com.aware.Gyroscope;
 import com.aware.Network;
 import com.aware.Proximity;
 import com.aware.Rotation;
-import com.aware.providers.Gyroscope_Provider;
-import com.aware.utils.Aware_Sensor;
+import com.aware.plugin.google.activity_recognition.Google_AR_Provider;
+import com.aware.plugin.google.activity_recognition.Plugin;
+import com.aware.providers.Applications_Provider;
+import com.aware.providers.Battery_Provider;
+import com.gc.android.market.api.MarketSession;
+import com.gc.android.market.api.model.Market;
 
 import java.util.Calendar;
 
@@ -29,19 +33,31 @@ import java.util.Calendar;
  */
 public class UserContextService extends IntentService {
 
+    private static String username = "stracker2015@gmail.com";
+    private static String password = "eGzFA9XmKHNvGfT2";
+
+    static int postureBuffer = 0;
+
     static int hour;
     static int minute;
     static int day_of_week;
     static int device_posture;
-    static int postureBuffer = 0;
     static int battery_level;
     static int battery_charging;
     static String foreground_app;
+    static String foreground_package;
+    static String foreground_app_category;
     static int proximity;
     static long last_call;
     static boolean internet_available = false;
     static boolean wifi_available = false;
     static int network_type;
+    static long last_action;
+    static int activity;
+
+    // activity
+    // indoor/outdoor
+    // location type / foursquare/google places
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
@@ -50,9 +66,14 @@ public class UserContextService extends IntentService {
         super("UserContextService");
     }
 
+    public static void setLastAction() {
+        last_action = System.currentTimeMillis();
+    }
+
     private class ContextReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (!intent.getAction().equals(Rotation.ACTION_AWARE_ROTATION)) Log.d("ReceivedAction", intent.getAction());
             switch (intent.getAction()) {
                 // device_posture
                 case Rotation.ACTION_AWARE_ROTATION:
@@ -79,20 +100,22 @@ public class UserContextService extends IntentService {
                     calculateNetworkType();
                     break;
                 // foreground_app
+                case ApplicationMonitor.NEW_FOREGROUND:
+                    foreground_app = intent.getStringExtra("app_name");
+                    foreground_package = intent.getStringExtra("package_name");
+                    //getAppCategory(intent.getStringExtra("app_name"), intent.getStringExtra("package_name"));
+                    break;
                 case Applications.ACTION_AWARE_APPLICATIONS_FOREGROUND:
-                    Log.d("foregroundapp", "changed");
-                    foreground_app = "new";
+                    Log.d("Application", "changed");
+                    getForegroundApp();
                     break;
                 // time since last call
                 case Communication.ACTION_AWARE_CALL_ACCEPTED:
                     last_call = System.currentTimeMillis();
                     break;
                 // battery level
-                case Battery.ACTION_AWARE_BATTERY_FULL:
-                    battery_level = 1;
-                    break;
-                case Battery.ACTION_AWARE_BATTERY_LOW:
-                    battery_level = 0;
+                case Battery.ACTION_AWARE_BATTERY_CHANGED:
+                    setBatteryLevel();
                     break;
                 case Battery.ACTION_AWARE_BATTERY_CHARGING_USB:
                     battery_level = 1;
@@ -106,11 +129,16 @@ public class UserContextService extends IntentService {
                     battery_charging = 0;
                     break;
                 case Proximity.ACTION_AWARE_PROXIMITY:
+                    Log.d("Proximity", "changed");
                     if (intent.hasExtra(Proximity.EXTRA_DATA)) {
                         ContentValues c = intent.getParcelableExtra(Proximity.EXTRA_DATA);
                         setProximity(c);
                     }
                     break;
+                case Plugin.ACTION_AWARE_GOOGLE_ACTIVITY_RECOGNITION:
+                    if (intent.getIntExtra("confidence", 0) > 60 && intent.getIntExtra("activity", -1) > -1) {
+                        activity = intent.getIntExtra("activity", -1);
+                    }
                 default:
                     break;
             }
@@ -118,9 +146,62 @@ public class UserContextService extends IntentService {
 
     }
 
+    private static void setActivity(int a) {
+        activity = a;
+    }
+
+    private void setBatteryLevel() {
+        try {
+            Cursor battery_data = getContentResolver().query(Battery_Provider.Battery_Data.CONTENT_URI, new String[]{"battery_level"}, null, null, "timestamp DESC LIMIT 1");
+            battery_data.moveToFirst();
+            battery_level = Integer.valueOf(battery_data.getString(battery_data.getColumnIndex("battery_level")));
+        }
+        catch (CursorIndexOutOfBoundsException e) {
+            Log.d("setBatteryLevel", "Failed:" + e.getMessage());
+        }
+    }
+
+    private void getForegroundApp() {
+        Log.d("Application", "getForegroundApp()");
+        try {
+            Cursor app_data = getContentResolver().query(Applications_Provider.Applications_Foreground.CONTENT_URI, new String[]{"package_name"}, null, null, "timestamp DESC LIMIT 1");
+            app_data.moveToFirst();
+            foreground_app = app_data.getString(app_data.getColumnIndex("package_name"));
+            foreground_package = app_data.getString(app_data.getColumnIndex("package_name"));
+            Log.d("Application", "fore, package: " + foreground_app + foreground_package);
+            getAppCategory(foreground_app, foreground_package);
+        }
+        catch (CursorIndexOutOfBoundsException e) {
+            Log.d("Application", "Failed:" + e.getMessage());
+        }
+    }
+
+    private void getAppCategory(final String appName, final String packageName) {
+        Log.d("Application", "getAppCategory()");
+        MarketSession session = new MarketSession();
+        session.login(username, password);
+        session.getContext().setAndroidId("myid");
+
+        Market.AppsRequest req = Market.AppsRequest.newBuilder()
+                .setQuery(packageName)
+                .setStartIndex(0).setEntriesCount(0)
+                .setWithExtendedInfo(true)
+                .build();
+
+        session.append(req, new MarketSession.Callback<Market.AppsResponse>() {
+            @Override
+            public void onResult(Market.ResponseContext responseContext, Market.AppsResponse response) {
+                foreground_app_category = response.getApp(0).getExtendedInfo().getCategory();
+                Log.d("app category", foreground_app_category);
+            }
+        });
+        session.flush();
+    }
+
     private void setProximity(ContentValues c) {
         if (c.getAsDouble("double_proximity") > 0) proximity = 1;
         else proximity = 0;
+
     }
 
     private void calculateNetworkType() {
@@ -163,7 +244,7 @@ public class UserContextService extends IntentService {
         Aware.setSetting(this, Aware_Preferences.STATUS_BATTERY, true);
         Aware.setSetting(this, Aware_Preferences.STATUS_CALLS, true);
         Aware.setSetting(this, Aware_Preferences.STATUS_NETWORK_EVENTS, true);
-        Aware.setSetting(this, Aware_Preferences.STATUS_APPLICATIONS, true);
+        //Aware.setSetting(this, Aware_Preferences.STATUS_APPLICATIONS, true);
         Aware.setSetting(this, Aware_Preferences.STATUS_PROXIMITY, true);
 
         // only poll once per second
@@ -173,19 +254,39 @@ public class UserContextService extends IntentService {
         IntentFilter i = new IntentFilter();
 
         i.addAction(Rotation.ACTION_AWARE_ROTATION);
+
         i.addAction(Network.ACTION_AWARE_INTERNET_AVAILABLE);
         i.addAction(Network.ACTION_AWARE_INTERNET_UNAVAILABLE);
         i.addAction(Network.ACTION_AWARE_WIFI_ON);
         i.addAction(Network.ACTION_AWARE_WIFI_OFF);
-        i.addAction(Applications.ACTION_AWARE_APPLICATIONS_FOREGROUND);
+
+        //i.addAction(Applications.ACTION_AWARE_APPLICATIONS_HISTORY);
+        //i.addAction(Applications.ACTION_AWARE_APPLICATIONS_FOREGROUND);
+        i.addAction(ApplicationMonitor.NEW_FOREGROUND);
+
         i.addAction(Proximity.ACTION_AWARE_PROXIMITY);
+
+        i.addAction(Battery.ACTION_AWARE_BATTERY_CHANGED);
+        i.addAction(Battery.ACTION_AWARE_BATTERY_CHARGING_AC);
+        i.addAction(Battery.ACTION_AWARE_BATTERY_CHARGING_USB);
+        i.addAction(Battery.ACTION_AWARE_BATTERY_DISCHARGING);
+
+        i.addAction(Communication.ACTION_AWARE_USER_IN_CALL);
+        i.addAction(Communication.ACTION_AWARE_USER_NOT_IN_CALL);
+        i.addAction(Communication.ACTION_AWARE_CALL_ACCEPTED);
+
+        i.addAction(Plugin.ACTION_AWARE_GOOGLE_ACTIVITY_RECOGNITION);
 
         registerReceiver(co, i);
 
         Intent aware = new Intent(this, Aware.class);
         startService(aware);
 
+        Aware.startPlugin(this, "com.aware.plugin.google.activity_recognition");
+
         setTimes();
+
+        ApplicationMonitor.isAccessibilityServiceActive(this);
 
         return START_STICKY;
     }
@@ -213,12 +314,15 @@ public class UserContextService extends IntentService {
         Aware.setSetting(this, Aware_Preferences.STATUS_BATTERY, false);
         Aware.setSetting(this, Aware_Preferences.STATUS_CALLS, false);
         Aware.setSetting(this, Aware_Preferences.STATUS_NETWORK_EVENTS, false);
-        Aware.setSetting(this, Aware_Preferences.STATUS_APPLICATIONS, false);
+        //Aware.setSetting(this, Aware_Preferences.STATUS_APPLICATIONS, false);
 
         unregisterReceiver(co);
 
         Intent aware = new Intent(this, Aware.class);
         startService(aware);
+
+        Aware.stopPlugin(this, "com.aware.plugin.google.activity_recognition");
+
     }
 
     public static String getUserContext() {

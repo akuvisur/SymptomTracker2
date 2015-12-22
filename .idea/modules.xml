@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/SymptomTracker.iml" filepath="$PROJECT_DIR$/SymptomTracker.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/com.aware.plugin.google.activity_recognition/com.aware.plugin.google.activity_recognition.iml" filepath="$PROJECT_DIR$/com.aware.plugin.google.activity_recognition/com.aware.plugin.google.activity_recognition.iml" />
     </modules>
   </component>
 </project>
