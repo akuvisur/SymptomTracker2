@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
@@ -18,6 +19,7 @@ import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.MainActivity;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.comag.aku.symptomtracker.data_syncronization.Plugin;
+import com.comag.aku.symptomtracker.data_syncronization.SyncProvider;
 import com.comag.aku.symptomtracker.model.NoSQLStorage;
 
 import java.util.Calendar;
@@ -96,6 +98,7 @@ public class NotificationService extends IntentService {
         if (!AppPreferences.appIsSetUp()) return START_NOT_STICKY;
         // otherwise load the prefs etc..
         if (!AppPreferences.hasLoaded()) AppPreferences.load();
+
         switch (mode) {
             case DUMMY_MODE:
                 new Handler().postDelayed(new Runnable() {

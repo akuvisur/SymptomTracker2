@@ -16,6 +16,8 @@ import android.util.Log;
 
 import com.aware.Aware;
 import com.aware.utils.DatabaseHelper;
+import com.comag.aku.symptomtracker.AppHelpers;
+import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.comag.aku.symptomtracker.services.NotificationService;
 
 import java.io.File;
@@ -26,7 +28,7 @@ import java.util.HashMap;
  */
 public class SyncProvider extends ContentProvider {
     public static String AUTHORITY = "com.comag.aku.symptomtracker.provider";
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
 
     private static final int ADVERSE_EVENTS = 1;
     private static final int ADVERSE_EVENTS_TYPE = 2;
@@ -180,6 +182,8 @@ public class SyncProvider extends ContentProvider {
 
         ContentValues values = (new_values != null) ? new ContentValues(new_values) : new ContentValues();
 
+        values.put("user_id", AppPreferences.userSettings.getUserId());
+
         long _id;
         switch (sUriMatcher.match(uri)) {
             case NOTIFICATIONS:
@@ -234,6 +238,9 @@ public class SyncProvider extends ContentProvider {
         }
 
         int count = 0;
+
+        values.put("user_id", AppPreferences.userSettings.getUserId());
+
         switch (sUriMatcher.match(uri)) {
             case NOTIFICATIONS:
                 count = database.update(DATABASE_TABLES[1], values, selection, selectionArgs);

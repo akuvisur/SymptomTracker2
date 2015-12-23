@@ -25,7 +25,7 @@ public class Plugin extends Aware_Plugin {
 
         DATABASE_TABLES = SyncProvider.DATABASE_TABLES;
         TABLES_FIELDS = SyncProvider.TABLES_FIELDS;
-        CONTEXT_URIS = new Uri[]{ SyncProvider.NotificationEventData.CONTENT_URI, SyncProvider.AdverseEventData.CONTENT_URI};
+        CONTEXT_URIS = new Uri[]{ SyncProvider.AdverseEventData.CONTENT_URI, SyncProvider.NotificationEventData.CONTENT_URI};
 
     }
 
