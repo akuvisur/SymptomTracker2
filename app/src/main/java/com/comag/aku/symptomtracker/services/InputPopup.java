@@ -27,6 +27,7 @@ import com.colintmiller.simplenosql.RetrievalCallback;
 import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.Launch;
 import com.comag.aku.symptomtracker.R;
+import com.comag.aku.symptomtracker.analytics.AnalyticsApplication;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.comag.aku.symptomtracker.data_syncronization.SyncronizationController;
 import com.comag.aku.symptomtracker.graphics.FlowLayout;
@@ -43,6 +44,7 @@ import com.comag.aku.symptomtracker.objects.tracking.Condition;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -218,6 +220,10 @@ public class InputPopup {
                         }
                         if (missingKeys.isEmpty()) {
                             // sometimes randomly show daily factor inputs to keep them up to date during the day
+                            Calendar c  =Calendar.getInstance();
+                            if (c.get(Calendar.HOUR_OF_DAY) < 18) {
+                                return;
+                            }
                             if ((new Random(System.currentTimeMillis()).nextInt(100) < 115) && !AppPreferences.factors.isEmpty()) {
                                 ArrayList<String> factors = new ArrayList<>();
                                 for (String key : AppPreferences.factors.keySet()) {
@@ -386,7 +392,7 @@ public class InputPopup {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                Toast.makeText(NotificationService.getContext(), "Remember to click the checkmark to finalize inputting.", Toast.LENGTH_SHORT);
+                Toast.makeText(NotificationService.getContext(), "Remember to click the checkmark to finalize inputting.", Toast.LENGTH_SHORT).show();
             }
         };
     }
@@ -473,12 +479,15 @@ public class InputPopup {
                         NoSQLStorage.storeSingle(new Condition(factor.key), new ValueMap(selected));
                     }
                 }, 350);
+                AnalyticsApplication.sendEvent("popup", "accepted", UserContextService.getUserContext(), null);
+
                 windowManager.removeView(dialogView);
             }
         });
         dialogCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                AnalyticsApplication.sendEvent("popup", "cancelled", UserContextService.getUserContext(), null);
                 windowManager.removeView(dialogView);
             }
         });

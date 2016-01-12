@@ -21,6 +21,7 @@ import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.comag.aku.symptomtracker.data_syncronization.Plugin;
 import com.comag.aku.symptomtracker.data_syncronization.SyncProvider;
 import com.comag.aku.symptomtracker.model.NoSQLStorage;
+import com.comag.aku.symptomtracker.services.smart_notifications.SmartNotificationEngine;
 
 import java.util.Calendar;
 import java.util.List;
@@ -36,7 +37,10 @@ public class NotificationService extends IntentService {
 
     private static NotificationMode mode = NotificationMode.DUMMY_MODE;
     public static NotificationMode getMode() {return mode;}
-    public static void setMode(NotificationMode newMode) {mode = newMode;}
+    public static void setMode(NotificationMode newMode) {
+        if (!SmartNotificationEngine.isEnabled()) mode = NotificationMode.DUMMY_MODE;
+        else mode = newMode;
+    }
 
     private static Context context;
     public static Context getContext() {return context;}

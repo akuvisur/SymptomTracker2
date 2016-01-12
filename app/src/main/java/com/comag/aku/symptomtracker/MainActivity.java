@@ -110,10 +110,10 @@ public class MainActivity extends AppCompatActivity {
         startService(aware);
 
         // restart the service if coming from launch.class
-        Log.d("main", "starting contextservice");
+        //Log.d("main", "starting contextservice");
         startService(new Intent(this, UserContextService.class));
 
-        Log.d("main", "starting notificationservice");
+        //Log.d("main", "starting notificationservice");
         startService(new Intent(this, NotificationService.class));
 
         startService(new Intent(this, ApplicationMonitor.class));
@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-
+        AnalyticsApplication.sendEvent("main_app", "resumed", null, null);
         AppHelpers.currentActivity = this;
         AppHelpers.currentContext = getApplicationContext();
         Log.d("main", "launched main");
@@ -175,8 +175,7 @@ public class MainActivity extends AppCompatActivity {
     private void showSymptoms() {
         tab = "symptoms";
 
-        Log.i("Analytics", "Setting screen name: " + tab);
-        mTracker.setScreenName("Image~" + tab);
+        mTracker.setScreenName(tab);
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
         NoSQLStorage.loadValues(tab);
@@ -204,8 +203,7 @@ public class MainActivity extends AppCompatActivity {
     private void showFactors() {
         tab = "factors";
 
-        Log.i("Analytics", "Setting screen name: " + tab);
-        mTracker.setScreenName("Image~" + tab);
+        mTracker.setScreenName(tab);
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
         NoSQLStorage.loadValues(tab);
@@ -244,8 +242,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.settings);
         tab = "settings";
 
-        Log.i("Analytics", "Setting screen name: " + tab);
-        mTracker.setScreenName("Image~" + tab);
+        mTracker.setScreenName(tab);
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
         Toolbar t = (Toolbar) findViewById(R.id.settingstoolbar);
@@ -297,6 +294,8 @@ public class MainActivity extends AppCompatActivity {
                         notifTime.invalidate();
                         clockDialog.dismiss();
                         Toast.makeText(AppHelpers.currentContext, "Notification time changed", Toast.LENGTH_SHORT).show();
+                        AnalyticsApplication.sendEvent("settings", "notification_time", null, null);
+
                         settingsSnack.dismiss();
                     }
                 });
@@ -329,6 +328,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 Toast.makeText(AppHelpers.currentContext, "Popup frequency changed to " + AppPreferences.userSettings.getPopupFrequency() + ".", Toast.LENGTH_SHORT).show();
+                AnalyticsApplication.sendEvent("settings", "notification_freq", String.valueOf(AppPreferences.userSettings.getPopupFrequency()), null);
                 hideSettingsHelp();
             }
         });
@@ -343,6 +343,8 @@ public class MainActivity extends AppCompatActivity {
                     popupFreq.setProgress(NotificationPreferences.getCurrentPreference());
                 }
                 Toast.makeText(AppHelpers.currentContext, "Popup automation changed to " + isChecked + ".", Toast.LENGTH_SHORT).show();
+                AnalyticsApplication.sendEvent("settings", "popup_automation", String.valueOf(isChecked), null);
+
             }
         });
 
@@ -365,6 +367,8 @@ public class MainActivity extends AppCompatActivity {
                         if (interval > AppHelpers.MINUTE_IN_MILLISECONDS) {
                             AppPreferences.setUserSetting(AppPreferences.POPUP_INTERVAL, interval);
                             Toast.makeText(AppHelpers.currentContext, "Popup interval changed to " + interval / AppHelpers.MINUTE_IN_MILLISECONDS + " minutes.", Toast.LENGTH_SHORT).show();
+                            AnalyticsApplication.sendEvent("settings", "popup_interval", String.valueOf(interval / AppHelpers.MINUTE_IN_MILLISECONDS), null);
+
                         } else
                             Toast.makeText(AppHelpers.currentContext, "Too brief interval.", Toast.LENGTH_SHORT).show();
                     } catch (NumberFormatException e) {
@@ -383,10 +387,12 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     Toast.makeText(AppHelpers.currentContext, "Enabling data sync...", Toast.LENGTH_SHORT).show();
+                    AnalyticsApplication.sendEvent("settings", "data_sync", "enabled", null);
                     Aware.joinStudy(AppHelpers.currentContext, AppPreferences.schema.aware_study_url);
                 }
                 else {
                     Toast.makeText(AppHelpers.currentContext, "Disabling data sync...", Toast.LENGTH_SHORT).show();
+                    AnalyticsApplication.sendEvent("settings", "data_sync", "disabled", null);
                     Aware.reset(AppHelpers.currentContext);
                 }
             }
@@ -488,7 +494,7 @@ public class MainActivity extends AppCompatActivity {
         tab = "data";
 
         Log.i("Analytics", "Setting screen name: " + tab);
-        mTracker.setScreenName("Image~" + tab);
+        mTracker.setScreenName(tab);
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
         for (String symptom : AppPreferences.symptoms.keySet()) {
