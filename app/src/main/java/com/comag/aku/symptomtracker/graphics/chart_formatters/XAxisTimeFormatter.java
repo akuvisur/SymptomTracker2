@@ -26,7 +26,6 @@ public class XAxisTimeFormatter implements XAxisValueFormatter {
 
     @Override
     public String getXValue(String original, int index, ViewPortHandler viewPortHandler) {
-        Log.d("dlfkj", original + " + " + calType);
         switch (calType) {
             case Calendar.HOUR_OF_DAY:
                 return original;

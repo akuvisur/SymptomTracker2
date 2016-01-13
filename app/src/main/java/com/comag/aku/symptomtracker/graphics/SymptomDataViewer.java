@@ -454,6 +454,7 @@ public class SymptomDataViewer {
         for (Condition c : DatabaseStorage.values.keySet()) {
             if (!c.key.equals(value.key)) continue;
             switch (DatabaseStorage.values.get(c).getValue()) {
+                // negative range
                 case "none":
                     none = none + 1;
                     break;
@@ -461,6 +462,16 @@ public class SymptomDataViewer {
                     mild = mild + 1;
                     break;
                 case "severe":
+                    severe = severe + 1;
+                    break;
+                // positive range
+                case "low":
+                    none = none + 1;
+                    break;
+                case "medium":
+                    mild = mild + 1;
+                    break;
+                case "high":
                     severe = severe + 1;
                     break;
                 default:
@@ -483,9 +494,9 @@ public class SymptomDataViewer {
         p.setDrawValues(false);
 
         ArrayList<String> xVals = new ArrayList<>();
-        xVals.add("None");
-        xVals.add("Mild");
-        xVals.add("Severe");
+        xVals.add("None/Low");
+        xVals.add("Mild/Medium");
+        xVals.add("Severe/High");
 
         BarData pd = new BarData(xVals, p);
 
@@ -535,6 +546,7 @@ public class SymptomDataViewer {
                     entryCal.setTimeInMillis(c.timestamp);
                     if (c.key.equals(value.key) && time == entryCal.get(repWindow)) {
                         switch (DatabaseStorage.values.get(c).getValue()) {
+                            // negative ranges
                             case "none":
                                 if (noneCount.containsKey(time)) val = noneCount.get(time);
                                 else val = 0f;
@@ -548,6 +560,25 @@ public class SymptomDataViewer {
                                 mildCount.put(time, val);
                                 break;
                             case "severe":
+                                if (severeCount.containsKey(time)) val = severeCount.get(time);
+                                else val = 0f;
+                                val = val + 1;
+                                severeCount.put(time, val);
+                                break;
+                            // positive ranges
+                            case "low":
+                                if (noneCount.containsKey(time)) val = noneCount.get(time);
+                                else val = 0f;
+                                val = val + 1;
+                                noneCount.put(time, val);
+                                break;
+                            case "medium":
+                                if (mildCount.containsKey(time)) val = mildCount.get(time);
+                                else val = 0f;
+                                val = val + 1;
+                                mildCount.put(time, val);
+                                break;
+                            case "high":
                                 if (severeCount.containsKey(time)) val = severeCount.get(time);
                                 else val = 0f;
                                 val = val + 1;
@@ -590,7 +621,7 @@ public class SymptomDataViewer {
             colors.add(ContextCompat.getColor(AppHelpers.currentContext, R.color.Severe));
 
             set.setColors(colors);
-            set.setStackLabels(new String[]{"None", "Mild", "Severe"});
+            set.setStackLabels(new String[]{"None/Low", "Mild/Medium", "Severe/High"});
             set.setDrawValues(false);
 
             ArrayList<String> times = new ArrayList<>();

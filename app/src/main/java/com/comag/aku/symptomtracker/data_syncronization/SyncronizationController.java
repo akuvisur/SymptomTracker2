@@ -53,6 +53,9 @@ public class SyncronizationController {
             c.put(SyncProvider.AdverseEventData.PICTURE, imgData);
         }
 
+        for (String k : c.keySet()) {
+            Log.d("db_insert", k + " : " + c.getAsString(k));
+        }
         SyncProvider s = new SyncProvider();
         try {
             s.insert(SyncProvider.AdverseEventData.CONTENT_URI, c);

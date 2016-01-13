@@ -270,10 +270,15 @@ public class InputPopup {
         Button noneButton = (Button) inputs.findViewById(R.id.symptom_none);
         Button mildButton = (Button) inputs.findViewById(R.id.symptom_mild);
         Button severeButton = (Button) inputs.findViewById(R.id.symptom_severe);
+        if (symptom.positiveRange) {
+            noneButton.setText("Low");
+            mildButton.setText("Medium");
+            severeButton.setText("High");
+        }
 
-        noneButton.setOnClickListener(setSymptomButtonListener("none", b, key, container, inputs));
-        mildButton.setOnClickListener(setSymptomButtonListener("mild", b, key, container, inputs));
-        severeButton.setOnClickListener(setSymptomButtonListener("severe", b, key, container, inputs));
+        noneButton.setOnClickListener(setSymptomButtonListener(AppHelpers.getSymptomValueName(symptom, 0), b, key, container, inputs));
+        mildButton.setOnClickListener(setSymptomButtonListener(AppHelpers.getSymptomValueName(symptom, 1), b, key, container, inputs));
+        severeButton.setOnClickListener(setSymptomButtonListener(AppHelpers.getSymptomValueName(symptom, 2), b, key, container, inputs));
 
         container.addView(inputs);
 
@@ -358,7 +363,7 @@ public class InputPopup {
 
         try {
             int value = Integer.valueOf(Values.fetch(factor.key).getValue());
-            Log.d("popup", "factor value:" + value);
+            //Log.d("popup", "factor value:" + value);
             rangeBar.setProgress(value);
             rangeText.setText(String.valueOf(value));
             input.setText(String.valueOf(value));
@@ -515,7 +520,7 @@ public class InputPopup {
                         selected.add(value);
                         _this.setChecked(true);
                     }
-                    Log.d("selected", selected.toString());
+                    //Log.d("selected", selected.toString());
                 }
             });
         }
@@ -534,6 +539,15 @@ public class InputPopup {
                         button.setBackgroundResource(R.drawable.checkmark_anim_mild);
                         break;
                     case "severe":
+                        button.setBackgroundResource(R.drawable.checkmark_anim_severe);
+                        break;
+                    case "low":
+                        button.setBackgroundResource(R.drawable.checkmark_anim_none);
+                        break;
+                    case "medium":
+                        button.setBackgroundResource(R.drawable.checkmark_anim_mild);
+                        break;
+                    case "high":
                         button.setBackgroundResource(R.drawable.checkmark_anim_severe);
                         break;
                 }

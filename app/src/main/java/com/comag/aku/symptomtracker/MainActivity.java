@@ -246,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
         Toolbar t = (Toolbar) findViewById(R.id.settingstoolbar);
-        t.setTitle("AppHelpers");
+        t.setTitle("Settings");
 
         AppPreferences.load();
 
@@ -388,6 +388,7 @@ public class MainActivity extends AppCompatActivity {
                 if (isChecked) {
                     Toast.makeText(AppHelpers.currentContext, "Enabling data sync...", Toast.LENGTH_SHORT).show();
                     AnalyticsApplication.sendEvent("settings", "data_sync", "enabled", null);
+                    Log.d("Joining", AppPreferences.schema.aware_study_url);
                     Aware.joinStudy(AppHelpers.currentContext, AppPreferences.schema.aware_study_url);
                 }
                 else {

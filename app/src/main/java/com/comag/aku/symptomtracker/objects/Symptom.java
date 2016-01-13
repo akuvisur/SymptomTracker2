@@ -20,6 +20,8 @@ public class Symptom extends Trackable {
     public String key;
     public String severity;
 
+    public boolean positiveRange = false;
+
     public Symptom(JsonObject o) {
         this.json = o;
         name = o.get("name").getAsString();
@@ -29,6 +31,7 @@ public class Symptom extends Trackable {
         key = o.get("key").getAsString();
         rep_window = o.get("rep_window").getAsString();
         severity = o.get("severity").getAsString();
+        if (o.has("range_type") && o.get("range_type").getAsString().equals("positive")) positiveRange = true;
     }
 
     public Symptom(String name, String desc, String rep_window) {

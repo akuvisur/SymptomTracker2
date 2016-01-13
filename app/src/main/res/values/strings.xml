@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Symptom Tracker</string>
+    <string name="app_name">LifeTracker</string>
     <string name="action_settings">Settings</string>
     <string name="action_symptoms">Symptoms</string>
     <string name="action_factors">Factors</string>

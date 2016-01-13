@@ -53,6 +53,12 @@ public class ValueMap {
                     return 2f;
                 case "severe":
                     return 3f;
+                case "low":
+                    return 1f;
+                case "medium":
+                    return 2f;
+                case "high":
+                    return 3f;
                 default:
                     try {
                         return Float.valueOf(value);

@@ -7,6 +7,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 
 import com.comag.aku.symptomtracker.objects.Schema;
+import com.comag.aku.symptomtracker.objects.Symptom;
 import com.comag.aku.symptomtracker.services.NotificationService;
 
 import java.io.File;
@@ -186,5 +187,23 @@ public class AppHelpers {
                 break;
         }
         //Log.d("offsets", String.valueOf(dayOffset) + String.valueOf(weekOffset));
+    }
+
+    // get name for the symptom's value based on the positive/negative input range
+    public static String getSymptomValueName(Symptom s, int input) {
+        if (s.positiveRange) {
+            switch (input) {
+                case 0: return "low";
+                case 1: return "medium";
+                case 2: return "high";
+                default: return "low";
+            }
+        }
+        switch (input) {
+            case 0: return "none";
+            case 1: return "mild";
+            case 2: return "severe";
+            default: return "none";
+        }
     }
 }

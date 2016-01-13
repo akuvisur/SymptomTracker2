@@ -154,15 +154,31 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                 stateButton.setText("Missing");
                 break;
             case "none":
-                if (UIManager.hasFinishedAnim(new ButtonKey(curSymptom.key, "none"))) {
+                if (UIManager.hasFinishedAnim(new ButtonKey(curSymptom.key, AppHelpers.getSymptomValueName(curSymptom, 0)))) {
                     // set drawable to static
                     stateButton.setBackground(ContextCompat.getDrawable(AppHelpers.currentContext, R.drawable.round_none_checkmark));
                 }
                 else {
                     stateButton.setBackgroundResource(R.drawable.checkmark_anim_none);
                     ObservedAnimation checkAnimation = new ObservedAnimation((AnimationDrawable) stateButton.getBackground(),
-                            new ButtonKey(curSymptom.key, "none"));
-                    UIManager.addAnim(new ButtonKey(curSymptom.key, "none"), checkAnimation);
+                            new ButtonKey(curSymptom.key, AppHelpers.getSymptomValueName(curSymptom, 0)));
+                    UIManager.addAnim(new ButtonKey(curSymptom.key, AppHelpers.getSymptomValueName(curSymptom, 0)), checkAnimation);
+                    stateButton.setBackground(checkAnimation);
+                    checkAnimation.start();
+                }
+                stateBar.setBackgroundColor(ContextCompat.getColor(AppHelpers.currentContext, R.color.None));
+                stateButton.setText("");
+                break;
+            case "low":
+                if (UIManager.hasFinishedAnim(new ButtonKey(curSymptom.key, AppHelpers.getSymptomValueName(curSymptom, 0)))) {
+                    // set drawable to static
+                    stateButton.setBackground(ContextCompat.getDrawable(AppHelpers.currentContext, R.drawable.round_none_checkmark));
+                }
+                else {
+                    stateButton.setBackgroundResource(R.drawable.checkmark_anim_none);
+                    ObservedAnimation checkAnimation = new ObservedAnimation((AnimationDrawable) stateButton.getBackground(),
+                            new ButtonKey(curSymptom.key, AppHelpers.getSymptomValueName(curSymptom, 0)));
+                    UIManager.addAnim(new ButtonKey(curSymptom.key, AppHelpers.getSymptomValueName(curSymptom, 0)), checkAnimation);
                     stateButton.setBackground(checkAnimation);
                     checkAnimation.start();
                 }
@@ -171,15 +187,32 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                 break;
             case "mild":
                 // if an animation already finished for this symptom and this state, use a static instead
-                if (UIManager.hasFinishedAnim(new ButtonKey(curSymptom.key, "mild"))) {
+                if (UIManager.hasFinishedAnim(new ButtonKey(curSymptom.key, AppHelpers.getSymptomValueName(curSymptom, 1)))) {
                     // set drawable to static
                     stateButton.setBackground(ContextCompat.getDrawable(AppHelpers.currentContext, R.drawable.round_mild_checkmark));
                 }
                 else {
                     stateButton.setBackgroundResource(R.drawable.checkmark_anim_mild);
                     ObservedAnimation checkAnimation = new ObservedAnimation((AnimationDrawable) stateButton.getBackground(),
-                            new ButtonKey(curSymptom.key, "mild"));
-                    UIManager.addAnim(new ButtonKey(curSymptom.key, "mild"), checkAnimation);
+                            new ButtonKey(curSymptom.key, AppHelpers.getSymptomValueName(curSymptom, 1)));
+                    UIManager.addAnim(new ButtonKey(curSymptom.key, AppHelpers.getSymptomValueName(curSymptom, 1)), checkAnimation);
+                    stateButton.setBackground(checkAnimation);
+                    checkAnimation.start();
+                }
+                stateBar.setBackgroundColor(ContextCompat.getColor(AppHelpers.currentContext, R.color.Mild));
+                stateButton.setText("");
+                break;
+            case "medium":
+                // if an animation already finished for this symptom and this state, use a static instead
+                if (UIManager.hasFinishedAnim(new ButtonKey(curSymptom.key, AppHelpers.getSymptomValueName(curSymptom, 1)))) {
+                    // set drawable to static
+                    stateButton.setBackground(ContextCompat.getDrawable(AppHelpers.currentContext, R.drawable.round_mild_checkmark));
+                }
+                else {
+                    stateButton.setBackgroundResource(R.drawable.checkmark_anim_mild);
+                    ObservedAnimation checkAnimation = new ObservedAnimation((AnimationDrawable) stateButton.getBackground(),
+                            new ButtonKey(curSymptom.key, AppHelpers.getSymptomValueName(curSymptom, 1)));
+                    UIManager.addAnim(new ButtonKey(curSymptom.key, AppHelpers.getSymptomValueName(curSymptom, 1)), checkAnimation);
                     stateButton.setBackground(checkAnimation);
                     checkAnimation.start();
                 }
@@ -187,15 +220,31 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                 stateButton.setText("");
                 break;
             case "severe":
-                if (UIManager.hasFinishedAnim(new ButtonKey(curSymptom.key, "severe"))) {
+                if (UIManager.hasFinishedAnim(new ButtonKey(curSymptom.key, AppHelpers.getSymptomValueName(curSymptom, 2)))) {
                     // set drawable to static
                     stateButton.setBackground(ContextCompat.getDrawable(AppHelpers.currentContext, R.drawable.round_severe_checkmark));
                 }
                 else {
                     stateButton.setBackgroundResource(R.drawable.checkmark_anim_severe);
                     ObservedAnimation checkAnimation = new ObservedAnimation((AnimationDrawable) stateButton.getBackground(),
-                            new ButtonKey(curSymptom.key, "severe"));
-                    UIManager.addAnim(new ButtonKey(curSymptom.key, "severe"), checkAnimation);
+                            new ButtonKey(curSymptom.key, AppHelpers.getSymptomValueName(curSymptom, 2)));
+                    UIManager.addAnim(new ButtonKey(curSymptom.key, AppHelpers.getSymptomValueName(curSymptom, 2)), checkAnimation);
+                    stateButton.setBackground(checkAnimation);
+                    checkAnimation.start();
+                }
+                stateBar.setBackgroundColor(ContextCompat.getColor(AppHelpers.currentContext, R.color.Severe));
+                stateButton.setText("");
+                break;
+            case "high":
+                if (UIManager.hasFinishedAnim(new ButtonKey(curSymptom.key, AppHelpers.getSymptomValueName(curSymptom, 2)))) {
+                    // set drawable to static
+                    stateButton.setBackground(ContextCompat.getDrawable(AppHelpers.currentContext, R.drawable.round_severe_checkmark));
+                }
+                else {
+                    stateButton.setBackgroundResource(R.drawable.checkmark_anim_severe);
+                    ObservedAnimation checkAnimation = new ObservedAnimation((AnimationDrawable) stateButton.getBackground(),
+                            new ButtonKey(curSymptom.key, AppHelpers.getSymptomValueName(curSymptom, 2)));
+                    UIManager.addAnim(new ButtonKey(curSymptom.key, AppHelpers.getSymptomValueName(curSymptom, 2)), checkAnimation);
                     stateButton.setBackground(checkAnimation);
                     checkAnimation.start();
                 }
@@ -228,12 +277,15 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
 
             Button noneButton = (Button) inputElement.findViewById(R.id.symptom_none);
             noneButton.setOnClickListener(noneButtonListeners.get(curSymptom.key));
+            if (curSymptom.positiveRange) noneButton.setText("Low");
 
             Button mildButton = (Button) inputElement.findViewById(R.id.symptom_mild);
             mildButton.setOnClickListener(mildButtonListeners.get(curSymptom.key));
+            if (curSymptom.positiveRange) mildButton.setText("Medium");
 
             Button severeButton = (Button) inputElement.findViewById(R.id.symptom_severe);
             severeButton.setOnClickListener(severeButtonListeners.get(curSymptom.key));
+            if (curSymptom.positiveRange) severeButton.setText("High");
 
             Animation anim = AnimationUtils.loadAnimation(AppHelpers.currentContext, R.anim.anim_in_right);
             inputElement.startAnimation(anim);
@@ -381,8 +433,8 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                 b.setText("");
 
                 ObservedAnimation checkAnimation = new ObservedAnimation((AnimationDrawable) b.getBackground(),
-                        new ButtonKey(curSymptom.key, "none"));
-                UIManager.addAnim(new ButtonKey(curSymptom.key, "none"), checkAnimation);
+                        new ButtonKey(curSymptom.key, AppHelpers.getSymptomValueName(symptom, 0)));
+                UIManager.addAnim(new ButtonKey(curSymptom.key, AppHelpers.getSymptomValueName(symptom, 0)), checkAnimation);
                 b.setBackground(checkAnimation);
                 checkAnimation.start();
                 b.invalidate();
@@ -390,7 +442,7 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        NoSQLStorage.storeSingle(new Condition(symptom.key), new ValueMap("none"));
+                        NoSQLStorage.storeSingle(new Condition(symptom.key), new ValueMap(AppHelpers.getSymptomValueName(symptom, 0)));
                         anim = AnimationUtils.loadAnimation(
                                 AppHelpers.currentContext, android.R.anim.slide_out_right
                         );
@@ -407,7 +459,7 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                 }, 600);
             }
             else {
-                NoSQLStorage.storeSingle(new Condition(symptom.key), new ValueMap("none"));
+                NoSQLStorage.storeSingle(new Condition(symptom.key), new ValueMap(AppHelpers.getSymptomValueName(symptom, 0)));
                 ((SymptomRowAdapter) MainActivity.symptom_list.getAdapter()).notifyDataSetChanged();
             }
 
@@ -432,8 +484,8 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                 b.setText("");
 
                 ObservedAnimation checkAnimation = new ObservedAnimation((AnimationDrawable) b.getBackground(),
-                        new ButtonKey(curSymptom.key, "mild"));
-                UIManager.addAnim(new ButtonKey(curSymptom.key, "mild"), checkAnimation);
+                        new ButtonKey(curSymptom.key, AppHelpers.getSymptomValueName(symptom, 1)));
+                UIManager.addAnim(new ButtonKey(curSymptom.key, AppHelpers.getSymptomValueName(symptom, 1)), checkAnimation);
                 b.setBackground(checkAnimation);
                 checkAnimation.start();
                 b.invalidate();
@@ -441,7 +493,7 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        NoSQLStorage.storeSingle(new Condition(symptom.key), new ValueMap("mild"));
+                        NoSQLStorage.storeSingle(new Condition(symptom.key), new ValueMap(AppHelpers.getSymptomValueName(symptom, 1)));
                         anim = AnimationUtils.loadAnimation(
                                 AppHelpers.currentContext, android.R.anim.slide_out_right
                         );
@@ -458,7 +510,7 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                 }, 600);
             }
             else {
-                NoSQLStorage.storeSingle(new Condition(symptom.key), new ValueMap("mild"));
+                NoSQLStorage.storeSingle(new Condition(symptom.key), new ValueMap(AppHelpers.getSymptomValueName(symptom, 1)));
                 ((SymptomRowAdapter) MainActivity.symptom_list.getAdapter()).notifyDataSetChanged();
             }
         }
@@ -481,8 +533,8 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                 b.setBackgroundResource(R.drawable.checkmark_anim_severe);
                 b.setText("");
                 ObservedAnimation checkAnimation = new ObservedAnimation((AnimationDrawable) b.getBackground(),
-                        new ButtonKey(curSymptom.key, "severe"));
-                UIManager.addAnim(new ButtonKey(curSymptom.key, "severe"), checkAnimation);
+                        new ButtonKey(curSymptom.key, AppHelpers.getSymptomValueName(symptom, 2)));
+                UIManager.addAnim(new ButtonKey(curSymptom.key, AppHelpers.getSymptomValueName(symptom, 2)), checkAnimation);
                 b.setBackground(checkAnimation);
                 checkAnimation.start();
                 b.invalidate();
@@ -490,7 +542,7 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        NoSQLStorage.storeSingle(new Condition(symptom.key), new ValueMap("severe"));
+                        NoSQLStorage.storeSingle(new Condition(symptom.key), new ValueMap(AppHelpers.getSymptomValueName(symptom, 2)));
                         anim = AnimationUtils.loadAnimation(
                                 AppHelpers.currentContext, android.R.anim.slide_out_right
                         );
@@ -507,7 +559,7 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                 }, 600);
             }
             else {
-                NoSQLStorage.storeSingle(new Condition(symptom.key), new ValueMap("severe"));
+                NoSQLStorage.storeSingle(new Condition(symptom.key), new ValueMap(AppHelpers.getSymptomValueName(symptom, 2)));
                 ((SymptomRowAdapter) MainActivity.symptom_list.getAdapter()).notifyDataSetChanged();
             }
         }
@@ -632,7 +684,7 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                 int photoW = bmOptions.outWidth;
                 int photoH = bmOptions.outHeight;
 
-                Log.d("math.min", photoW + " / " + targetW + " : " + photoH + " / " + targetH);
+                //Log.d("math.min", photoW + " / " + targetW + " : " + photoH + " / " + targetH);
                 int scaleFactor = Math.min(photoW/600, photoH/800);
 
                 bmOptions.inJustDecodeBounds = false;

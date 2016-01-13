@@ -97,6 +97,7 @@ public class ConditionMap {
 
     private Float parseValue(String value) {
         switch(value) {
+            // negative input range
             case "none":
                 //Log.d("data", key + " none");
                 return new Float(0.33);
@@ -104,6 +105,16 @@ public class ConditionMap {
                 //Log.d("data", key + " mild");
                 return new Float(1);
             case "severe":
+                //Log.d("data", key + " severe");
+                return new Float(3);
+            // positive input range
+            case "low":
+                //Log.d("data", key + " none");
+                return new Float(0.33);
+            case "medium":
+                //Log.d("data", key + " mild");
+                return new Float(1);
+            case "high":
                 //Log.d("data", key + " severe");
                 return new Float(3);
             default:
