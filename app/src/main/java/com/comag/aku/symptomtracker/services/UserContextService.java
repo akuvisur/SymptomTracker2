@@ -27,6 +27,9 @@ import com.comag.aku.symptomtracker.data_syncronization.SyncProvider;
 import com.gc.android.market.api.MarketSession;
 import com.gc.android.market.api.model.Market;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Calendar;
 
 /**
@@ -39,22 +42,22 @@ public class UserContextService extends IntentService {
 
     static int postureBuffer = 0;
 
-    static int hour;
-    static int minute;
-    static int day_of_week;
-    static int device_posture;
-    static int battery_level;
-    static int battery_charging;
+    static Integer hour;
+    static Integer minute;
+    static Integer day_of_week;
+    static Integer device_posture;
+    static Integer battery_level;
+    static Integer battery_charging;
     static String foreground_app;
     static String foreground_package;
     static String foreground_app_category;
-    static int proximity;
-    static long last_call;
-    static boolean internet_available = false;
-    static boolean wifi_available = false;
-    static int network_type;
-    static long last_action;
-    static int activity;
+    static Integer proximity;
+    static Long last_call;
+    static Boolean internet_available = false;
+    static Boolean wifi_available = false;
+    static Integer network_type;
+    static Long last_action;
+    static Integer activity;
 
     // activity
     // indoor/outdoor
@@ -241,16 +244,27 @@ public class UserContextService extends IntentService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        Log.d("ContextService", "Started");
+
+        Aware.setSetting(this, Aware_Preferences.STATUS_ROTATION, true);
+        Aware.setSetting(this, Aware_Preferences.STATUS_BATTERY, true);
+        Aware.setSetting(this, Aware_Preferences.STATUS_CALLS, true);
+        Aware.setSetting(this, Aware_Preferences.STATUS_NETWORK_EVENTS, true);
+        Aware.setSetting(this, Aware_Preferences.STATUS_APPLICATIONS, true);
+
+        Aware.setSetting(this, Aware_Preferences.STATUS_BATTERY, true);
+
+        Aware.setSetting(this, Aware_Preferences.FREQUENCY_ROTATION, 60000);
+
         Aware.startSensor(this, Aware_Preferences.STATUS_ROTATION);
         Aware.startSensor(this, Aware_Preferences.STATUS_BATTERY);
         Aware.startSensor(this, Aware_Preferences.STATUS_CALLS);
         Aware.startSensor(this, Aware_Preferences.STATUS_NETWORK_EVENTS);
+        Aware.startSensor(this, Aware_Preferences.STATUS_APPLICATIONS);
         //Aware.setSetting(this, Aware_Preferences.STATUS_APPLICATIONS, true);
         Aware.startSensor(this, Aware_Preferences.STATUS_PROXIMITY);
 
         Aware.startPlugin(this, "com.aware.plugin.google.activity_recognition");
-
-        Aware.setSetting(this, Aware_Preferences.FREQUENCY_ROTATION, 60000);
 
         // only poll once per second
         co = new ContextReceiver();
@@ -323,7 +337,67 @@ public class UserContextService extends IntentService {
         Aware.stopPlugin(this, "com.aware.plugin.google.activity_recognition");
     }
 
+    private static JSONObject userContext;
+    private static void generateJson() throws JSONException {
+        userContext = new JSONObject();
+        if (hour != null) {
+            userContext.put("hour", hour);
+        }
+        if (minute != null) {
+            userContext.put("minute", minute);
+        }
+        if (day_of_week != null) {
+            userContext.put("day", day_of_week);
+        }
+        if (device_posture != null) {
+            userContext.put("device_posture", device_posture);
+        }
+        if (battery_level != null) {
+            userContext.put("battery_level", battery_level);
+        }
+        if (battery_charging != null) {
+            userContext.put("battery_charing", battery_charging);
+        }
+        if (foreground_app != null) {
+            userContext.put("foreground_app", foreground_app);
+        }
+        if (foreground_package != null) {
+            userContext.put("foreground_package", foreground_package);
+        }
+        if (foreground_app_category != null) {
+            userContext.put("foreground_app_category", foreground_app_category);
+        }
+        if (proximity != null) {
+            userContext.put("proximity", proximity);
+        }
+        if (last_call != null) {
+            userContext.put("last_call", last_call);
+        }
+        if (internet_available != null) {
+            userContext.put("internet_available", internet_available);
+        }
+        if (wifi_available != null) {
+            userContext.put("wifi_available", wifi_available);
+        }
+        if (network_type != null) {
+            userContext.put("network_type", network_type);
+        }
+        if (last_action != null) {
+            userContext.put("last_action", last_action);
+        }
+        if (activity != null) {
+            userContext.put("activity", activity);
+        }
+    }
+
     public static String getUserContext() {
-        return "{}";
+        try {
+            generateJson();
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+            return new JSONObject().toString();
+        }
+        return userContext.toString();
     }
 }

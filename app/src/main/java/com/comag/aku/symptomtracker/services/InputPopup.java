@@ -68,7 +68,7 @@ public class InputPopup {
     private static View popupLayout;
     public static void hidePopup() {
         final WindowManager windowManager = (WindowManager) NotificationService.getContext().getSystemService(Context.WINDOW_SERVICE);
-        windowManager.removeView(popupLayout);
+        if (popupLayout != null) windowManager.removeView(popupLayout);
     }
 
     public boolean emit(ArrayList<String> keys) {

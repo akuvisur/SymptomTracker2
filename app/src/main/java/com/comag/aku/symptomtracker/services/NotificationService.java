@@ -17,6 +17,7 @@ import com.aware.Screen;
 import com.aware.providers.Aware_Provider;
 import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.MainActivity;
+import com.comag.aku.symptomtracker.R;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.comag.aku.symptomtracker.data_syncronization.Plugin;
 import com.comag.aku.symptomtracker.data_syncronization.SyncProvider;
@@ -82,6 +83,10 @@ public class NotificationService extends IntentService {
         //Apply settings
         Aware.startSensor(this, Aware_Preferences.STATUS_SCREEN);
 
+        Aware.setSetting(this, Aware_Preferences.STATUS_SCREEN, true);
+
+        //startService(new Intent(this, Aware.class));
+
         s = new ScreenReceiver();
         IntentFilter i = new IntentFilter();
         i.addAction(Screen.ACTION_AWARE_SCREEN_UNLOCKED);
@@ -121,7 +126,8 @@ public class NotificationService extends IntentService {
     }
 
     private void postOnUnlock() {
-        if ((Math.random()*100) < NotificationPreferences.getCurrentPreference()) new InputPopup().show();
+        if (mode == NotificationMode.DUMMY_MODE) if ((Math.random()*100) < NotificationPreferences.getCurrentPreference()) new InputPopup().show();
+        else if (mode == NotificationMode.LEARNING_MODE && SmartNotificationEngine.emitNow()) new InputPopup().show();
     }
 
     private void emitDummyMode() {
@@ -152,11 +158,48 @@ public class NotificationService extends IntentService {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    Log.d("postnew", "user didnt liek!");
                     emitDummyMode();
                 }
             }, AppPreferences.userSettings.getPopupInterval());
         }
+        else if (mode.equals(NotificationMode.LEARNING_MODE)) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                   emitLearningMode();
+                }
+            }, AppPreferences.userSettings.getPopupInterval());
+        }
+    }
+
+    private void emitLearningMode() {
+        if (SmartNotificationEngine.emitNow() && !mainRunning() && !AppHelpers.showingPopup && screenStatus == 1 && mode.equals(NotificationMode.LEARNING_MODE)) {
+            new InputPopup().show();
+            AppHelpers.showingPopup = true;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    emitLearningMode();
+                }
+            }, AppPreferences.userSettings.getPopupInterval());
+        }
+        else if (mode.equals(NotificationMode.LEARNING_MODE)) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    emitLearningMode();
+                }
+            }, AppPreferences.userSettings.getPopupInterval());
+        }
+        else if (mode.equals(NotificationMode.DUMMY_MODE)) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    emitDummyMode();
+                }
+            }, AppPreferences.userSettings.getPopupInterval());
+        }
+
     }
 
     @Override
@@ -204,14 +247,17 @@ public class NotificationService extends IntentService {
 
 
     private boolean mainRunning() {
+        return UserContextService.foreground_app.equals(getResources().getString(R.string.app_name));
+        /*
         Log.d("mainact", MainActivity.class.getCanonicalName());
         ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         List<ActivityManager.RunningTaskInfo> runningTaskInfo = manager.getRunningTasks(1);
+        Log.d("foreground", UserContextService.foreground_app);
         for (int i = 0; i < runningTaskInfo.size(); i++) {
             Log.d("running", runningTaskInfo.get(i).topActivity.getClassName());
             if (runningTaskInfo.get(i).topActivity.getClassName().equals(MainActivity.class.getCanonicalName())) return true;
         }
-        return false;
+        return false;*/
     }
 
 }

@@ -8,4 +8,6 @@ public class SmartNotificationEngine {
     public static boolean isEnabled() {
         return false;
     }
+
+    public static boolean emitNow() { return false; }
 }

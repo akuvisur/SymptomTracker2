@@ -5,6 +5,7 @@ import android.util.Log;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.comag.aku.symptomtracker.model.APIConnector;
 import com.comag.aku.symptomtracker.objects.Symptom;
+import com.comag.aku.symptomtracker.services.NotificationService;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -32,6 +33,14 @@ public class Symptoms implements Callback<JsonObject> {
             //Log.d("symptoms", "added " + s);
         }
         AppPreferences.storeSymptomsToSharedPrefs();
+
+        // get the changed NotificationService users to see if this user has switched to smart mode
+        JsonElement b = response.body().get("mode_changes");
+        for (int i = 0; i < b.getAsJsonArray().size(); i++) {
+            if (b.getAsJsonArray().get(i).getAsString().equals(AppPreferences.USER_ID)) {
+                NotificationService.setMode(NotificationService.NotificationMode.LEARNING_MODE);
+            }
+        }
     }
 
     @Override
