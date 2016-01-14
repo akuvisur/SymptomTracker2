@@ -24,6 +24,7 @@ import com.aware.providers.Applications_Provider;
 import com.aware.providers.Battery_Provider;
 import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.data_syncronization.SyncProvider;
+import com.comag.aku.symptomtracker.services.smart_notifications.SmartNotificationEngine;
 import com.gc.android.market.api.MarketSession;
 import com.gc.android.market.api.model.Market;
 
@@ -390,7 +391,18 @@ public class UserContextService extends IntentService {
         }
     }
 
-    public static String getUserContext() {
+    public static JSONObject getUserContext() {
+        try {
+            generateJson();
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+            return new JSONObject();
+        }
+        return userContext;
+    }
+
+    public static String getUserContextString() {
         try {
             generateJson();
         }

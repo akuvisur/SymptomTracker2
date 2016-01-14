@@ -118,7 +118,7 @@ public class InputPopup {
                 popupLayout.startAnimation(anim);
                 Toast.makeText(NotificationService.getContext(), "I will try to bother you less frequently.", Toast.LENGTH_SHORT).show();
 
-                SyncronizationController.storeNotificationResponse("no", "popup", UserContextService.getUserContext());
+                SyncronizationController.storeNotificationResponse("no", "popup", UserContextService.getUserContextString());
 
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -154,7 +154,7 @@ public class InputPopup {
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         NotificationService.getContext().startActivity(intent);
 
-                        SyncronizationController.storeNotificationResponse("app", "popup", UserContextService.getUserContext());
+                        SyncronizationController.storeNotificationResponse("app", "popup", UserContextService.getUserContextString());
 
                         switch (NotificationService.getMode()) {
                             case DUMMY_MODE:
@@ -176,7 +176,7 @@ public class InputPopup {
                 anim.setDuration(250);
                 popupLayout.startAnimation(anim);
                 Toast.makeText(NotificationService.getContext(), "Inputted values saved.", Toast.LENGTH_SHORT).show();
-                SyncronizationController.storeNotificationResponse("ok", "popup", UserContextService.getUserContext());
+                SyncronizationController.storeNotificationResponse("ok", "popup", UserContextService.getUserContextString());
 
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -484,7 +484,7 @@ public class InputPopup {
                         NoSQLStorage.storeSingle(new Condition(factor.key), new ValueMap(selected));
                     }
                 }, 350);
-                AnalyticsApplication.sendEvent("popup", "accepted", UserContextService.getUserContext(), null);
+                AnalyticsApplication.sendEvent("popup", "accepted", UserContextService.getUserContextString(), null);
 
                 windowManager.removeView(dialogView);
             }
@@ -492,7 +492,7 @@ public class InputPopup {
         dialogCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AnalyticsApplication.sendEvent("popup", "cancelled", UserContextService.getUserContext(), null);
+                AnalyticsApplication.sendEvent("popup", "cancelled", UserContextService.getUserContextString(), null);
                 windowManager.removeView(dialogView);
             }
         });
