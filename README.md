@@ -7,6 +7,7 @@ Next iteration of the symptom tracker application for Master's Thesis
     - Activity Recognition: https://github.com/denzilferreira/com.aware.plugin.google.activity_recognition.git</br>
 
 3) Add a new module to this project:</br>
+    - Open Module Settings, click top left '+' icon, select 'add new Module'</br>
     - Select existing Android Studio Project</br>
     - browser to module directory (Activity Recognition)</br>
     - Go to module app/build.gradle</br>
