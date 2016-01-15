@@ -339,6 +339,10 @@ public class UserContextService extends IntentService {
 
     private static JSONObject userContext;
     private static void generateJson() throws JSONException {
+        Calendar cal = Calendar.getInstance();
+        hour = cal.get(Calendar.HOUR_OF_DAY);
+        minute = cal.get(Calendar.MINUTE);
+        day_of_week = cal.get(Calendar.DAY_OF_WEEK);
         userContext = new JSONObject();
         if (hour != null) {
             userContext.put("hour", hour);

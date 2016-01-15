@@ -54,15 +54,16 @@ public class SmartNotificationEngine {
         Cursor c = sp.query(Plugin.URI[1], projection, null, null, null);
         if (c == null) return;
         while (c.moveToNext()) {
-            Log.d("past_context", c.getString(0));
             try {
                 JSONObject o = new JSONObject(c.getString(0));
                 o.put("value", c.getString(1));
                 pastContext.add(o);
+                Log.d("past_context_dump", o.toString());
             }
             catch (JSONException e) {
                 Log.d("past_context", "error generating JSON from string: " + c.getString(0));
             }
+
         }
         c.close();
     }
