@@ -16,5 +16,8 @@ Next iteration of the symptom tracker application for Master's Thesis
 
 4) Include "compile project(':com.aware.plugin.google.activity_recognition')" to main project app/build.gradle if not there already</br>
 
-5) Build project</br>
+5) Change com.aware.plugin.google.activity_recognition.Plugin class variable ACTION_AWARE_GOOGLE_ACTIVITY_RECOGNITION to final (public final static ..)</br>
+    - Since it is used inside a switch statement and needs to be declared final..</br>
+
+6) Build project</br>
     - Change plugin's buildToolsVersion if required</br>
