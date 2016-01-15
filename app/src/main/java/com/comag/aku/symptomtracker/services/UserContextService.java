@@ -42,7 +42,6 @@ public class UserContextService extends IntentService {
     private static String password = "eGzFA9XmKHNvGfT2";
 
     static int postureBuffer = 0;
-
     static Integer hour;
     static Integer minute;
     static Integer day_of_week;
@@ -60,6 +59,16 @@ public class UserContextService extends IntentService {
     static Integer network_type;
     static Long last_action;
     static Integer activity;
+
+    // change each variable to have timestamp,object structure to prevent too old values to be set to context
+    public class Tuple<X, Y> {
+        public final X x;
+        public final Y y;
+        public Tuple(X x, Y y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
 
     // activity
     // indoor/outdoor
@@ -247,6 +256,8 @@ public class UserContextService extends IntentService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Intent aware = new Intent(this, Aware.class);
+        startService(aware);
 
         Log.d("ContextService", "Started");
 
@@ -255,8 +266,9 @@ public class UserContextService extends IntentService {
         Aware.setSetting(this, Aware_Preferences.STATUS_CALLS, true);
         Aware.setSetting(this, Aware_Preferences.STATUS_NETWORK_EVENTS, true);
         Aware.setSetting(this, Aware_Preferences.STATUS_APPLICATIONS, true);
-
+        Aware.setSetting(this, Aware_Preferences.STATUS_PROXIMITY, true);
         Aware.setSetting(this, Aware_Preferences.STATUS_BATTERY, true);
+        Aware.setSetting(this, "com.aware.plugin.google.activity_recognition", true);
 
         //Aware.setSetting(this, Aware_Preferences.FREQUENCY_ROTATION, 60000);
 
@@ -265,7 +277,6 @@ public class UserContextService extends IntentService {
         Aware.startSensor(this, Aware_Preferences.STATUS_CALLS);
         Aware.startSensor(this, Aware_Preferences.STATUS_NETWORK_EVENTS);
         Aware.startSensor(this, Aware_Preferences.STATUS_APPLICATIONS);
-        //Aware.setSetting(this, Aware_Preferences.STATUS_APPLICATIONS, true);
         Aware.startSensor(this, Aware_Preferences.STATUS_PROXIMITY);
 
         Aware.startPlugin(this, "com.aware.plugin.google.activity_recognition");
@@ -346,13 +357,13 @@ public class UserContextService extends IntentService {
         userContext = new JSONObject();
         if (hour != null) {
             userContext.put("hour", hour);
-        }
+        } else {userContext.put("hour", -1);};
         if (minute != null) {
             userContext.put("minute", minute);
-        }
+        } else {userContext.put("minute", -1);};
         if (day_of_week != null) {
             userContext.put("day", day_of_week);
-        }
+        } else {userContext.put("day", -1);};
         /*
         if (device_posture != null) {
             userContext.put("device_posture", device_posture);
@@ -360,40 +371,40 @@ public class UserContextService extends IntentService {
         */
         if (battery_level != null) {
             userContext.put("battery_level", battery_level);
-        }
+        } else {userContext.put("battery_level", -1);};
         if (battery_charging != null) {
             userContext.put("battery_charging", battery_charging);
-        }
+        } else {userContext.put("battery_charging", -1);};
         if (foreground_app != null) {
             userContext.put("foreground_app", foreground_app);
-        }
+        } else {userContext.put("foreground_app", -1);};
         if (foreground_package != null) {
             userContext.put("foreground_package", foreground_package);
-        }
+        } else {userContext.put("foreground_package", -1);};
         if (foreground_app_category != null) {
             userContext.put("foreground_app_category", foreground_app_category);
-        }
+        } else {userContext.put("foreground_app_category", -1);};
         if (proximity != null) {
             userContext.put("proximity", proximity);
-        }
+        } else {userContext.put("proximity", -1);};
         if (last_call != null) {
             userContext.put("last_call", last_call);
-        }
+        } else {userContext.put("last_call", -1);};
         if (internet_available != null) {
             userContext.put("internet_available", internet_available);
-        }
+        } else {userContext.put("internet_available", -1);};
         if (wifi_available != null) {
             userContext.put("wifi_available", wifi_available);
-        }
+        } else {userContext.put("wifi_available", -1);};
         if (network_type != null) {
             userContext.put("network_type", network_type);
-        }
+        } else {userContext.put("network_type", -1);};
         if (last_action != null) {
             userContext.put("last_action", last_action);
-        }
+        } else {userContext.put("last_action", -1);};
         if (activity != null) {
             userContext.put("activity", activity);
-        }
+        } else {userContext.put("activity", -1);};
     }
 
     public static JSONObject getUserContext() {
