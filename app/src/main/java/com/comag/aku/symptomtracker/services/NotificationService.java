@@ -129,8 +129,6 @@ public class NotificationService extends IntentService {
     }
 
     private void postOnUnlock() {
-        Log.d("post_on_unlock", "trying to post and generate past context");
-        SmartNotificationEngine.generatePastContext();
         if (mode == NotificationMode.DUMMY_MODE) if ((Math.random()*100) < NotificationPreferences.getCurrentPreference()) new InputPopup().show();
         else if (mode == NotificationMode.LEARNING_MODE && SmartNotificationEngine.emitNow()) new InputPopup().show();
     }
