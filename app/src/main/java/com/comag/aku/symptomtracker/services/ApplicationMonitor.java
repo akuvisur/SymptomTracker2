@@ -93,6 +93,7 @@ public class ApplicationMonitor extends AccessibilityService {
         if( settingValue != null ) {
             splitter.setString(settingValue);
             while (splitter.hasNext()) {
+
                 if (splitter.next().matches(c.getPackageName())){
                     enabled = true;
                     break;
@@ -104,7 +105,7 @@ public class ApplicationMonitor extends AccessibilityService {
                 List<AccessibilityServiceInfo> enabledServices = AccessibilityManagerCompat.getEnabledAccessibilityServiceList(accessibilityManager, AccessibilityEventCompat.TYPES_ALL_MASK);
                 if( ! enabledServices.isEmpty() ) {
                     for( AccessibilityServiceInfo service : enabledServices ) {
-                        Log.d(Aware.TAG, service.toString());
+                        Log.d("accessibility_service", service.toString());
                         if( service.getId().contains(c.getPackageName()) ) {
                             enabled = true;
                             break;
@@ -131,23 +132,32 @@ public class ApplicationMonitor extends AccessibilityService {
     }
 
     public static boolean isAccessibilityServiceActive(Context c) {
+        // service verification was bugged 15/1/2016
+        // would always remind user to switch services on
+        return true;
+        /*
         if( ! isAccessibilityEnabled(c) ) {
-            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(c);
-            mBuilder.setSmallIcon(R.drawable.ic_stat_aware_accessibility);
-            mBuilder.setContentTitle("Symptom Tracker configuration");
-            mBuilder.setContentText(c.getResources().getString(R.string.activate_accessibility));
-            mBuilder.setAutoCancel(true);
-            mBuilder.setOnlyAlertOnce(true); //notify the user only once
-            mBuilder.setDefaults(NotificationCompat.DEFAULT_ALL);
-
-            Intent accessibilitySettings = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
-            accessibilitySettings.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-            PendingIntent clickIntent = PendingIntent.getActivity(c, 0, accessibilitySettings, PendingIntent.FLAG_UPDATE_CURRENT);
-            mBuilder.setContentIntent(clickIntent);
-            NotificationManager notManager = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
-            notManager.notify(987654, mBuilder.build());
+            sendAccessibilityServiceVerification(c);
         }
         return isAccessibilityEnabled(c);
+        */
+    }
+
+    public static void sendAccessibilityServiceVerification(Context c) {
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(c);
+        mBuilder.setSmallIcon(R.drawable.ic_stat_aware_accessibility);
+        mBuilder.setContentTitle("Symptom Tracker configuration");
+        mBuilder.setContentText(c.getResources().getString(R.string.activate_accessibility));
+        mBuilder.setAutoCancel(true);
+        mBuilder.setOnlyAlertOnce(true); //notify the user only once
+        mBuilder.setDefaults(NotificationCompat.DEFAULT_ALL);
+
+        Intent accessibilitySettings = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
+        accessibilitySettings.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        PendingIntent clickIntent = PendingIntent.getActivity(c, 0, accessibilitySettings, PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(clickIntent);
+        NotificationManager notManager = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
+        notManager.notify(987654, mBuilder.build());
     }
 }

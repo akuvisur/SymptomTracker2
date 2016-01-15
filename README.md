@@ -19,5 +19,9 @@ Next iteration of the symptom tracker application for Master's Thesis
 5) Change com.aware.plugin.google.activity_recognition.Plugin class variable ACTION_AWARE_GOOGLE_ACTIVITY_RECOGNITION to final (public final static ..)</br>
     - Since it is used inside a switch statement and needs to be declared final..</br>
 
-6) Build project</br>
+6) Change the activity recognition dependencies (build.gradle)</br>
+    - Change aware-core version to same as the app/build.gradle</br>
+    - include "compile 'com.koushikdutta.ion:ion:2.1.6'" due to aware-core-3.9.8 or higher requirements</br>
+
+7) Build project</br>
     - Change plugin's buildToolsVersion if required</br>

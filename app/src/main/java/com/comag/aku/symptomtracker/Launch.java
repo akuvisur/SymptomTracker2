@@ -1,5 +1,6 @@
 package com.comag.aku.symptomtracker;
 
+import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import com.comag.aku.symptomtracker.model.ApiManager;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.comag.aku.symptomtracker.model.DatabaseStorage;
 import com.comag.aku.symptomtracker.objects.Schema;
+import com.comag.aku.symptomtracker.services.ApplicationMonitor;
 
 import java.util.TreeMap;
 
@@ -153,13 +155,21 @@ public class Launch extends AppCompatActivity {
 
         builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-            Toast.makeText(AppHelpers.currentActivity, "Loading schema information..", Toast.LENGTH_SHORT).show();
-            // proceed to new action etc
-            AppPreferences.join(DatabaseStorage.schemaList.get(selectedSchemaIndex));
-            ApiManager.getSymptomsForSchema();
-            ApiManager.getFactorsForSchema();
-            AppHelpers.currentActivity.startActivity(new Intent(AppHelpers.currentActivity, MainActivity.class));
-        }});
+                // proceed to new action etc
+                AppPreferences.join(DatabaseStorage.schemaList.get(selectedSchemaIndex));
+                ApiManager.getSymptomsForSchema();
+                ApiManager.getFactorsForSchema();
+                AppHelpers.currentActivity.startActivity(new Intent(AppHelpers.currentActivity, MainActivity.class));
+                ApplicationMonitor.sendAccessibilityServiceVerification(AppHelpers.currentContext);
+                Snackbar.make(input, "Please enable accessibility services for this application in your settings", Snackbar.LENGTH_INDEFINITE).setAction("Go to settings", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent accessibilitySettings = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                        AppHelpers.currentContext.startService(accessibilitySettings);
+                    }
+                }).show();
+            }
+        });
         builder.setNegativeButton(android.R.string.no, null).show();
     }
 

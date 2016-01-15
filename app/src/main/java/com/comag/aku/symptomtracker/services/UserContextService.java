@@ -46,7 +46,8 @@ public class UserContextService extends IntentService {
     static Integer hour;
     static Integer minute;
     static Integer day_of_week;
-    static Integer device_posture;
+    // too high frequency monitoring
+    //static Integer device_posture;
     static Integer battery_level;
     static Integer battery_charging;
     static String foreground_app;
@@ -81,12 +82,14 @@ public class UserContextService extends IntentService {
             if (!intent.getAction().equals(Rotation.ACTION_AWARE_ROTATION)) Log.d("ReceivedAction", intent.getAction());
             switch (intent.getAction()) {
                 // device_posture
+                /*
                 case Rotation.ACTION_AWARE_ROTATION:
                     if (intent.hasExtra(Rotation.EXTRA_DATA)) {
                         ContentValues c = intent.getParcelableExtra(Rotation.EXTRA_DATA);
                         device_posture = calculatePosture(c);
                     }
                     break;
+                    */
                 // network_type
                 case Network.ACTION_AWARE_INTERNET_AVAILABLE:
                     internet_available = true;
@@ -247,7 +250,7 @@ public class UserContextService extends IntentService {
 
         Log.d("ContextService", "Started");
 
-        Aware.setSetting(this, Aware_Preferences.STATUS_ROTATION, true);
+        Aware.setSetting(this, Aware_Preferences.STATUS_ROTATION, false);
         Aware.setSetting(this, Aware_Preferences.STATUS_BATTERY, true);
         Aware.setSetting(this, Aware_Preferences.STATUS_CALLS, true);
         Aware.setSetting(this, Aware_Preferences.STATUS_NETWORK_EVENTS, true);
@@ -255,9 +258,9 @@ public class UserContextService extends IntentService {
 
         Aware.setSetting(this, Aware_Preferences.STATUS_BATTERY, true);
 
-        Aware.setSetting(this, Aware_Preferences.FREQUENCY_ROTATION, 60000);
+        //Aware.setSetting(this, Aware_Preferences.FREQUENCY_ROTATION, 60000);
 
-        Aware.startSensor(this, Aware_Preferences.STATUS_ROTATION);
+        //Aware.startSensor(this, Aware_Preferences.STATUS_ROTATION);
         Aware.startSensor(this, Aware_Preferences.STATUS_BATTERY);
         Aware.startSensor(this, Aware_Preferences.STATUS_CALLS);
         Aware.startSensor(this, Aware_Preferences.STATUS_NETWORK_EVENTS);
@@ -271,7 +274,7 @@ public class UserContextService extends IntentService {
         co = new ContextReceiver();
         IntentFilter i = new IntentFilter();
 
-        i.addAction(Rotation.ACTION_AWARE_ROTATION);
+        //i.addAction(Rotation.ACTION_AWARE_ROTATION);
 
         i.addAction(Network.ACTION_AWARE_INTERNET_AVAILABLE);
         i.addAction(Network.ACTION_AWARE_INTERNET_UNAVAILABLE);
@@ -299,11 +302,7 @@ public class UserContextService extends IntentService {
 
         setTimes();
 
-        ApplicationMonitor.isAccessibilityServiceActive(this);
-
-        //startService(new Intent(this, Aware.class));
-
-        //Log.d("Frequency", Rotation.getFrequency(this) + "");
+        //ApplicationMonitor.isAccessibilityServiceActive(this);
 
         return START_STICKY;
     }
@@ -350,9 +349,11 @@ public class UserContextService extends IntentService {
         if (day_of_week != null) {
             userContext.put("day", day_of_week);
         }
+        /*
         if (device_posture != null) {
             userContext.put("device_posture", device_posture);
         }
+        */
         if (battery_level != null) {
             userContext.put("battery_level", battery_level);
         }
