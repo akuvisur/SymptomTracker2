@@ -68,7 +68,12 @@ public class InputPopup {
     private static View popupLayout;
     public static void hidePopup() {
         final WindowManager windowManager = (WindowManager) NotificationService.getContext().getSystemService(Context.WINDOW_SERVICE);
-        if (popupLayout != null) windowManager.removeView(popupLayout);
+        try {
+            if (popupLayout != null) windowManager.removeView(popupLayout);
+        }
+        catch (IllegalArgumentException e) {
+            Log.d("input_popup", "crash while trying to hide non-existing popups");
+        }
     }
 
     public boolean emit(ArrayList<String> keys) {
