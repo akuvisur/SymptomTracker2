@@ -1,5 +1,6 @@
 package com.comag.aku.symptomtracker.data_syncronization;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
@@ -15,6 +16,7 @@ import com.comag.aku.symptomtracker.services.smart_notifications.SmartNotificati
  */
 public class Plugin extends Aware_Plugin {
     public static Uri[] URI;
+    private static Context context;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -22,12 +24,17 @@ public class Plugin extends Aware_Plugin {
         Aware.setSetting(this, Aware_Preferences.DEBUG_FLAG, "true");
 
         Aware.startPlugin(this, "com.comag.aku.symptomtracker");
-        //Log.d("AWARE", "Created and started Symptom Tracker as plugin");
 
         DATABASE_TABLES = SyncProvider.DATABASE_TABLES;
         TABLES_FIELDS = SyncProvider.TABLES_FIELDS;
         CONTEXT_URIS = new Uri[]{ SyncProvider.AdverseEventData.CONTENT_URI, SyncProvider.NotificationEventData.CONTENT_URI};
-        URI = new Uri[]{ SyncProvider.AdverseEventData.CONTENT_URI, SyncProvider.NotificationEventData.CONTENT_URI};
+        URI = CONTEXT_URIS;
+
+        context = getApplicationContext();
+    }
+
+    public static Context getContext() {
+        return context;
     }
 
     //This function gets called every 5 minutes by AWARE to make sure this plugin is still running.

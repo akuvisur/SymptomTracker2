@@ -105,6 +105,9 @@ public class NotificationService extends IntentService {
         Log.d("startcommand", "notificationservice started");
         // if app not set up, no need for the service to run
         if (!AppPreferences.appIsSetUp()) return START_NOT_STICKY;
+
+        context = this;
+
         // otherwise load the prefs etc..
         if (!AppPreferences.hasLoaded()) AppPreferences.load();
 
@@ -126,6 +129,8 @@ public class NotificationService extends IntentService {
     }
 
     private void postOnUnlock() {
+        Log.d("post_on_unlock", "trying to post and generate past context");
+        SmartNotificationEngine.generatePastContext();
         if (mode == NotificationMode.DUMMY_MODE) if ((Math.random()*100) < NotificationPreferences.getCurrentPreference()) new InputPopup().show();
         else if (mode == NotificationMode.LEARNING_MODE && SmartNotificationEngine.emitNow()) new InputPopup().show();
     }

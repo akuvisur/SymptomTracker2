@@ -358,7 +358,7 @@ public class UserContextService extends IntentService {
             userContext.put("battery_level", battery_level);
         }
         if (battery_charging != null) {
-            userContext.put("battery_charing", battery_charging);
+            userContext.put("battery_charging", battery_charging);
         }
         if (foreground_app != null) {
             userContext.put("foreground_app", foreground_app);

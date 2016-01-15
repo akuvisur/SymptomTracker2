@@ -46,15 +46,22 @@ public class SmartNotificationEngine {
         pastContext = new ArrayList<>();
         sp = new SyncProvider();
 
-        String[] projection = {SyncProvider.NotificationEventData.CONTEXT};
+        String[] projection = {
+                SyncProvider.NotificationEventData.CONTEXT,
+                SyncProvider.NotificationEventData.VALUE
+        };
 
         Cursor c = sp.query(Plugin.URI[1], projection, null, null, null);
         if (c == null) return;
         while (c.moveToNext()) {
+            Log.d("past_context", c.getString(0));
             try {
-                pastContext.add(new JSONObject(c.getString(0)));
+                JSONObject o = new JSONObject(c.getString(0));
+                o.put("value", c.getString(1));
+                pastContext.add(o);
             }
-            catch (JSONException e) {//do nothing on expeption
+            catch (JSONException e) {
+                Log.d("past_context", "error generating JSON from string: " + c.getString(0));
             }
         }
         c.close();

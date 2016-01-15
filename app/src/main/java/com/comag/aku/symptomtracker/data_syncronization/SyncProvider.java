@@ -5,6 +5,7 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteConstraintException;
@@ -69,8 +70,9 @@ public class SyncProvider extends ContentProvider {
     private static SQLiteDatabase database = null;
 
     private boolean initializeDB() {
+
         if (databaseHelper == null) {
-            databaseHelper = new DatabaseHelper(NotificationService.getContext(), DATABASE_NAME, null, DATABASE_VERSION, DATABASE_TABLES, TABLES_FIELDS );
+            databaseHelper = new DatabaseHelper(Plugin.getContext(), DATABASE_NAME, null, DATABASE_VERSION, DATABASE_TABLES, TABLES_FIELDS );
         }
         if( databaseHelper != null && ( database == null || ! database.isOpen()) ) {
             database = databaseHelper.getWritableDatabase();
@@ -149,7 +151,7 @@ public class SyncProvider extends ContentProvider {
         }
         try {
             Cursor c = qb.query(database, projection, selection, selectionArgs, null, null, sortOrder);
-            c.setNotificationUri(NotificationService.getContext().getApplicationContext().getContentResolver(), uri);
+            c.setNotificationUri(Plugin.getContext().getContentResolver(), uri);
             return c;
         } catch (IllegalStateException e) {
             if (Aware.DEBUG) Log.e(Aware.TAG, e.getMessage());
@@ -190,7 +192,7 @@ public class SyncProvider extends ContentProvider {
                 _id = database.insert(DATABASE_TABLES[1], null, values);
                 if (_id > 0) {
                     Uri dataUri = ContentUris.withAppendedId(NotificationEventData.CONTENT_URI, _id);
-                    NotificationService.getContext().getApplicationContext().getContentResolver().notifyChange(dataUri, null);
+                    Plugin.getContext().getContentResolver().notifyChange(dataUri, null);
                     return dataUri;
                 }
                 throw new SQLException("Failed to insert row into " + uri);
@@ -198,7 +200,7 @@ public class SyncProvider extends ContentProvider {
                 _id = database.insert(DATABASE_TABLES[0], null, values);
                 if (_id > 0) {
                     Uri dataUri = ContentUris.withAppendedId(AdverseEventData.CONTENT_URI, _id);
-                    NotificationService.getContext().getApplicationContext().getContentResolver().notifyChange(dataUri, null);
+                    Plugin.getContext().getContentResolver().notifyChange(dataUri, null);
                     return dataUri;
                 }
                 throw new SQLException("Failed to insert row into " + uri);
@@ -226,7 +228,7 @@ public class SyncProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
-        NotificationService.getContext().getApplicationContext().getContentResolver().notifyChange(uri, null);
+        Plugin.getContext().getContentResolver().notifyChange(uri, null);
         return count;
     }
 
@@ -252,7 +254,7 @@ public class SyncProvider extends ContentProvider {
                 database.close();
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
-        NotificationService.getContext().getApplicationContext().getContentResolver().notifyChange(uri, null);
+        Plugin.getContext().getContentResolver().notifyChange(uri, null);
         return count;
     }
 

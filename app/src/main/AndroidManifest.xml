@@ -37,7 +37,8 @@
             android:label="LifeTracker"
             android:theme="@style/AppTheme">
         </activity>
-        <service android:name=".services.NotificationService"/>
+        <service android:name=".services.NotificationService"
+            android:permission="android.permission.READ_EXTERNAL_STORAGE"/>
         <service android:name=".services.UserContextService"/>
         <service android:name=".data_syncronization.Plugin"/>
         <service android:name=".services.ApplicationMonitor"
