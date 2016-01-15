@@ -34,7 +34,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity"
-            android:label="Symptom Tracker"
+            android:label="LifeTracker"
             android:theme="@style/AppTheme">
         </activity>
         <service android:name=".services.NotificationService"/>

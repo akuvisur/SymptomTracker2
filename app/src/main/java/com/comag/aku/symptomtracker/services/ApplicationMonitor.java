@@ -83,6 +83,7 @@ public class ApplicationMonitor extends AccessibilityService {
 
     private static boolean isAccessibilityEnabled(Context c) {
         boolean enabled = false;
+        Log.d("accessibility_service", "checking for package name: " + c.getPackageName());
 
         AccessibilityManager accessibilityManager = (AccessibilityManager) c.getSystemService(ACCESSIBILITY_SERVICE);
 
