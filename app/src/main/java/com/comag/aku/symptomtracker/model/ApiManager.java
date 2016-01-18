@@ -5,8 +5,6 @@ import com.comag.aku.symptomtracker.model.REST_queries.Factors;
 import com.comag.aku.symptomtracker.model.REST_queries.Schemas;
 import com.comag.aku.symptomtracker.model.REST_queries.Symptoms;
 
-import org.json.JSONArray;
-
 /**
  * Created by aku on 28/10/15.
  */

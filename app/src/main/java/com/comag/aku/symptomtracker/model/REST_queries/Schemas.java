@@ -1,6 +1,5 @@
 package com.comag.aku.symptomtracker.model.REST_queries;
 
-import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 

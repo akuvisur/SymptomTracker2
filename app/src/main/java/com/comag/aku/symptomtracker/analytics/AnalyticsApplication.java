@@ -23,7 +23,6 @@ import android.util.Log;
 import com.comag.aku.symptomtracker.services.UserContextService;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Logger;
 import com.google.android.gms.analytics.Tracker;
 
 /**

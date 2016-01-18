@@ -30,9 +30,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.MainActivity;
 import com.comag.aku.symptomtracker.R;
-import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.graphics.UIManager;
 import com.comag.aku.symptomtracker.graphics.elements.ObservedAnimation;
 import com.comag.aku.symptomtracker.model.NoSQLStorage;

@@ -1,12 +1,10 @@
 package com.comag.aku.symptomtracker.services;
 
-import android.app.ActivityManager;
 import android.app.IntentService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
@@ -14,18 +12,14 @@ import android.widget.Toast;
 import com.aware.Aware;
 import com.aware.Aware_Preferences;
 import com.aware.Screen;
-import com.aware.providers.Aware_Provider;
 import com.comag.aku.symptomtracker.AppHelpers;
-import com.comag.aku.symptomtracker.MainActivity;
 import com.comag.aku.symptomtracker.R;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.comag.aku.symptomtracker.data_syncronization.Plugin;
-import com.comag.aku.symptomtracker.data_syncronization.SyncProvider;
 import com.comag.aku.symptomtracker.model.NoSQLStorage;
 import com.comag.aku.symptomtracker.services.smart_notifications.SmartNotificationEngine;
 
 import java.util.Calendar;
-import java.util.List;
 
 /**
  * Created by aku on 25/11/15.

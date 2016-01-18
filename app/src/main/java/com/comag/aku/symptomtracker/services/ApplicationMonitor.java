@@ -19,7 +19,6 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 
-import com.aware.Applications;
 import com.aware.Aware;
 import com.comag.aku.symptomtracker.R;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;

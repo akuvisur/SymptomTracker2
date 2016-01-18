@@ -3,15 +3,12 @@ package com.comag.aku.symptomtracker.data_syncronization;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.database.sqlite.SQLiteConstraintException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.provider.Settings;
 import android.util.Log;
 
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
-import com.comag.aku.symptomtracker.model.data_storage.Values;
-import com.comag.aku.symptomtracker.objects.Trackable;
 import com.comag.aku.symptomtracker.objects.ValueMap;
 import com.comag.aku.symptomtracker.objects.tracking.Condition;
 import com.comag.aku.symptomtracker.services.NotificationService;

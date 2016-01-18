@@ -1,10 +1,6 @@
 package com.comag.aku.symptomtracker.graphics.chart_formatters;
 
-import android.util.Log;
-
-import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.formatter.XAxisValueFormatter;
-import com.github.mikephil.charting.formatter.YAxisValueFormatter;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.text.SimpleDateFormat;

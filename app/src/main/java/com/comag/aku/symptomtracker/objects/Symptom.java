@@ -1,10 +1,7 @@
 package com.comag.aku.symptomtracker.objects;
 
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
-import com.comag.aku.symptomtracker.model.Deserializers.SymptomDeserializer;
 import com.comag.aku.symptomtracker.model.Serializers.SymptomSerializer;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 

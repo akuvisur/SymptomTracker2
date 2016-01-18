@@ -1,13 +1,7 @@
 package com.comag.aku.symptomtracker.objects;
 
-import android.util.Log;
-
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.google.gson.JsonObject;
-
-import org.json.JSONObject;
-
-import java.util.Map;
 
 /**
  * Created by aku on 26/10/15.

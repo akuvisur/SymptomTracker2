@@ -1,12 +1,11 @@
 package com.comag.aku.symptomtracker;
 
-import android.app.PendingIntent;
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
@@ -16,11 +15,10 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.Toast;
 
+import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.comag.aku.symptomtracker.graphics.adapters.SchemaListAdapter;
 import com.comag.aku.symptomtracker.model.ApiManager;
-import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.comag.aku.symptomtracker.model.DatabaseStorage;
 import com.comag.aku.symptomtracker.objects.Schema;
 import com.comag.aku.symptomtracker.services.ApplicationMonitor;

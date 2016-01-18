@@ -2,10 +2,7 @@ package com.comag.aku.symptomtracker.graphics.elements;
 
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Handler;
-import android.util.Log;
-import android.view.animation.Animation;
 
-import com.comag.aku.symptomtracker.graphics.UIManager;
 import com.comag.aku.symptomtracker.objects.ButtonKey;
 
 /**

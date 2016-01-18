@@ -10,7 +10,6 @@ import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.MainActivity;
 import com.comag.aku.symptomtracker.R;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
-import com.comag.aku.symptomtracker.objects.Factor;
 import com.comag.aku.symptomtracker.objects.Symptom;
 
 /**

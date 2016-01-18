@@ -3,10 +3,8 @@ package com.comag.aku.symptomtracker.app_settings;
 import android.util.Log;
 
 import com.aware.Aware;
-import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.services.NotificationPreferences;
 import com.comag.aku.symptomtracker.services.NotificationService;
-import com.google.android.gms.cast.CastRemoteDisplayLocalService;
 
 /**
  * Created by aku on 30/11/15.

@@ -1,9 +1,5 @@
 package com.comag.aku.symptomtracker.model.REST_queries;
 
-import android.util.Log;
-import android.widget.Toast;
-
-import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.comag.aku.symptomtracker.model.APIConnector;
 import com.comag.aku.symptomtracker.objects.Factor;

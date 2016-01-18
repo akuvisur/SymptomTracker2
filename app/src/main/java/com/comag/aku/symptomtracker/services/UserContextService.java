@@ -22,17 +22,13 @@ import com.aware.Rotation;
 import com.aware.plugin.google.activity_recognition.Plugin;
 import com.aware.providers.Applications_Provider;
 import com.aware.providers.Battery_Provider;
-import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
-import com.comag.aku.symptomtracker.data_syncronization.SyncProvider;
-import com.comag.aku.symptomtracker.services.smart_notifications.SmartNotificationEngine;
 import com.gc.android.market.api.MarketSession;
 import com.gc.android.market.api.model.Market;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;

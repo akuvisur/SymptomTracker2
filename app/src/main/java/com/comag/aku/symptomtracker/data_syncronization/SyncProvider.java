@@ -5,10 +5,8 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
@@ -17,9 +15,7 @@ import android.util.Log;
 
 import com.aware.Aware;
 import com.aware.utils.DatabaseHelper;
-import com.comag.aku.symptomtracker.AppHelpers;
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
-import com.comag.aku.symptomtracker.services.NotificationService;
 
 import java.io.File;
 import java.util.HashMap;

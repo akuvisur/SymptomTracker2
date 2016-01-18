@@ -1,6 +1,5 @@
 package com.comag.aku.symptomtracker.model.Deserializers;
 
-import com.comag.aku.symptomtracker.objects.Schema;
 import com.comag.aku.symptomtracker.objects.Symptom;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
