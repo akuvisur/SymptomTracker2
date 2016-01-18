@@ -466,7 +466,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void leaveStudy(View view) {
-        new LeaveStudy().show(AppHelpers.currentActivity);
+        try {
+            new LeaveStudy().show(AppHelpers.currentActivity);
+        }
+        catch (Exception e) {
+            Log.d("leave_study", "crashed while trying to leave ze study");
+            e.printStackTrace();
+        }
     }
 
     public static LinearLayout scrollContainer;

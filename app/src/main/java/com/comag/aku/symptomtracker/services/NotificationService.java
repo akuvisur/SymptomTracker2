@@ -206,17 +206,16 @@ public class NotificationService extends IntentService {
 
     @Override
     public void onDestroy() {
-        Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
         Aware.stopSensor(this, Aware_Preferences.STATUS_SCREEN);
 
-        if (s != null) unregisterReceiver(s);
-        Intent aware = new Intent(this, Aware.class);
         try {
+            if (s != null) unregisterReceiver(s);
+            /*
+            Intent aware = new Intent(this, Aware.class);
             stopService(aware);
+            */
         }
-        catch (Exception e) {
-            Log.d("NotiService", "onDestroy(): could not stopService(aware)");
-        }
+        catch (Exception e) {}
     }
 
     private void emitNotification() {

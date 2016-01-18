@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.SearchView;
 
 import com.comag.aku.symptomtracker.app_settings.AppPreferences;
+import com.comag.aku.symptomtracker.app_settings.UserSettings;
 import com.comag.aku.symptomtracker.graphics.adapters.SchemaListAdapter;
 import com.comag.aku.symptomtracker.model.ApiManager;
 import com.comag.aku.symptomtracker.model.DatabaseStorage;
@@ -154,7 +155,13 @@ public class Launch extends AppCompatActivity {
         builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 // proceed to new action etc
+
+                Log.d("user_id", input.getText().toString());
+
                 AppPreferences.join(DatabaseStorage.schemaList.get(selectedSchemaIndex));
+
+                AppPreferences.setUserSetting(AppPreferences.USER_ID, input.getText().toString());
+
                 ApiManager.getSymptomsForSchema();
                 ApiManager.getFactorsForSchema();
                 AppHelpers.currentActivity.startActivity(new Intent(AppHelpers.currentActivity, MainActivity.class));
@@ -166,6 +173,7 @@ public class Launch extends AppCompatActivity {
                         AppHelpers.currentContext.startService(accessibilitySettings);
                     }
                 }).show();
+
             }
         });
         builder.setNegativeButton(android.R.string.no, null).show();

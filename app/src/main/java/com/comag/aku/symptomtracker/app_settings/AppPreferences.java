@@ -43,7 +43,7 @@ public class AppPreferences {
     public static HashMap<String, Symptom> generatedSymptoms = new HashMap<>();
     public static TreeMap<String, Factor> factors = new TreeMap<>();
 
-    public static UserSettings userSettings;
+    public static UserSettings userSettings = new UserSettings();
 
     private static void init() {
         String myTrackedData = "TrackingData";
@@ -187,7 +187,6 @@ public class AppPreferences {
             ApiManager.getSymptomsForSchema();
         }
 
-        userSettings = new UserSettings();
         userSettings.setNotificationHour(sharedPrefs.getInt(NOTIFICATION_HOUR, 18));
         userSettings.setPopupFrequency(sharedPrefs.getInt(POPUP_FREQUENCY, 50));
         userSettings.setPopupsAutomated(sharedPrefs.getBoolean(POPUP_AUTOMATED, true));
@@ -219,6 +218,11 @@ public class AppPreferences {
                 int interval = (int) value;
                 editor.putInt(setting, interval);
                 userSettings.setPopupInterval(interval);
+                break;
+            case USER_ID:
+                String id = (String) value;
+                editor.putString(USER_ID, id);
+                userSettings.setUserId(id);
             default:
                 break;
         }

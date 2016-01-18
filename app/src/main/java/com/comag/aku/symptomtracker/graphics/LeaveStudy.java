@@ -19,7 +19,7 @@ import com.comag.aku.symptomtracker.services.NotificationService;
  */
 public class LeaveStudy {
 
-    public void show(Activity a) {
+    public void show(Activity a) throws Exception {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(a);
         dialogBuilder.setTitle("Are you sure?")
                 .setMessage("Leaving a study causes all local data and preferences to be lost.")
@@ -35,6 +35,7 @@ public class LeaveStudy {
                         AnalyticsApplication.sendEvent("general", "leave_study", AppPreferences.schema.title, null);
                         AppPreferences.clear();
                         AppHelpers.currentActivity.stopService(new Intent(AppHelpers.currentActivity, NotificationService.class));
+
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
