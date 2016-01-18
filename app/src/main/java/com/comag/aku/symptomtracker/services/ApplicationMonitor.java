@@ -22,6 +22,7 @@ import android.view.accessibility.AccessibilityManager;
 import com.aware.Applications;
 import com.aware.Aware;
 import com.comag.aku.symptomtracker.R;
+import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 
 import java.util.List;
 
@@ -74,6 +75,8 @@ public class ApplicationMonitor extends AccessibilityService {
         newForeground.putExtra("app_name", appName);
         newForeground.putExtra("package_name", pkgInfo.packageName);
         sendBroadcast(newForeground);
+
+        AppPreferences.addUsedApplication(appName, pkgInfo.packageName, "category");
     }
 
     @Override

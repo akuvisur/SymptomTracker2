@@ -23,6 +23,7 @@ import com.aware.plugin.google.activity_recognition.Plugin;
 import com.aware.providers.Applications_Provider;
 import com.aware.providers.Battery_Provider;
 import com.comag.aku.symptomtracker.AppHelpers;
+import com.comag.aku.symptomtracker.app_settings.AppPreferences;
 import com.comag.aku.symptomtracker.data_syncronization.SyncProvider;
 import com.comag.aku.symptomtracker.services.smart_notifications.SmartNotificationEngine;
 import com.gc.android.market.api.MarketSession;
@@ -31,42 +32,62 @@ import com.gc.android.market.api.model.Market;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Created by aku on 11/12/15.
  */
 public class UserContextService extends IntentService {
 
+    public static final List<String> required = Arrays.asList(
+            "hour",
+            "minute",
+            "day_of_week",
+            "battery_level",
+            "battery_charging",
+            //"foreground_app",
+            "foreground_package",
+            //"foreground_app_category",
+            "proximity",
+            "last_call",
+            "internet_available",
+            "wifi_available",
+            "network_type",
+            "last_action",
+            "activity"
+            );
     private static String username = "stracker2015@gmail.com";
     private static String password = "eGzFA9XmKHNvGfT2";
 
     static int postureBuffer = 0;
-    static Integer hour;
-    static Integer minute;
-    static Integer day_of_week;
+    static Tuple<Long, Integer> hour;
+    static Tuple<Long, Integer> minute;
+    static Tuple<Long, Integer> day_of_week;
     // too high frequency monitoring
     //static Integer device_posture;
-    static Integer battery_level;
-    static Integer battery_charging;
-    static String foreground_app;
-    static String foreground_package;
-    static String foreground_app_category;
-    static Integer proximity;
-    static Long last_call;
-    static Boolean internet_available = false;
-    static Boolean wifi_available = false;
-    static Integer network_type;
-    static Long last_action;
-    static Integer activity;
+    static Tuple<Long, Integer> battery_level;
+    static Tuple<Long, Integer> battery_charging;
+    static Tuple<Long, String> foreground_app;
+    static Tuple<Long, String> foreground_package;
+    static Tuple<Long, String> foreground_app_category;
+    static Tuple<Long, Integer> proximity;
+    static Tuple<Long, Long> last_call;
+    static Tuple<Long, Integer> internet_available = new Tuple(System.currentTimeMillis(), 0);
+    static Tuple<Long, Integer> wifi_available = new Tuple(System.currentTimeMillis(), 0);
+    static Tuple<Long, Integer> network_type;
+    static Tuple<Long, Long> last_action;
+    static Tuple<Long, Integer> activity;
 
     // change each variable to have timestamp,object structure to prevent too old values to be set to context
-    public class Tuple<X, Y> {
-        public final X x;
-        public final Y y;
-        public Tuple(X x, Y y) {
-            this.x = x;
-            this.y = y;
+    public static class Tuple<Long, Y> {
+        public final Long time;
+        public final Y value;
+        public Tuple(Long time, Y y) {
+            this.time = time;
+            this.value = y;
         }
     }
 
@@ -82,7 +103,7 @@ public class UserContextService extends IntentService {
     }
 
     public static void setLastAction() {
-        last_action = System.currentTimeMillis();
+        last_action = new Tuple(System.currentTimeMillis(),System.currentTimeMillis());
     }
 
     private class ContextReceiver extends BroadcastReceiver {
@@ -101,25 +122,25 @@ public class UserContextService extends IntentService {
                     */
                 // network_type
                 case Network.ACTION_AWARE_INTERNET_AVAILABLE:
-                    internet_available = true;
+                    internet_available = new Tuple(System.currentTimeMillis(), 1);
                     calculateNetworkType();
                     break;
                 case Network.ACTION_AWARE_INTERNET_UNAVAILABLE:
-                    internet_available = false;
+                    internet_available = new Tuple(System.currentTimeMillis(), 0);
                     calculateNetworkType();
                     break;
                 case Network.ACTION_AWARE_WIFI_ON:
-                    wifi_available = true;
+                    wifi_available = new Tuple(System.currentTimeMillis(), 1);
                     calculateNetworkType();
                     break;
                 case Network.ACTION_AWARE_WIFI_OFF:
-                    wifi_available = false;
+                    wifi_available = new Tuple(System.currentTimeMillis(), 0);
                     calculateNetworkType();
                     break;
                 // foreground_app
                 case ApplicationMonitor.NEW_FOREGROUND:
-                    foreground_app = intent.getStringExtra("app_name");
-                    foreground_package = intent.getStringExtra("package_name");
+                    foreground_app = new Tuple(System.currentTimeMillis(), intent.getStringExtra("app_name"));
+                    foreground_package = new Tuple(System.currentTimeMillis(), intent.getStringExtra("package_name"));
                     //getAppCategory(intent.getStringExtra("app_name"), intent.getStringExtra("package_name"));
                     break;
                 case Applications.ACTION_AWARE_APPLICATIONS_FOREGROUND:
@@ -128,22 +149,22 @@ public class UserContextService extends IntentService {
                     break;
                 // time since last call
                 case Communication.ACTION_AWARE_CALL_ACCEPTED:
-                    last_call = System.currentTimeMillis();
+                    last_call = new Tuple(System.currentTimeMillis(), System.currentTimeMillis());
                     break;
                 // battery level
                 case Battery.ACTION_AWARE_BATTERY_CHANGED:
                     setBatteryLevel();
                     break;
                 case Battery.ACTION_AWARE_BATTERY_CHARGING_USB:
-                    battery_level = 1;
-                    battery_charging = 1;
+                    battery_level = new Tuple(System.currentTimeMillis(), 1);
+                    battery_charging = new Tuple(System.currentTimeMillis(), 1);
                     break;
                 case Battery.ACTION_AWARE_BATTERY_CHARGING_AC:
-                    battery_level = 1;
-                    battery_charging = 1;
+                    battery_level = new Tuple(System.currentTimeMillis(), 1);
+                    battery_charging = new Tuple(System.currentTimeMillis(), 1);
                     break;
                 case Battery.ACTION_AWARE_BATTERY_DISCHARGING:
-                    battery_charging = 0;
+                    battery_charging = new Tuple(System.currentTimeMillis(), 0);
                     break;
                 case Proximity.ACTION_AWARE_PROXIMITY:
                     //Log.d("Proximity", "changed");
@@ -154,7 +175,7 @@ public class UserContextService extends IntentService {
                     break;
                 case Plugin.ACTION_AWARE_GOOGLE_ACTIVITY_RECOGNITION:
                     if (intent.getIntExtra("confidence", 0) > 60 && intent.getIntExtra("activity", -1) > -1) {
-                        activity = intent.getIntExtra("activity", -1);
+                        activity = new Tuple(System.currentTimeMillis(), intent.getIntExtra("activity", -1));
                     }
                 default:
                     break;
@@ -164,14 +185,14 @@ public class UserContextService extends IntentService {
     }
 
     private static void setActivity(int a) {
-        activity = a;
+        activity = new Tuple(System.currentTimeMillis(), a);
     }
 
     private void setBatteryLevel() {
         try {
             Cursor battery_data = getContentResolver().query(Battery_Provider.Battery_Data.CONTENT_URI, new String[]{"battery_level"}, null, null, "timestamp DESC LIMIT 1");
             battery_data.moveToFirst();
-            battery_level = Integer.valueOf(battery_data.getString(battery_data.getColumnIndex("battery_level")));
+            battery_level = new Tuple(System.currentTimeMillis(), Integer.valueOf(battery_data.getString(battery_data.getColumnIndex("battery_level"))));
             battery_data.close();
         }
         catch (CursorIndexOutOfBoundsException e) {
@@ -184,10 +205,10 @@ public class UserContextService extends IntentService {
         try {
             Cursor app_data = getContentResolver().query(Applications_Provider.Applications_Foreground.CONTENT_URI, new String[]{"package_name"}, null, null, "timestamp DESC LIMIT 1");
             app_data.moveToFirst();
-            foreground_app = app_data.getString(app_data.getColumnIndex("package_name"));
-            foreground_package = app_data.getString(app_data.getColumnIndex("package_name"));
+            foreground_app = new Tuple(System.currentTimeMillis(), app_data.getString(app_data.getColumnIndex("package_name")));
+            foreground_package = new Tuple(System.currentTimeMillis(), app_data.getString(app_data.getColumnIndex("package_name")));
             //Log.d("Application", "fore, package: " + foreground_app + foreground_package);
-            getAppCategory(foreground_app, foreground_package);
+            getAppCategory(foreground_app.value, foreground_package.value);
             app_data.close();
         }
         catch (CursorIndexOutOfBoundsException e) {
@@ -210,24 +231,24 @@ public class UserContextService extends IntentService {
         session.append(req, new MarketSession.Callback<Market.AppsResponse>() {
             @Override
             public void onResult(Market.ResponseContext responseContext, Market.AppsResponse response) {
-                foreground_app_category = response.getApp(0).getExtendedInfo().getCategory();
-                Log.d("app category", foreground_app_category);
+                foreground_app_category = new Tuple(System.currentTimeMillis(), response.getApp(0).getExtendedInfo().getCategory());
+                Log.d("app category", foreground_app_category.value);
             }
         });
         session.flush();
     }
 
     private void setProximity(ContentValues c) {
-        if (c.getAsDouble("double_proximity") > 0) proximity = 1;
-        else proximity = 0;
+        if (c.getAsDouble("double_proximity") > 0) proximity = new Tuple(System.currentTimeMillis(), 1);
+        else proximity = new Tuple(System.currentTimeMillis(), 0);
 
     }
 
     private void calculateNetworkType() {
-        if (!wifi_available && !internet_available) network_type = 0;
-        else if (wifi_available && !internet_available) network_type = 1;
-        else if (!wifi_available) network_type = 2;
-        else network_type = 3;
+        if ((wifi_available.value < 1) && (internet_available.value < 1)) network_type = new Tuple(System.currentTimeMillis(), 0);
+        else if ((wifi_available.value > 0) && (internet_available.value < 1)) network_type = new Tuple(System.currentTimeMillis(), 1);
+        else if (wifi_available.value < 1) network_type = new Tuple(System.currentTimeMillis(), 2);
+        else network_type = new Tuple(System.currentTimeMillis(), 3);
     }
 
     private int calculatePosture(ContentValues c) {
@@ -324,9 +345,9 @@ public class UserContextService extends IntentService {
             @Override
             public void run() {
                 cal = Calendar.getInstance();
-                hour = cal.get(Calendar.HOUR_OF_DAY);
-                minute = cal.get(Calendar.MINUTE);
-                day_of_week = cal.get(Calendar.DAY_OF_WEEK);
+                hour = new Tuple(System.currentTimeMillis(), cal.get(Calendar.HOUR_OF_DAY));
+                minute = new Tuple(System.currentTimeMillis(), cal.get(Calendar.MINUTE));
+                day_of_week = new Tuple(System.currentTimeMillis(),cal.get(Calendar.DAY_OF_WEEK));
                 setTimes();
             }
         }, 60000);
@@ -350,61 +371,78 @@ public class UserContextService extends IntentService {
 
     private static JSONObject userContext;
     private static void generateJson() throws JSONException {
+        Long curTime = System.currentTimeMillis();
         Calendar cal = Calendar.getInstance();
-        hour = cal.get(Calendar.HOUR_OF_DAY);
-        minute = cal.get(Calendar.MINUTE);
-        day_of_week = cal.get(Calendar.DAY_OF_WEEK);
+        hour = new Tuple(System.currentTimeMillis(), cal.get(Calendar.HOUR_OF_DAY));
+        minute = new Tuple(System.currentTimeMillis(), cal.get(Calendar.MINUTE));
+        day_of_week = new Tuple(System.currentTimeMillis(),cal.get(Calendar.DAY_OF_WEEK));
         userContext = new JSONObject();
-        if (hour != null) {
-            userContext.put("hour", hour);
-        } else {userContext.put("hour", -1);};
-        if (minute != null) {
-            userContext.put("minute", minute);
-        } else {userContext.put("minute", -1);};
-        if (day_of_week != null) {
-            userContext.put("day", day_of_week);
-        } else {userContext.put("day", -1);};
+        // no values over 1800000ms (30minutes) long accepted
+        if (hour != null && (hour.time - curTime < 1800000)) {
+            userContext.put("hour", hour.value);
+        } else {userContext.put("hour", -1);}
+        if (minute != null && (minute.time - curTime < 1800000)) {
+            userContext.put("minute", minute.value);
+        } else {userContext.put("minute", -1);}
+        if (day_of_week != null && (day_of_week.time - curTime < 1800000)) {
+            userContext.put("day", day_of_week.value);
+        } else {userContext.put("day", -1);}
         /*
         if (device_posture != null) {
             userContext.put("device_posture", device_posture);
         }
         */
-        if (battery_level != null) {
-            userContext.put("battery_level", battery_level);
-        } else {userContext.put("battery_level", -1);};
-        if (battery_charging != null) {
-            userContext.put("battery_charging", battery_charging);
-        } else {userContext.put("battery_charging", -1);};
-        if (foreground_app != null) {
+        if (battery_level != null && (battery_level.time - curTime < 1800000)) {
+            userContext.put("battery_level", battery_level.value);
+        } else {userContext.put("battery_level", -1);}
+
+        if (battery_charging != null && (battery_charging.time - curTime < 1800000)) {
+            userContext.put("battery_charging", battery_charging.value);
+        } else {userContext.put("battery_charging", -1);}
+
+        /*
+        if (foreground_app != null && (foreground_app.time - curTime < 300000)) {
             userContext.put("foreground_app", foreground_app);
-        } else {userContext.put("foreground_app", -1);};
-        if (foreground_package != null) {
-            userContext.put("foreground_package", foreground_package);
-        } else {userContext.put("foreground_package", -1);};
-        if (foreground_app_category != null) {
+        } else {userContext.put("foreground_app", -1);}
+        */
+        if (foreground_package != null && (foreground_package.time - curTime < 1800000)) {
+            userContext.put("foreground_package", AppPreferences.getApplicationIndex(foreground_package.value));
+        } else {userContext.put("foreground_package", -1);}
+
+        /*
+        if (foreground_app_category != null && (foreground_app_category.time - curTime < 300000)) {
             userContext.put("foreground_app_category", foreground_app_category);
-        } else {userContext.put("foreground_app_category", -1);};
-        if (proximity != null) {
-            userContext.put("proximity", proximity);
-        } else {userContext.put("proximity", -1);};
-        if (last_call != null) {
-            userContext.put("last_call", last_call);
-        } else {userContext.put("last_call", -1);};
-        if (internet_available != null) {
-            userContext.put("internet_available", internet_available);
-        } else {userContext.put("internet_available", -1);};
-        if (wifi_available != null) {
-            userContext.put("wifi_available", wifi_available);
-        } else {userContext.put("wifi_available", -1);};
-        if (network_type != null) {
-            userContext.put("network_type", network_type);
-        } else {userContext.put("network_type", -1);};
-        if (last_action != null) {
-            userContext.put("last_action", last_action);
-        } else {userContext.put("last_action", -1);};
-        if (activity != null) {
-            userContext.put("activity", activity);
-        } else {userContext.put("activity", -1);};
+        } else {userContext.put("foreground_app_category", -1);}
+        */
+
+        if (proximity != null && (proximity.time - curTime < 1800000)) {
+            userContext.put("proximity", proximity.value);
+        } else {userContext.put("proximity", -1);}
+
+        if (last_call != null && (last_call.time - curTime < 1800000)) {
+            userContext.put("last_call", last_call.value);
+        } else {userContext.put("last_call", -1);}
+
+        if (internet_available != null && (internet_available.time - curTime < 1800000)) {
+            userContext.put("internet_available", internet_available.value);
+        } else {userContext.put("internet_available", -1);}
+
+        if (wifi_available != null && (wifi_available.time - curTime < 1800000)) {
+            userContext.put("wifi_available", wifi_available.value);
+        } else {userContext.put("wifi_available", -1);}
+
+        if (network_type != null && (network_type.time - curTime < 1800000)) {
+            userContext.put("network_type", network_type.value);
+        } else {userContext.put("network_type", -1);}
+
+        if (last_action != null && (last_action.time - curTime < 1800000)) {
+            userContext.put("last_action", last_action.value);
+        } else {userContext.put("last_action", -1);}
+
+        if (activity != null && (activity.time - curTime < 1800000)) {
+            userContext.put("activity", activity.value);
+        } else {userContext.put("activity", -1);}
+
     }
 
     public static JSONObject getUserContext() {

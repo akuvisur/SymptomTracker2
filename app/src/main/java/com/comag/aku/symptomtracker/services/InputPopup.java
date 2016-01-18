@@ -69,6 +69,7 @@ public class InputPopup {
     public static void hidePopup() {
         final WindowManager windowManager = (WindowManager) NotificationService.getContext().getSystemService(Context.WINDOW_SERVICE);
         try {
+            AppHelpers.showingPopup = false;
             if (popupLayout != null) windowManager.removeView(popupLayout);
         }
         catch (IllegalArgumentException e) {
@@ -200,8 +201,14 @@ public class InputPopup {
             }
         });
 
-
+        // remove view after 5 minutes
         windowManager.addView(popupLayout, params);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                hidePopup();
+            }
+        }, 300000);
         // returned a popup
         return true;
     }

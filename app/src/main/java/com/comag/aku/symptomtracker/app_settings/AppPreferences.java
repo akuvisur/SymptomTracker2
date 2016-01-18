@@ -91,6 +91,40 @@ public class AppPreferences {
         editor.apply();
     }
 
+    public static void addUsedApplication(String appName, String appPackage, String appCategory) {
+        Log.d("add new app", appPackage);
+        int i = 0;
+        try {
+            JSONObject apps = new JSONObject(sharedPrefs.getString("apps", "{}"));
+            Iterator<String> keys = apps.keys();
+            while (keys.hasNext()) {
+                String key = keys.next();
+                if (key.equals(appPackage)) return;
+                else if (apps.getInt(key) < i) i = apps.getInt(key);
+            }
+            i++;
+            SharedPreferences.Editor editor = sharedPrefs.edit();
+            apps.put(appPackage, i);
+            editor.putString("apps", apps.toString());
+            editor.apply();
+        }
+        catch (JSONException e) {}
+    }
+
+    public static int getApplicationIndex(String appPackage) {
+        try {
+            JSONObject apps = new JSONObject(sharedPrefs.getString("apps", "{}"));
+            Iterator<String> keys = apps.keys();
+            while (keys.hasNext()) {
+                String key = keys.next();
+                if (key.equals(appPackage)) return apps.getInt(key);
+            }
+        }
+        catch (JSONException e) {}
+        // not found
+        return -1;
+    }
+
     public static void addFactors() {
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.putString("factors", gson.toJson(AppPreferences.factors));

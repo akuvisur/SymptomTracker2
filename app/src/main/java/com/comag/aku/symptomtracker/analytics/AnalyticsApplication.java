@@ -20,6 +20,7 @@ package com.comag.aku.symptomtracker.analytics;
 import android.app.Application;
 import android.util.Log;
 
+import com.comag.aku.symptomtracker.services.UserContextService;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Logger;
@@ -58,5 +59,7 @@ public class AnalyticsApplication extends Application {
         if (value != null) event.setValue(value);
 
         mTracker.send(event.build());
+
+        UserContextService.setLastAction();
     }
 }
