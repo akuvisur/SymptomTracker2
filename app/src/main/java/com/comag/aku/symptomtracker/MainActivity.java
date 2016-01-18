@@ -527,8 +527,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    for (View v : factorViews.values()) {
-                        scrollContainer.addView(v);
+                    for (String key : factorViews.keySet()) {
+                        if (dataFactors.contains(key)) scrollContainer.addView(factorViews.get(key));
                     }
                 } else {
                     for (View v : factorViews.values()) {

@@ -92,15 +92,16 @@ public class AppPreferences {
     }
 
     public static void addUsedApplication(String appName, String appPackage, String appCategory) {
-        Log.d("add new app", appPackage);
+        //Log.d("add_app", appPackage);
         int i = 0;
         try {
             JSONObject apps = new JSONObject(sharedPrefs.getString("apps", "{}"));
             Iterator<String> keys = apps.keys();
             while (keys.hasNext()) {
                 String key = keys.next();
+                //Log.d("add_app", key + ": " + apps.get(key));
                 if (key.equals(appPackage)) return;
-                else if (apps.getInt(key) < i) i = apps.getInt(key);
+                else if (apps.getInt(key) > i) i = apps.getInt(key);
             }
             i++;
             SharedPreferences.Editor editor = sharedPrefs.edit();
@@ -117,6 +118,7 @@ public class AppPreferences {
             Iterator<String> keys = apps.keys();
             while (keys.hasNext()) {
                 String key = keys.next();
+                //Log.d("app_index", key + ": " + apps.get(key));
                 if (key.equals(appPackage)) return apps.getInt(key);
             }
         }

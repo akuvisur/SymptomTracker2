@@ -266,7 +266,8 @@ public class UserContextService extends IntentService {
         }
     }
 
-    ContextReceiver co;
+    // allow only one instance
+    static ContextReceiver co;
 
     @Override
     public void onCreate() {}
@@ -275,6 +276,8 @@ public class UserContextService extends IntentService {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Intent aware = new Intent(this, Aware.class);
         startService(aware);
+
+        if (co != null) unregisterReceiver(co);
 
         Log.d("ContextService", "Started");
 
@@ -298,7 +301,6 @@ public class UserContextService extends IntentService {
 
         Aware.startPlugin(this, "com.aware.plugin.google.activity_recognition");
 
-        // only poll once per second
         co = new ContextReceiver();
         IntentFilter i = new IntentFilter();
 
