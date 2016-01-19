@@ -711,7 +711,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private static void animateChart() {
-        symptomChart.animateXY(750, 750, Easing.EasingOption.EaseInQuart, Easing.EasingOption.EaseOutQuart);
+        symptomChart.animateX(750, Easing.EasingOption.EaseInQuart);
         Animation chartAnim = AnimationUtils.loadAnimation(AppHelpers.currentContext, android.R.anim.fade_in);
         chartAnim.setDuration(250);
         symptomChart.startAnimation(chartAnim);

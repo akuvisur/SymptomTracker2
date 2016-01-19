@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_id": "symptom-tracker",
-    "project_number": "268790224243",
-    "name": "Symptom Tracker"
+    "project_id": "lifetracker-df318",
+    "project_number": "159401505389",
+    "name": "LifeTracker"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:268790224243:android:69d2f94eff88cf96",
+        "mobilesdk_app_id": "1:159401505389:android:f9232720595eda73",
         "client_id": "android:com.comag.aku.lifetracker",
         "client_type": 1,
         "android_client_info": {

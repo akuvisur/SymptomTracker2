@@ -332,7 +332,7 @@ public class UserContextService extends IntentService {
 
         setTimes();
 
-        //ApplicationMonitor.isAccessibilityServiceActive(this);
+        ApplicationMonitor.isAccessibilityServiceActive(this);
 
         return START_STICKY;
     }

@@ -24,7 +24,7 @@ import java.util.HashMap;
  * Created by aku on 10/12/15.
  */
 public class SyncProvider extends ContentProvider {
-    public static String AUTHORITY = "com.comag.aku.symptomtracker.provider";
+    public static String AUTHORITY = "com.comag.aku.lifetracker.provider";
     public static final int DATABASE_VERSION = 3;
 
     private static final int ADVERSE_EVENTS = 1;
@@ -32,7 +32,7 @@ public class SyncProvider extends ContentProvider {
     private static final int NOTIFICATIONS = 3;
     private static final int NOTIFICATIONS_TYPE = 4;
 
-    public static final String DATABASE_NAME = "plugin_symptomtracker.db";
+    public static final String DATABASE_NAME = "lifetracker.db";
 
     public static final String[] DATABASE_TABLES = {"adverse_events", "notifications"};
     public static final String[] TABLES_FIELDS = {
@@ -268,13 +268,13 @@ public class SyncProvider extends ContentProvider {
          * How your data collection is identified internally in Android (vnd.android.cursor.dir). <br/>
          * It needs to be /vnd.aware.plugin.XXX where XXX is your plugin name (no spaces!).
          */
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.aware.plugin.symptomtracker";
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.aware.plugin.lifetracker";
 
         /**
          * How each row is identified individually internally in Android (vnd.android.cursor.item). <br/>
          * It needs to be /vnd.aware.plugin.XXX where XXX is your plugin name (no spaces!).
          */
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.aware.plugin.symptomtracker";
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.aware.plugin.lifetracker";
 
         public static final String _ID = "_id";
         public static final String TIMESTAMP = "timestamp";
@@ -303,13 +303,13 @@ public class SyncProvider extends ContentProvider {
          * How your data collection is identified internally in Android (vnd.android.cursor.dir). <br/>
          * It needs to be /vnd.aware.plugin.XXX where XXX is your plugin name (no spaces!).
          */
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.aware.plugin.symptomtracker";
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.aware.plugin.lifetracker";
 
         /**
          * How each row is identified individually internally in Android (vnd.android.cursor.item). <br/>
          * It needs to be /vnd.aware.plugin.XXX where XXX is your plugin name (no spaces!).
          */
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.aware.plugin.symptomtracker";
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.aware.plugin.lifetracker";
 
         public static final String _ID = "_id";
         public static final String TIMESTAMP = "timestamp";

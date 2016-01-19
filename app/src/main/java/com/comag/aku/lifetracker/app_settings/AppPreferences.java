@@ -69,7 +69,10 @@ public class AppPreferences {
         Toast.makeText(AppHelpers.currentActivity, "joined " + s.title, Toast.LENGTH_SHORT).show();
         editor.apply();
 
-        if (s.aware_study_url != null) Aware.joinStudy(AppHelpers.currentContext, s.aware_study_url);
+        if (s.aware_study_url != null) {
+            Aware.joinStudy(AppHelpers.currentContext, s.aware_study_url);
+            AppPreferences.setUserSetting(DATASYNC_ENABLED, true);
+        }
 
         schema = s;
 

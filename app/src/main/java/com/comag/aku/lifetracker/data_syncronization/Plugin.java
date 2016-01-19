@@ -23,7 +23,7 @@ public class Plugin extends Aware_Plugin {
         TAG = "AWARE::" + getResources().getString(R.string.app_name);
         Aware.setSetting(this, Aware_Preferences.DEBUG_FLAG, "true");
 
-        Aware.startPlugin(this, "com.comag.aku.symptomtracker");
+        Aware.startPlugin(this, "com.comag.aku.lifetracker");
 
         DATABASE_TABLES = SyncProvider.DATABASE_TABLES;
         TABLES_FIELDS = SyncProvider.TABLES_FIELDS;
@@ -60,6 +60,6 @@ public class Plugin extends Aware_Plugin {
         Log.d("AWARE", "Stopping Symptom Tracker plugin service");
 
         //Stop plugin
-        Aware.stopPlugin(this, "com.comag.aku.symptomtracker");
+        Aware.stopPlugin(this, "com.comag.aku.lifetracker");
     }
 }
