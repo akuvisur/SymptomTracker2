@@ -8,10 +8,10 @@
     {
       "client_info": {
         "mobilesdk_app_id": "1:268790224243:android:69d2f94eff88cf96",
-        "client_id": "android:com.comag.aku.symptomtracker",
+        "client_id": "android:com.comag.aku.lifetracker",
         "client_type": 1,
         "android_client_info": {
-          "package_name": "com.comag.aku.symptomtracker"
+          "package_name": "com.comag.aku.lifetracker"
         }
       },
       "oauth_client": [],

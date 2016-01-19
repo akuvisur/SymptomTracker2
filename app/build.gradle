@@ -5,11 +5,11 @@ android {
     buildToolsVersion "23.0.1"
 
     defaultConfig {
-        applicationId "com.comag.aku.symptomtracker"
+        applicationId "com.comag.aku.lifetracker"
         minSdkVersion 17
         targetSdkVersion 23
-        versionCode 2
-        versionName "0.9b"
+        versionCode 3
+        versionName "0.91b"
         multiDexEnabled true
     }
     buildTypes {

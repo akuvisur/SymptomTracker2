@@ -17,7 +17,7 @@
         android:textColor="@color/white"
         android:gravity="start" />
 
-    <com.comag.aku.symptomtracker.graphics.FlowLayout
+    <com.comag.aku.lifetracker.graphics.FlowLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"

@@ -1,4 +1,4 @@
-package com.comag.aku.symptomtracker;
+package com.comag.aku.lifetracker;
 
 import org.junit.Test;
 

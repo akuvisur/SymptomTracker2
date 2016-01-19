@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.comag.aku.symptomtracker" >
+    package="com.comag.aku.lifetracker" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -21,10 +21,10 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:name=".analytics.AnalyticsApplication"
+        android:name="com.comag.aku.lifetracker.analytics.AnalyticsApplication"
         tools:replace="android:icon, android:theme">
         <activity
-            android:name=".Launch"
+            android:name="com.comag.aku.lifetracker.Launch"
             android:label= "@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
@@ -33,15 +33,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"
+        <activity android:name="com.comag.aku.lifetracker.MainActivity"
             android:label="LifeTracker"
             android:theme="@style/AppTheme">
         </activity>
-        <service android:name=".services.NotificationService"
+        <service android:name="com.comag.aku.lifetracker.services.NotificationService"
             android:permission="android.permission.READ_EXTERNAL_STORAGE"/>
-        <service android:name=".services.UserContextService"/>
-        <service android:name=".data_syncronization.Plugin"/>
-        <service android:name=".services.ApplicationMonitor"
+        <service android:name="com.comag.aku.lifetracker.services.UserContextService"/>
+        <service android:name="com.comag.aku.lifetracker.data_syncronization.Plugin"/>
+        <service android:name="com.comag.aku.lifetracker.services.ApplicationMonitor"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService"/>
@@ -51,8 +51,8 @@
 
     <!-- Plugin's own provider -->
     <provider
-        android:authorities="com.comag.aku.symptomtracker.provider"
-        android:name=".data_syncronization.SyncProvider"
+        android:authorities="com.comag.aku.lifetracker.provider"
+        android:name="com.comag.aku.lifetracker.data_syncronization.SyncProvider"
         android:exported="true"
         android:readPermission="com.aware.READ_CONTEXT_DATA"
         android:writePermission="com.aware.WRITE_CONTEXT_DATA"/>
