@@ -25,7 +25,7 @@ import java.util.Calendar;
  */
 public class NotificationService extends IntentService {
 
-    public static int NOTIFICATION_DELAY_MS = 5 * AppHelpers.MINUTE_IN_MILLISECONDS;
+    public static int NOTIFICATION_DELAY_MS = 20 * AppHelpers.MINUTE_IN_MILLISECONDS;
 
     public enum NotificationMode { DUMMY_MODE, LEARNING_MODE }
 

@@ -45,6 +45,8 @@ public class Plugin extends Aware_Plugin {
         //Check if the user has toggled the debug messages
         DEBUG = Aware.getSetting(this, Aware_Preferences.DEBUG_FLAG).equals("true");
 
+        Aware.setSetting(this, "com.comag.aku.lifetracker", true);
+
         SmartNotificationEngine.generatePastContext();
 
         return super.onStartCommand(intent, flags, startId);
@@ -59,6 +61,7 @@ public class Plugin extends Aware_Plugin {
 
         Log.d("AWARE", "Stopping Symptom Tracker plugin service");
 
+        Aware.setSetting(this, "com.comag.aku.lifetracker", false);
         //Stop plugin
         Aware.stopPlugin(this, "com.comag.aku.lifetracker");
     }
