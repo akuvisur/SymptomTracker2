@@ -96,6 +96,8 @@ public class Condition {
 
     public boolean isSimilar(Condition c) {
         String rep_window = getRepWindow();
+        // update AppHelper calendar time
+        AppHelpers.cal.setTimeInMillis(System.currentTimeMillis());
         switch (rep_window) {
             case "hour":
                 return c.key.equals(key) && isHour(c.hour);

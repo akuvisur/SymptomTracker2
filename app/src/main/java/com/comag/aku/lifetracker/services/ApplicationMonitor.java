@@ -148,7 +148,7 @@ public class ApplicationMonitor extends AccessibilityService {
     public static void sendAccessibilityServiceVerification(Context c) {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(c);
         mBuilder.setSmallIcon(R.drawable.ic_stat_aware_accessibility);
-        mBuilder.setContentTitle("Symptom Tracker configuration");
+        mBuilder.setContentTitle("LifeTracker configuration");
         mBuilder.setContentText(c.getResources().getString(R.string.activate_accessibility));
         mBuilder.setAutoCancel(true);
         mBuilder.setOnlyAlertOnce(true); //notify the user only once

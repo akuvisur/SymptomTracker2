@@ -95,6 +95,7 @@ public class AppPreferences {
     }
 
     public static void addUsedApplication(String appName, String appPackage, String appCategory) {
+        init();
         //Log.d("add_app", appPackage);
         int i = 0;
         try {
@@ -116,6 +117,7 @@ public class AppPreferences {
     }
 
     public static int getApplicationIndex(String appPackage) {
+        init();
         try {
             JSONObject apps = new JSONObject(sharedPrefs.getString("apps", "{}"));
             Iterator<String> keys = apps.keys();

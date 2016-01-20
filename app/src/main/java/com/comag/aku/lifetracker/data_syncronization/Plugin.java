@@ -9,7 +9,6 @@ import com.aware.Aware;
 import com.aware.Aware_Preferences;
 import com.aware.utils.Aware_Plugin;
 import com.comag.aku.lifetracker.R;
-import com.comag.aku.lifetracker.services.smart_notifications.SmartNotificationEngine;
 
 /**
  * Created by aku on 10/12/15.
@@ -47,7 +46,8 @@ public class Plugin extends Aware_Plugin {
 
         Aware.setSetting(this, "com.comag.aku.lifetracker", true);
 
-        SmartNotificationEngine.generatePastContext();
+        DATABASE_TABLES = SyncProvider.DATABASE_TABLES;
+        TABLES_FIELDS = SyncProvider.TABLES_FIELDS;
 
         return super.onStartCommand(intent, flags, startId);
     }

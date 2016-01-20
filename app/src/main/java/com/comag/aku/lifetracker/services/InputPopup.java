@@ -125,6 +125,7 @@ public class InputPopup {
                 Toast.makeText(NotificationService.getContext(), "I will try to bother you less frequently.", Toast.LENGTH_SHORT).show();
 
                 SyncronizationController.storeNotificationResponse("no", "popup", UserContextService.getUserContextString());
+                AnalyticsApplication.sendEvent("popup", "rejected", UserContextService.getUserContextString(), null);
 
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -161,6 +162,7 @@ public class InputPopup {
                         NotificationService.getContext().startActivity(intent);
 
                         SyncronizationController.storeNotificationResponse("app", "popup", UserContextService.getUserContextString());
+                        AnalyticsApplication.sendEvent("popup", "move to app", UserContextService.getUserContextString(), null);
 
                         switch (NotificationService.getMode()) {
                             case DUMMY_MODE:
@@ -183,6 +185,7 @@ public class InputPopup {
                 popupLayout.startAnimation(anim);
                 Toast.makeText(NotificationService.getContext(), "Inputted values saved.", Toast.LENGTH_SHORT).show();
                 SyncronizationController.storeNotificationResponse("ok", "popup", UserContextService.getUserContextString());
+                AnalyticsApplication.sendEvent("popup", "accepted", UserContextService.getUserContextString(), null);
 
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -496,8 +499,6 @@ public class InputPopup {
                         NoSQLStorage.storeSingle(new Condition(factor.key), new ValueMap(selected));
                     }
                 }, 350);
-                AnalyticsApplication.sendEvent("popup", "accepted", UserContextService.getUserContextString(), null);
-
                 windowManager.removeView(dialogView);
             }
         });

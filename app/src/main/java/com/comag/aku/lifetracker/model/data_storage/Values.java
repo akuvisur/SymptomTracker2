@@ -66,7 +66,7 @@ public class Values {
         }
         Condition cc = new Condition(key);
         for (Condition c : values.keySet()) {
-            if (c.isSimilar(cc)) return values.get(c);
+            if (cc.isSimilar(c)) return values.get(c);
         }
         return new ValueMap("missing");
     }

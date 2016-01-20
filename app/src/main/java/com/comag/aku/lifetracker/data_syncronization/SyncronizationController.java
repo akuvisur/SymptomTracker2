@@ -24,7 +24,7 @@ public class SyncronizationController {
     public static void storeAdverseEvent(Condition cond, ValueMap values) {
         ContentValues c = new ContentValues();
 
-        c.put(SyncProvider.AdverseEventData.TIMESTAMP, cond.timestamp / 1000);
+        c.put(SyncProvider.AdverseEventData.TIMESTAMP, cond.timestamp);
         c.put(SyncProvider.AdverseEventData.DEVICE_ID, Settings.Secure.getString(NotificationService.getContext().getContentResolver(), Settings.Secure.ANDROID_ID));
         c.put(SyncProvider.AdverseEventData.USER_ID, AppPreferences.userSettings.getUserId());
         c.put(SyncProvider.AdverseEventData.TRACKABLE_KEY, cond.key);
@@ -101,7 +101,7 @@ public class SyncronizationController {
 
     public static void storeNotificationResponse(String value, String type, String context) {
         ContentValues c = new ContentValues();
-        c.put(SyncProvider.NotificationEventData.TIMESTAMP, System.currentTimeMillis() / 1000);
+        c.put(SyncProvider.NotificationEventData.TIMESTAMP, System.currentTimeMillis());
         c.put(SyncProvider.NotificationEventData.DEVICE_ID, Settings.Secure.getString(NotificationService.getContext().getContentResolver(), Settings.Secure.ANDROID_ID));
         c.put(SyncProvider.NotificationEventData.USER_ID, AppPreferences.userSettings.getUserId());
         c.put(SyncProvider.NotificationEventData.VALUE, value);

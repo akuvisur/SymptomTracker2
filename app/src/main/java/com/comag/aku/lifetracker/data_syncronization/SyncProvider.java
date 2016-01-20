@@ -91,7 +91,7 @@ public class SyncProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        //AUTHORITY = AppHelpers.package_name + ".provider.plugin.example"; //make AUTHORITY dynamic
+        AUTHORITY = getContext().getPackageName() + ".provider"; //make AUTHORITY dynamic
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         sUriMatcher.addURI(AUTHORITY, DATABASE_TABLES[0], ADVERSE_EVENTS); //URI for all records
         sUriMatcher.addURI(AUTHORITY, DATABASE_TABLES[0] + "/#", ADVERSE_EVENTS_TYPE); //URI for a single record

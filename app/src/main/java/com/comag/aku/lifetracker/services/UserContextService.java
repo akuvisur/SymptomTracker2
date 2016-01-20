@@ -23,6 +23,7 @@ import com.aware.plugin.google.activity_recognition.Plugin;
 import com.aware.providers.Applications_Provider;
 import com.aware.providers.Battery_Provider;
 import com.comag.aku.lifetracker.app_settings.AppPreferences;
+import com.comag.aku.lifetracker.data_syncronization.SyncProvider;
 import com.gc.android.market.api.MarketSession;
 import com.gc.android.market.api.model.Market;
 
@@ -115,6 +116,7 @@ public class UserContextService extends IntentService {
                     break;
                     */
                 // network_type
+
                 case Network.ACTION_AWARE_INTERNET_AVAILABLE:
                     internet_available = new Tuple(System.currentTimeMillis(), 1);
                     calculateNetworkType();
@@ -138,7 +140,7 @@ public class UserContextService extends IntentService {
                     //getAppCategory(intent.getStringExtra("app_name"), intent.getStringExtra("package_name"));
                     break;
                 case Applications.ACTION_AWARE_APPLICATIONS_FOREGROUND:
-                    //Log.d("Application", "changed");
+                    Log.d("Application", "changed");
                     getForegroundApp();
                     break;
                 // time since last call
@@ -283,7 +285,7 @@ public class UserContextService extends IntentService {
         Aware.setSetting(this, Aware_Preferences.STATUS_BATTERY, true);
         Aware.setSetting(this, Aware_Preferences.STATUS_CALLS, true);
         Aware.setSetting(this, Aware_Preferences.STATUS_NETWORK_EVENTS, true);
-        Aware.setSetting(this, Aware_Preferences.STATUS_APPLICATIONS, true);
+        //Aware.setSetting(this, Aware_Preferences.STATUS_APPLICATIONS, true);
         Aware.setSetting(this, Aware_Preferences.STATUS_PROXIMITY, true);
         Aware.setSetting(this, Aware_Preferences.STATUS_BATTERY, true);
         Aware.setSetting(this, "com.aware.plugin.google.activity_recognition", true);
@@ -294,7 +296,7 @@ public class UserContextService extends IntentService {
         Aware.startSensor(this, Aware_Preferences.STATUS_BATTERY);
         Aware.startSensor(this, Aware_Preferences.STATUS_CALLS);
         Aware.startSensor(this, Aware_Preferences.STATUS_NETWORK_EVENTS);
-        Aware.startSensor(this, Aware_Preferences.STATUS_APPLICATIONS);
+        //Aware.startSensor(this, Aware_Preferences.STATUS_APPLICATIONS);
         Aware.startSensor(this, Aware_Preferences.STATUS_PROXIMITY);
 
         Aware.startPlugin(this, "com.aware.plugin.google.activity_recognition");
@@ -332,6 +334,7 @@ public class UserContextService extends IntentService {
 
         ApplicationMonitor.isAccessibilityServiceActive(this);
 
+        SyncProvider sp = new SyncProvider();
         return START_STICKY;
     }
 
@@ -381,8 +384,8 @@ public class UserContextService extends IntentService {
             userContext.put("minute", minute.value);
         } else {userContext.put("minute", -1);}
         if (day_of_week != null && (day_of_week.time - curTime < 1800000)) {
-            userContext.put("day", day_of_week.value);
-        } else {userContext.put("day", -1);}
+            userContext.put("day_of_week", day_of_week.value);
+        } else {userContext.put("day_of_week", -1);}
         /*
         if (device_posture != null) {
             userContext.put("device_posture", device_posture);
