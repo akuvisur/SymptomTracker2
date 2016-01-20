@@ -55,8 +55,6 @@ public class UserContextService extends IntentService {
             "last_action",
             "activity"
             );
-    private static String username = "stracker2015@gmail.com";
-    private static String password = "eGzFA9XmKHNvGfT2";
 
     static int postureBuffer = 0;
     static Tuple<Long, Integer> hour;

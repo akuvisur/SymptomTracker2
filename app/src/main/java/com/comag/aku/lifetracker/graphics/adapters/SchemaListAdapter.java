@@ -49,11 +49,13 @@ public class SchemaListAdapter extends ArrayAdapter<Schema> {
                 title = (TextView) rowView.findViewById(R.id.schema_title);
                 title.setText(schemas.get(position).title);
 
+                /*
                 symptoms = (TextView) rowView.findViewById(R.id.schema_symptoms);
                 symptoms.setText(schemas.get(position).symptoms.size() + " symptoms");
 
                 factors = (TextView) rowView.findViewById(R.id.schema_factors);
                 factors.setText(schemas.get(position).factors.size() + " factors");
+                */
 
                 //row = (LinearLayout) rowView.findViewById(R.id.schema_row);
                 //row.setBackgroundColor(AppHelpers.randomizeListColor(position));

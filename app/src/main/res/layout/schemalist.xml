@@ -9,34 +9,21 @@
     android:layout_margin="2dp"
     android:id="@+id/schema_row"
     android:background="@drawable/generic_shadow">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="10dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:id="@+id/symptom_row_color"
+        android:background="@color/colorPrimary"
+        android:layout_marginTop="0dp"/>
 
     <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Medium Text"
         android:textColor="@color/colorPrimaryDark"
         android:id="@+id/schema_title" />
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="4dp">
-        <TextView
-            android:layout_width="160dp"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="n Symptoms"
-            android:textColor="@color/Symptom"
-            android:id="@+id/schema_symptoms"
-            android:layout_marginRight="12dp"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="n Factors"
-            android:textColor="@color/Factor"
-            android:id="@+id/schema_factors" />
-    </LinearLayout>
 
 </LinearLayout>
