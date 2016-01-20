@@ -63,7 +63,12 @@ public class AppPreferences {
     }
 
     public static void join(Schema s) {
-        init();
+        try {
+            init();
+        }
+        catch (NullPointerException e) {
+            return;
+        }
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.putString("schema", gson.toJson(s.json));
         Toast.makeText(AppHelpers.currentActivity, "joined " + s.title, Toast.LENGTH_SHORT).show();
@@ -95,7 +100,12 @@ public class AppPreferences {
     }
 
     public static void addUsedApplication(String appName, String appPackage, String appCategory) {
-        init();
+        try {
+            init();
+        }
+        catch (NullPointerException e) {
+            return;
+        }
         //Log.d("add_app", appPackage);
         int i = 0;
         try {

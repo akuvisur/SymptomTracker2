@@ -126,10 +126,21 @@ public class SyncProvider extends ContentProvider {
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,String sortOrder) {
+        /*
+        Log.d("row_query", "making query to ae/notif database:");
+        if (projection != null) Log.d("row_query", "Projection: " + projection.toString());
+        Log.d("row_query", "selection: " + selection);
+        if (selectionArgs != null) Log.d("row_query", "selectionArgs: " + selectionArgs.toString());
+        Log.d("row_query", "sortOrder: " + sortOrder);
+        */
+
         if( ! initializeDB() ) {
             Log.w(AUTHORITY,"Database unavailable...");
             return null;
         }
+
+        // this is a bit of a hack but fixes the AWARE dashboard sync problems
+        if (selection != null && selection.contains("timestamp")) selection = null;
 
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         switch (sUriMatcher.match(uri)) {
@@ -148,6 +159,18 @@ public class SyncProvider extends ContentProvider {
         try {
             Cursor c = qb.query(database, projection, selection, selectionArgs, null, null, sortOrder);
             c.setNotificationUri(Plugin.getContext().getContentResolver(), uri);
+
+            /*
+            while (c.moveToNext()) {
+
+                for ( int i = 0 ; i < c.getColumnCount(); i++) {
+                    Log.d("row_query", c.getColumnName(i) + " : " + c.getString(i));
+                }
+
+            }
+            c = qb.query(database, projection, selection, selectionArgs, null, null, sortOrder);
+            */
+
             return c;
         } catch (IllegalStateException e) {
             if (Aware.DEBUG) Log.e(Aware.TAG, e.getMessage());

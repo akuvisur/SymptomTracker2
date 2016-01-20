@@ -5,13 +5,13 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.provider.Settings;
 import android.util.Log;
 
+import com.aware.Aware;
+import com.aware.Aware_Preferences;
 import com.comag.aku.lifetracker.app_settings.AppPreferences;
 import com.comag.aku.lifetracker.objects.ValueMap;
 import com.comag.aku.lifetracker.objects.tracking.Condition;
-import com.comag.aku.lifetracker.services.NotificationService;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Calendar;
@@ -23,9 +23,10 @@ public class SyncronizationController {
 
     public static void storeAdverseEvent(Condition cond, ValueMap values) {
         ContentValues c = new ContentValues();
-
         c.put(SyncProvider.AdverseEventData.TIMESTAMP, cond.timestamp);
-        c.put(SyncProvider.AdverseEventData.DEVICE_ID, Settings.Secure.getString(NotificationService.getContext().getContentResolver(), Settings.Secure.ANDROID_ID));
+        //c.put(SyncProvider.NotificationEventData.DEVICE_ID, Settings.Secure.getString(NotificationService.getContext().getContentResolver(), Settings.Secure.ANDROID_ID));
+        c.put(SyncProvider.NotificationEventData.DEVICE_ID, Aware.getSetting(Plugin.getContext(), Aware_Preferences.DEVICE_ID));
+
         c.put(SyncProvider.AdverseEventData.USER_ID, AppPreferences.userSettings.getUserId());
         c.put(SyncProvider.AdverseEventData.TRACKABLE_KEY, cond.key);
         if (cond.key.contains("symptom_")) {
@@ -102,7 +103,8 @@ public class SyncronizationController {
     public static void storeNotificationResponse(String value, String type, String context) {
         ContentValues c = new ContentValues();
         c.put(SyncProvider.NotificationEventData.TIMESTAMP, System.currentTimeMillis());
-        c.put(SyncProvider.NotificationEventData.DEVICE_ID, Settings.Secure.getString(NotificationService.getContext().getContentResolver(), Settings.Secure.ANDROID_ID));
+        //c.put(SyncProvider.NotificationEventData.DEVICE_ID, Settings.Secure.getString(NotificationService.getContext().getContentResolver(), Settings.Secure.ANDROID_ID));
+        c.put(SyncProvider.NotificationEventData.DEVICE_ID, Aware.getSetting(Plugin.getContext(), Aware_Preferences.DEVICE_ID));
         c.put(SyncProvider.NotificationEventData.USER_ID, AppPreferences.userSettings.getUserId());
         c.put(SyncProvider.NotificationEventData.VALUE, value);
         c.put(SyncProvider.NotificationEventData.NOTIFICATION_TYPE, type);
