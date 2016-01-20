@@ -202,7 +202,7 @@ public class UserContextService extends IntentService {
             foreground_app = new Tuple(System.currentTimeMillis(), app_data.getString(app_data.getColumnIndex("package_name")));
             foreground_package = new Tuple(System.currentTimeMillis(), app_data.getString(app_data.getColumnIndex("package_name")));
             //Log.d("Application", "fore, package: " + foreground_app + foreground_package);
-            getAppCategory(foreground_app.value, foreground_package.value);
+            //getAppCategory(foreground_app.value, foreground_package.value);
             app_data.close();
         }
         catch (CursorIndexOutOfBoundsException e) {
@@ -213,7 +213,7 @@ public class UserContextService extends IntentService {
     private void getAppCategory(final String appName, final String packageName) {
         Log.d("Application", "getAppCategory()");
         MarketSession session = new MarketSession();
-        session.login(username, password);
+        //session.login(username, password);
         session.getContext().setAndroidId("myid");
 
         Market.AppsRequest req = Market.AppsRequest.newBuilder()
