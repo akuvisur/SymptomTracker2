@@ -1,7 +1,9 @@
 package com.comag.aku.lifetracker.app_settings;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -62,7 +64,10 @@ public class AppPreferences {
         return schema;
     }
 
-    public static void join(Schema s) {
+    public static void join(final Schema s) {
+        Intent aware = new Intent(AppHelpers.currentContext, Aware.class);
+        AppHelpers.currentContext.startService(aware);
+
         try {
             init();
         }
@@ -75,8 +80,17 @@ public class AppPreferences {
         editor.apply();
 
         if (s.aware_study_url != null) {
-            Aware.joinStudy(AppHelpers.currentContext, s.aware_study_url);
-            AppPreferences.setUserSetting(DATASYNC_ENABLED, true);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d("study_join", "from delayed join..");
+                    Intent join = new Intent(AppHelpers.currentContext, Aware.JoinStudy.class);
+                    join.putExtra("study_url", s.aware_study_url);
+                    AppHelpers.currentContext.startService(join);
+                    //Aware.joinStudy(AppHelpers.currentContext, s.aware_study_url);
+                    AppPreferences.setUserSetting(DATASYNC_ENABLED, true);
+                }
+            }, 30000);
         }
 
         schema = s;
@@ -240,11 +254,17 @@ public class AppPreferences {
                 String id = (String) value;
                 editor.putString(USER_ID, id);
                 userSettings.setUserId(id);
+                break;
+            case DATASYNC_ENABLED:
+                boolean enabled = (boolean) value;
+                editor.putBoolean(DATASYNC_ENABLED, enabled);
+                userSettings.setDataSync(enabled);
+                break;
             default:
                 break;
         }
 
-        editor.apply();
+        editor.commit();
     }
 
     public static List<Symptom> symptomsAsList() {

@@ -15,6 +15,7 @@ public class UserSettings {
     int popupFrequency = 50;
     int popupInterval = NotificationService.NOTIFICATION_DELAY_MS;
     String userId = "";
+    boolean data_sync = false;
 
     public void setPopupsAutomated(Boolean automated) {
         popupsAutomated = automated;
@@ -35,6 +36,8 @@ public class UserSettings {
     public void setUserId(String id) {
         userId = id;
     }
+
+    public void setDataSync(boolean enabled) {data_sync = enabled;}
 
     public boolean isPopupsAutomated() {
         return popupsAutomated;
