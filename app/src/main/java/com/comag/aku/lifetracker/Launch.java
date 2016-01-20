@@ -143,8 +143,8 @@ public class Launch extends AppCompatActivity {
 
     public static void proceed() {
         AlertDialog.Builder builder = new AlertDialog.Builder(AppHelpers.currentActivity);
-        builder.setTitle("Give your user ID:");
-        builder.setMessage(AppHelpers.parseSchema(DatabaseStorage.schemaList.get(selectedSchemaIndex)));
+        builder.setTitle("Join a study:");
+        builder.setMessage("Please give your designated participant ID if a part of a study. Leave blank if not part of a study.");
         // Set up the input
         final EditText input = new EditText(AppHelpers.currentActivity);
         // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text

@@ -6,7 +6,6 @@ import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 
-import com.comag.aku.lifetracker.objects.Schema;
 import com.comag.aku.lifetracker.objects.Symptom;
 import com.comag.aku.lifetracker.services.NotificationService;
 
@@ -138,12 +137,6 @@ public class AppHelpers {
             default:
                 return ContextCompat.getColor(AppHelpers.currentContext, R.color.Factor1);
         }
-    }
-
-    public static String parseSchema(Schema s) {
-        String text = "This schema tracks "+s.symptoms.size()+" symptoms and "+s.factors.size()+" factors.";
-
-        return text;
     }
 
     public static File createImageFile(String key) throws IOException {
