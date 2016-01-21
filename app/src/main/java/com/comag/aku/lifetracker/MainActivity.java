@@ -87,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
 
     private Tracker mTracker;
 
+    String launchContext;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,18 +96,6 @@ public class MainActivity extends AppCompatActivity {
         AppHelpers.currentContext = getApplicationContext();
         AppHelpers.factory = LayoutInflater.from(this);
         AppHelpers.package_name = getPackageName();
-
-        if (getIntent() != null &&
-                getIntent().getStringExtra("launch_source") != null &&
-                getIntent().getStringExtra("launch_source").equals("notification")) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Log.d("app_launch", "from notification");
-                    SyncronizationController.storeNotificationResponse("launch", "notification", UserContextService.getUserContextString());
-                }
-            }, 15000);
-        }
 
         new Handler().post(new Runnable() {
             @Override
@@ -131,6 +121,23 @@ public class MainActivity extends AppCompatActivity {
 
         startService(new Intent(this, ApplicationMonitor.class));
 
+        // store launch context and store possible launch event from notification
+        try {launchContext = UserContextService.getUserContextString();}
+        catch (NullPointerException e) {}
+        if (getIntent() != null &&
+                getIntent().getStringExtra("launch_source") != null &&
+                getIntent().getStringExtra("launch_source").equals("notification")) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d("app_launch", "from notification");
+                    if (launchContext == null) {
+                        launchContext = UserContextService.getUserContextString();
+                    }
+                    SyncronizationController.storeNotificationResponse("launch", "notification", launchContext);
+                }
+            }, 15000);
+        }
     }
 
     @Override
