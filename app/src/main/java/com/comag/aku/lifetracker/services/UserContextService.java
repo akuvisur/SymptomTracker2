@@ -39,7 +39,14 @@ import java.util.List;
  */
 public class UserContextService extends IntentService {
 
+    static String input_source = "app";
+    public static void setInputSource(String source) {
+        if (source != null) input_source = source;
+    }
+    public static String getInputSource() {return input_source;}
+
     public static final List<String> required = Arrays.asList(
+            "timestamp",
             "hour",
             "minute",
             "day_of_week",
@@ -376,6 +383,7 @@ public class UserContextService extends IntentService {
         minute = new Tuple(System.currentTimeMillis(), cal.get(Calendar.MINUTE));
         day_of_week = new Tuple(System.currentTimeMillis(),cal.get(Calendar.DAY_OF_WEEK));
         userContext = new JSONObject();
+        userContext.put("timestamp", curTime);
         // no values over 1800000ms (30minutes) long accepted
         if (hour != null && (hour.time - curTime < 1800000)) {
             userContext.put("hour", hour.value);

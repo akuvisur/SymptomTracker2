@@ -12,6 +12,7 @@ import com.aware.Aware_Preferences;
 import com.comag.aku.lifetracker.app_settings.AppPreferences;
 import com.comag.aku.lifetracker.objects.ValueMap;
 import com.comag.aku.lifetracker.objects.tracking.Condition;
+import com.comag.aku.lifetracker.services.NotificationService;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Calendar;
@@ -21,7 +22,7 @@ import java.util.Calendar;
  */
 public class SyncronizationController {
 
-    public static void storeAdverseEvent(Condition cond, ValueMap values) {
+    public static void storeAdverseEvent(Condition cond, ValueMap values, String input_source) {
         ContentValues c = new ContentValues();
         c.put(SyncProvider.AdverseEventData.TIMESTAMP, cond.timestamp);
         //c.put(SyncProvider.NotificationEventData.DEVICE_ID, Settings.Secure.getString(NotificationService.getContext().getContentResolver(), Settings.Secure.ANDROID_ID));
@@ -29,6 +30,9 @@ public class SyncronizationController {
 
         c.put(SyncProvider.AdverseEventData.USER_ID, AppPreferences.userSettings.getUserId());
         c.put(SyncProvider.AdverseEventData.TRACKABLE_KEY, cond.key);
+
+        c.put(SyncProvider.AdverseEventData.INPUT_SOURCE, input_source);
+
         if (cond.key.contains("symptom_")) {
             c.put(SyncProvider.AdverseEventData.TRACKABLE_FREQUENCY, AppPreferences.symptoms.get(cond.key).rep_window);
             c.put(SyncProvider.AdverseEventData.TRACKABLE_TYPE, "symptom");
@@ -42,6 +46,8 @@ public class SyncronizationController {
 
         c.put(SyncProvider.AdverseEventData.COMMENT, values.getComment());
         c.put(SyncProvider.AdverseEventData.INPUT, values.getValue());
+
+        c.put(SyncProvider.AdverseEventData.NOTIFICATION_MODE, NotificationService.getModeInt());
 
         if (values.getPicturePath() != null && values.getPicturePath().length() > 0) {
             Bitmap bm = BitmapFactory.decodeFile(values.getPicturePath());
@@ -109,6 +115,9 @@ public class SyncronizationController {
         c.put(SyncProvider.NotificationEventData.VALUE, value);
         c.put(SyncProvider.NotificationEventData.NOTIFICATION_TYPE, type);
         c.put(SyncProvider.NotificationEventData.CONTEXT, context);
+
+        c.put(SyncProvider.NotificationEventData.NOTIFICATION_MODE, NotificationService.getModeInt());
+
         SyncProvider s = new SyncProvider();
         try {
             s.insert(SyncProvider.NotificationEventData.CONTENT_URI, c);

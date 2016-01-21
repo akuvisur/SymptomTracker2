@@ -428,6 +428,7 @@ public class InputPopup {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        UserContextService.setInputSource("popup");
                         NoSQLStorage.storeSingle(new Condition(factor.key), new ValueMap(String.valueOf(bar.getProgress())));
                         container.removeView(inputs);
                     }
@@ -496,6 +497,7 @@ public class InputPopup {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        UserContextService.setInputSource("popup");
                         NoSQLStorage.storeSingle(new Condition(factor.key), new ValueMap(selected));
                     }
                 }, 350);
@@ -577,12 +579,8 @@ public class InputPopup {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        UserContextService.setInputSource("popup");
                         NoSQLStorage.storeSingle(new Condition(symptomKey), new ValueMap(value));
-                        anim = AnimationUtils.loadAnimation(
-                                NotificationService.getContext(), android.R.anim.slide_out_right
-                        );
-                        anim.setDuration(250);
-                        container.startAnimation(anim);
                     }
                 }, 250);
                 new Handler().postDelayed(new Runnable() {

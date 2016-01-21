@@ -1,7 +1,5 @@
 package com.comag.aku.lifetracker.model.data_storage;
 
-import android.util.Log;
-
 import com.comag.aku.lifetracker.model.NoSQLStorage;
 import com.comag.aku.lifetracker.objects.ValueMap;
 import com.comag.aku.lifetracker.objects.tracking.Condition;
@@ -44,7 +42,6 @@ public class Values {
     }
 
     public static void addComment(Condition condition, String text) {
-        Log.d("addcomment", "ei voi olla null?" + (condition == null));
         values.get(condition).setComment(text);
         NoSQLStorage.storeSingle(condition, values.get(condition));
     }

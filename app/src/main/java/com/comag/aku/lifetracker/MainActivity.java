@@ -40,6 +40,7 @@ import android.widget.Toast;
 import com.aware.Aware;
 import com.comag.aku.lifetracker.analytics.AnalyticsApplication;
 import com.comag.aku.lifetracker.app_settings.AppPreferences;
+import com.comag.aku.lifetracker.data_syncronization.SyncronizationController;
 import com.comag.aku.lifetracker.graphics.FactorDataViewer;
 import com.comag.aku.lifetracker.graphics.LeaveStudy;
 import com.comag.aku.lifetracker.graphics.NewSymptom;
@@ -93,6 +94,18 @@ public class MainActivity extends AppCompatActivity {
         AppHelpers.currentContext = getApplicationContext();
         AppHelpers.factory = LayoutInflater.from(this);
         AppHelpers.package_name = getPackageName();
+
+        if (getIntent() != null &&
+                getIntent().getStringExtra("launch_source") != null &&
+                getIntent().getStringExtra("launch_source").equals("notification")) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d("app_launch", "from notification");
+                    SyncronizationController.storeNotificationResponse("launch", "notification", UserContextService.getUserContextString());
+                }
+            }, 15000);
+        }
 
         new Handler().post(new Runnable() {
             @Override

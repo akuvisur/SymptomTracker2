@@ -36,6 +36,16 @@ public class NotificationService extends IntentService {
         else mode = newMode;
     }
 
+    public static int getModeInt() {
+        switch (getMode()) {
+            case DUMMY_MODE:
+                return 0;
+            case LEARNING_MODE:
+                return 1;
+        }
+        return 0;
+    }
+
     private static Context context;
     public static Context getContext() {return context;}
 

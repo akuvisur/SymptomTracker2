@@ -9,7 +9,7 @@ import android.content.Intent;
 import com.colintmiller.simplenosql.NoSQL;
 import com.colintmiller.simplenosql.NoSQLEntity;
 import com.colintmiller.simplenosql.RetrievalCallback;
-import com.comag.aku.lifetracker.Launch;
+import com.comag.aku.lifetracker.MainActivity;
 import com.comag.aku.lifetracker.R;
 import com.comag.aku.lifetracker.app_settings.AppPreferences;
 import com.comag.aku.lifetracker.model.DataObject;
@@ -27,7 +27,8 @@ public class ReminderNotification {
     }
 
     private void emit() {
-        Intent launchIntent = new Intent(NotificationService.getContext(), Launch.class);
+        Intent launchIntent = new Intent(NotificationService.getContext(), MainActivity.class);
+        launchIntent.putExtra("launch_source", "notification");
         PendingIntent intent = PendingIntent.getActivity(NotificationService.getContext(), 0, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         Notification.Builder mBuilder =
                 new Notification.Builder(NotificationService.getContext().getApplicationContext())

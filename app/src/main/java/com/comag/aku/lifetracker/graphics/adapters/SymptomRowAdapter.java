@@ -41,6 +41,7 @@ import com.comag.aku.lifetracker.objects.ButtonKey;
 import com.comag.aku.lifetracker.objects.Symptom;
 import com.comag.aku.lifetracker.objects.ValueMap;
 import com.comag.aku.lifetracker.objects.tracking.Condition;
+import com.comag.aku.lifetracker.services.UserContextService;
 
 import java.io.File;
 import java.io.IOException;
@@ -442,6 +443,7 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        UserContextService.setInputSource("in_app");
                         NoSQLStorage.storeSingle(new Condition(symptom.key), new ValueMap(AppHelpers.getSymptomValueName(symptom, 0)));
                         anim = AnimationUtils.loadAnimation(
                                 AppHelpers.currentContext, android.R.anim.slide_out_right
@@ -459,6 +461,7 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                 }, 600);
             }
             else {
+                UserContextService.setInputSource("in_app");
                 NoSQLStorage.storeSingle(new Condition(symptom.key), new ValueMap(AppHelpers.getSymptomValueName(symptom, 0)));
                 ((SymptomRowAdapter) MainActivity.symptom_list.getAdapter()).notifyDataSetChanged();
             }
@@ -493,6 +496,7 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        UserContextService.setInputSource("in_app");
                         NoSQLStorage.storeSingle(new Condition(symptom.key), new ValueMap(AppHelpers.getSymptomValueName(symptom, 1)));
                         anim = AnimationUtils.loadAnimation(
                                 AppHelpers.currentContext, android.R.anim.slide_out_right
@@ -510,6 +514,7 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                 }, 600);
             }
             else {
+                UserContextService.setInputSource("in_app");
                 NoSQLStorage.storeSingle(new Condition(symptom.key), new ValueMap(AppHelpers.getSymptomValueName(symptom, 1)));
                 ((SymptomRowAdapter) MainActivity.symptom_list.getAdapter()).notifyDataSetChanged();
             }
@@ -542,6 +547,7 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        UserContextService.setInputSource("in_app");
                         NoSQLStorage.storeSingle(new Condition(symptom.key), new ValueMap(AppHelpers.getSymptomValueName(symptom, 2)));
                         anim = AnimationUtils.loadAnimation(
                                 AppHelpers.currentContext, android.R.anim.slide_out_right
@@ -559,6 +565,7 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                 }, 600);
             }
             else {
+                UserContextService.setInputSource("in_app");
                 NoSQLStorage.storeSingle(new Condition(symptom.key), new ValueMap(AppHelpers.getSymptomValueName(symptom, 2)));
                 ((SymptomRowAdapter) MainActivity.symptom_list.getAdapter()).notifyDataSetChanged();
             }
@@ -587,6 +594,7 @@ public class SymptomRowAdapter extends ArrayAdapter<Symptom> {
                     .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int id) {
+                            UserContextService.setInputSource("in_app");
                             Values.addComment(new Condition(symptom.key), text.getText().toString());
                             ((SymptomRowAdapter) MainActivity.symptom_list.getAdapter()).notifyDataSetChanged();
                         }

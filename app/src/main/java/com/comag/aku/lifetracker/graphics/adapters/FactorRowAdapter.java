@@ -40,6 +40,7 @@ import com.comag.aku.lifetracker.model.data_storage.Values;
 import com.comag.aku.lifetracker.objects.Factor;
 import com.comag.aku.lifetracker.objects.ValueMap;
 import com.comag.aku.lifetracker.objects.tracking.Condition;
+import com.comag.aku.lifetracker.services.UserContextService;
 
 import java.io.File;
 import java.io.IOException;
@@ -341,6 +342,7 @@ public class FactorRowAdapter extends ArrayAdapter<Factor> {
                                 @Override
                                 public void run() {
                                     UIManager.setFactorState(factor.key, "done");
+                                    UserContextService.setInputSource("in_app");
                                     NoSQLStorage.storeSingle(new Condition(factor.key), new ValueMap(selected));
                                     ((FactorRowAdapter) MainActivity.factor_list.getAdapter()).notifyDataSetChanged();
                                 }
@@ -491,6 +493,7 @@ public class FactorRowAdapter extends ArrayAdapter<Factor> {
                                 @Override
                                 public void run() {
                                     UIManager.setFactorState(factor.key, "done");
+                                    UserContextService.setInputSource("in_app");
                                     NoSQLStorage.storeSingle(new Condition(factor.key), new ValueMap(selected));
                                     ((FactorRowAdapter) MainActivity.factor_list.getAdapter()).notifyDataSetChanged();
                                 }
@@ -564,6 +567,7 @@ public class FactorRowAdapter extends ArrayAdapter<Factor> {
                 @Override
                 public void run() {
                     UIManager.setFactorState(factor.key, "done");
+                    UserContextService.setInputSource("in_app");
                     NoSQLStorage.storeSingle(new Condition(factor.key), new ValueMap(
                             ((TextView) inputElements.get(factor.key).findViewById(R.id.factor_input_range_value)).getText().toString()));
                     ((FactorRowAdapter) MainActivity.factor_list.getAdapter()).notifyDataSetChanged();
@@ -596,6 +600,7 @@ public class FactorRowAdapter extends ArrayAdapter<Factor> {
                         public void onClick(DialogInterface dialog, int id) {
                             ValueMap m = Values.fetch(factor.key);
                             m.setComment(text.getText().toString());
+                            UserContextService.setInputSource("in_app");
                             NoSQLStorage.storeSingle(new Condition(factor.key), m);
                             ((FactorRowAdapter) MainActivity.factor_list.getAdapter()).notifyDataSetChanged();
                         }

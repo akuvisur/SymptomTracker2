@@ -15,6 +15,7 @@ import com.comag.aku.lifetracker.model.data_storage.Values;
 import com.comag.aku.lifetracker.objects.ValueMap;
 import com.comag.aku.lifetracker.objects.tracking.Condition;
 import com.comag.aku.lifetracker.services.NotificationService;
+import com.comag.aku.lifetracker.services.UserContextService;
 
 import java.util.List;
 
@@ -59,7 +60,7 @@ public class NoSQLStorage {
         NoSQL.with(AppHelpers.currentContext).using(DataObject.class).save(entity);
         Values.put(o.c, o.v);
 
-        SyncronizationController.storeAdverseEvent(c, v);
+        SyncronizationController.storeAdverseEvent(c, v, UserContextService.getInputSource());
         //loadValues(MainActivity.tab);
     }
 

@@ -25,7 +25,7 @@ import java.util.HashMap;
  */
 public class SyncProvider extends ContentProvider {
     public static String AUTHORITY = "com.comag.aku.lifetracker.provider";
-    public static final int DATABASE_VERSION = 3;
+    public static final int DATABASE_VERSION = 6;
 
     private static final int ADVERSE_EVENTS = 1;
     private static final int ADVERSE_EVENTS_TYPE = 2;
@@ -47,6 +47,8 @@ public class SyncProvider extends ContentProvider {
                     AdverseEventData.INPUT + " text default ''," +
                     AdverseEventData.COMMENT + " text default ''," +
                     AdverseEventData.PICTURE + " blob," +
+                    AdverseEventData.NOTIFICATION_MODE + " integer default 0," +
+                    AdverseEventData.INPUT_SOURCE + " text default ''," +
                     "UNIQUE (" + AdverseEventData.TRACKABLE_FREQUENCY + "," + AdverseEventData.TRACKABLE_FREQUENCY_VALUE + "," + AdverseEventData.DEVICE_ID + "," + AdverseEventData.TRACKABLE_KEY + ")"
             ,
             NotificationEventData._ID + " integer primary key autoincrement," +
@@ -56,6 +58,7 @@ public class SyncProvider extends ContentProvider {
                     NotificationEventData.NOTIFICATION_TYPE + " text default ''," +
                     NotificationEventData.VALUE + " text default ''," +
                     NotificationEventData.CONTEXT + " text default '{}'," +
+                    NotificationEventData.NOTIFICATION_MODE + " integer default 0," +
                     "UNIQUE (" + NotificationEventData.TIMESTAMP + "," + NotificationEventData.DEVICE_ID + ")"
     };
 
@@ -111,6 +114,8 @@ public class SyncProvider extends ContentProvider {
         eventMap.put(AdverseEventData.INPUT, AdverseEventData.INPUT);
         eventMap.put(AdverseEventData.COMMENT, AdverseEventData.COMMENT);
         eventMap.put(AdverseEventData.PICTURE, AdverseEventData.PICTURE);
+        eventMap.put(AdverseEventData.NOTIFICATION_MODE, AdverseEventData.NOTIFICATION_MODE);
+        eventMap.put(AdverseEventData.INPUT_SOURCE, AdverseEventData.INPUT_SOURCE);
 
         notificationMap = new HashMap<>();
         notificationMap.put(NotificationEventData._ID, NotificationEventData._ID);
@@ -120,6 +125,7 @@ public class SyncProvider extends ContentProvider {
         notificationMap.put(NotificationEventData.NOTIFICATION_TYPE, NotificationEventData.NOTIFICATION_TYPE);
         notificationMap.put(NotificationEventData.VALUE, NotificationEventData.VALUE);
         notificationMap.put(NotificationEventData.CONTEXT, NotificationEventData.CONTEXT);
+        notificationMap.put(NotificationEventData.NOTIFICATION_MODE, NotificationEventData.NOTIFICATION_MODE);
 
         return true; //let Android know that the database is ready to be used.
     }
@@ -310,6 +316,8 @@ public class SyncProvider extends ContentProvider {
         public static final String INPUT = "input";
         public static final String COMMENT = "comment";
         public static final String PICTURE = "picture";
+        public static final String NOTIFICATION_MODE = "notification_mode";
+        public static final String INPUT_SOURCE = "input_source";
 
    }
 
@@ -341,6 +349,7 @@ public class SyncProvider extends ContentProvider {
         public static final String NOTIFICATION_TYPE = "notification_type";
         public static final String VALUE = "value";
         public static final String CONTEXT = "context";
+        public static final String NOTIFICATION_MODE = "notification_mode";
 
     }
 
