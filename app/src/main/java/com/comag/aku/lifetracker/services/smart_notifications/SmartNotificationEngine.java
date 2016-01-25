@@ -158,7 +158,7 @@ public class SmartNotificationEngine {
                     //Log.d("past_context","58 valueString = "+ valueString);
 
                     int value=0;
-                    if(valueString.equals("ok"))
+                    if(valueString.equals("ok") || valueString.equals("app"))
                     {
                         value=1;
                     }
@@ -312,7 +312,7 @@ public class SmartNotificationEngine {
                 SyncProvider.NotificationEventData.VALUE
         };
 
-        Cursor c = sp.query(Plugin.URI[1], projection, null, null, null);
+        Cursor c = sp.query(Plugin.URI[1], projection, "value = ? OR value = ? OR value = ?", new String[] {"ok", "no", "app"}, null);
         if (c == null) return;
         while (c.moveToNext()) {
             // create a new list that contains all the sensors that are required
