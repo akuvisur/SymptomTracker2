@@ -13,6 +13,7 @@ import com.comag.aku.lifetracker.app_settings.AppPreferences;
 import com.comag.aku.lifetracker.objects.ValueMap;
 import com.comag.aku.lifetracker.objects.tracking.Condition;
 import com.comag.aku.lifetracker.services.NotificationService;
+import com.comag.aku.lifetracker.services.smart_notifications.SmartNotificationEngine;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Calendar;
@@ -115,8 +116,11 @@ public class SyncronizationController {
         c.put(SyncProvider.NotificationEventData.VALUE, value);
         c.put(SyncProvider.NotificationEventData.NOTIFICATION_TYPE, type);
         c.put(SyncProvider.NotificationEventData.CONTEXT, context);
-
         c.put(SyncProvider.NotificationEventData.NOTIFICATION_MODE, NotificationService.getModeInt());
+
+        c.put(SyncProvider.NotificationEventData.ML_NAIVE_PREDICTION, SmartNotificationEngine.enumToString(SmartNotificationEngine.getNaiveBayesPredictor()));
+        c.put(SyncProvider.NotificationEventData.ML_TREE_PREDICTION, SmartNotificationEngine.enumToString(SmartNotificationEngine.getC49Predictor()));
+        c.put(SyncProvider.NotificationEventData.ML_CONTEXT_SIZE, SmartNotificationEngine.getContextSize());
 
         SyncProvider s = new SyncProvider();
         try {

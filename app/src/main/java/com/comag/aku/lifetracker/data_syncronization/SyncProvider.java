@@ -25,7 +25,7 @@ import java.util.HashMap;
  */
 public class SyncProvider extends ContentProvider {
     public static String AUTHORITY = "com.comag.aku.lifetracker.provider";
-    public static final int DATABASE_VERSION = 6;
+    public static final int DATABASE_VERSION = 7;
 
     private static final int ADVERSE_EVENTS = 1;
     private static final int ADVERSE_EVENTS_TYPE = 2;
@@ -59,6 +59,9 @@ public class SyncProvider extends ContentProvider {
                     NotificationEventData.VALUE + " text default ''," +
                     NotificationEventData.CONTEXT + " text default '{}'," +
                     NotificationEventData.NOTIFICATION_MODE + " integer default 0," +
+                    NotificationEventData.ML_CONTEXT_SIZE + " integer," +
+                    NotificationEventData.ML_NAIVE_PREDICTION + " text, " +
+                    NotificationEventData.ML_TREE_PREDICTION + " text," +
                     "UNIQUE (" + NotificationEventData.TIMESTAMP + "," + NotificationEventData.DEVICE_ID + ")"
     };
 
@@ -126,6 +129,9 @@ public class SyncProvider extends ContentProvider {
         notificationMap.put(NotificationEventData.VALUE, NotificationEventData.VALUE);
         notificationMap.put(NotificationEventData.CONTEXT, NotificationEventData.CONTEXT);
         notificationMap.put(NotificationEventData.NOTIFICATION_MODE, NotificationEventData.NOTIFICATION_MODE);
+        notificationMap.put(NotificationEventData.ML_CONTEXT_SIZE, NotificationEventData.ML_CONTEXT_SIZE);
+        notificationMap.put(NotificationEventData.ML_NAIVE_PREDICTION, NotificationEventData.ML_NAIVE_PREDICTION);
+        notificationMap.put(NotificationEventData.ML_TREE_PREDICTION, NotificationEventData.ML_TREE_PREDICTION);
 
         return true; //let Android know that the database is ready to be used.
     }
@@ -350,6 +356,10 @@ public class SyncProvider extends ContentProvider {
         public static final String VALUE = "value";
         public static final String CONTEXT = "context";
         public static final String NOTIFICATION_MODE = "notification_mode";
+        public static final String ML_CONTEXT_SIZE = "ml_context_size";
+        public static final String ML_NAIVE_PREDICTION = "ml_naive_prediction";
+        public static final String ML_TREE_PREDICTION = "ml_tree_prediction";
+
 
     }
 

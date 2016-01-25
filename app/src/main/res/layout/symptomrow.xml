@@ -66,6 +66,7 @@
                 android:textAlignment="inherit"
                 android:maxLines="4"
                 android:ellipsize="end"
+                android:textColor="@color/black"
                 android:layout_below="@+id/symptom_title"
                 android:layout_alignStart="@+id/symptom_title"
                 android:layout_toStartOf="@+id/symptom_input" />

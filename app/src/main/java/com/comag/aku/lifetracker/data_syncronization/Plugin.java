@@ -9,6 +9,9 @@ import com.aware.Aware;
 import com.aware.Aware_Preferences;
 import com.aware.utils.Aware_Plugin;
 import com.comag.aku.lifetracker.R;
+import com.comag.aku.lifetracker.services.ApplicationMonitor;
+import com.comag.aku.lifetracker.services.NotificationService;
+import com.comag.aku.lifetracker.services.UserContextService;
 
 /**
  * Created by aku on 10/12/15.
@@ -48,6 +51,11 @@ public class Plugin extends Aware_Plugin {
 
         DATABASE_TABLES = SyncProvider.DATABASE_TABLES;
         TABLES_FIELDS = SyncProvider.TABLES_FIELDS;
+
+        // start the services here so AWARE takes care of them running
+        startService(new Intent(this, UserContextService.class));
+        startService(new Intent(this, NotificationService.class));
+        startService(new Intent(this, ApplicationMonitor.class));
 
         return super.onStartCommand(intent, flags, startId);
     }

@@ -22,6 +22,7 @@ import com.aware.Rotation;
 import com.aware.plugin.google.activity_recognition.Plugin;
 import com.aware.providers.Applications_Provider;
 import com.aware.providers.Battery_Provider;
+import com.comag.aku.lifetracker.analytics.AnalyticsApplication;
 import com.comag.aku.lifetracker.app_settings.AppPreferences;
 import com.comag.aku.lifetracker.data_syncronization.SyncProvider;
 import com.gc.android.market.api.MarketSession;
@@ -30,6 +31,8 @@ import com.gc.android.market.api.model.Market;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -201,6 +204,11 @@ public class UserContextService extends IntentService {
         catch (CursorIndexOutOfBoundsException e) {
             Log.d("setBatteryLevel", "Failed:" + e.getMessage());
         }
+        catch (NullPointerException e2) {
+            StringWriter sw = new StringWriter();
+            e2.printStackTrace(new PrintWriter(sw));
+            AnalyticsApplication.sendEvent("crash", "setBatteryLevel()", sw.toString(), null);
+        }
     }
 
     private void getForegroundApp() {
@@ -216,6 +224,11 @@ public class UserContextService extends IntentService {
         }
         catch (CursorIndexOutOfBoundsException e) {
             Log.d("Application", "Failed:" + e.getMessage());
+        }
+        catch (NullPointerException e2) {
+            StringWriter sw = new StringWriter();
+            e2.printStackTrace(new PrintWriter(sw));
+            AnalyticsApplication.sendEvent("crash", "getForegroundApp()", sw.toString(), null);
         }
     }
 
@@ -281,8 +294,6 @@ public class UserContextService extends IntentService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Intent aware = new Intent(this, Aware.class);
-        startService(aware);
 
         if (co != null) unregisterReceiver(co);
 
@@ -377,44 +388,57 @@ public class UserContextService extends IntentService {
 
     private static JSONObject userContext;
     private static void generateJson() throws JSONException {
-        Long curTime = System.currentTimeMillis();
-        Calendar cal = Calendar.getInstance();
-        hour = new Tuple(System.currentTimeMillis(), cal.get(Calendar.HOUR_OF_DAY));
-        minute = new Tuple(System.currentTimeMillis(), cal.get(Calendar.MINUTE));
-        day_of_week = new Tuple(System.currentTimeMillis(),cal.get(Calendar.DAY_OF_WEEK));
-        userContext = new JSONObject();
-        userContext.put("timestamp", curTime);
-        // no values over 1800000ms (30minutes) long accepted
-        if (hour != null && (hour.time - curTime < 1800000)) {
-            userContext.put("hour", hour.value);
-        } else {userContext.put("hour", -1);}
-        if (minute != null && (minute.time - curTime < 1800000)) {
-            userContext.put("minute", minute.value);
-        } else {userContext.put("minute", -1);}
-        if (day_of_week != null && (day_of_week.time - curTime < 1800000)) {
-            userContext.put("day_of_week", day_of_week.value);
-        } else {userContext.put("day_of_week", -1);}
+        try {
+            Long curTime = System.currentTimeMillis();
+            Calendar cal = Calendar.getInstance();
+            hour = new Tuple(System.currentTimeMillis(), cal.get(Calendar.HOUR_OF_DAY));
+            minute = new Tuple(System.currentTimeMillis(), cal.get(Calendar.MINUTE));
+            day_of_week = new Tuple(System.currentTimeMillis(), cal.get(Calendar.DAY_OF_WEEK));
+            userContext = new JSONObject();
+            userContext.put("timestamp", curTime);
+            // no values over 1800000ms (30minutes) long accepted
+            if (hour != null && (hour.time - curTime < 1800000)) {
+                userContext.put("hour", hour.value);
+            } else {
+                userContext.put("hour", -1);
+            }
+            if (minute != null && (minute.time - curTime < 1800000)) {
+                userContext.put("minute", minute.value);
+            } else {
+                userContext.put("minute", -1);
+            }
+            if (day_of_week != null && (day_of_week.time - curTime < 1800000)) {
+                userContext.put("day_of_week", day_of_week.value);
+            } else {
+                userContext.put("day_of_week", -1);
+            }
         /*
         if (device_posture != null) {
             userContext.put("device_posture", device_posture);
         }
         */
-        if (battery_level != null && (battery_level.time - curTime < 1800000)) {
-            userContext.put("battery_level", battery_level.value);
-        } else {userContext.put("battery_level", -1);}
+            if (battery_level != null && (battery_level.time - curTime < 1800000)) {
+                userContext.put("battery_level", battery_level.value);
+            } else {
+                userContext.put("battery_level", -1);
+            }
 
-        if (battery_charging != null && (battery_charging.time - curTime < 1800000)) {
-            userContext.put("battery_charging", battery_charging.value);
-        } else {userContext.put("battery_charging", -1);}
+            if (battery_charging != null && (battery_charging.time - curTime < 1800000)) {
+                userContext.put("battery_charging", battery_charging.value);
+            } else {
+                userContext.put("battery_charging", -1);
+            }
 
         /*
         if (foreground_app != null && (foreground_app.time - curTime < 300000)) {
             userContext.put("foreground_app", foreground_app);
         } else {userContext.put("foreground_app", -1);}
         */
-        if (foreground_package != null && (foreground_package.time - curTime < 1800000)) {
-            userContext.put("foreground_package", AppPreferences.getApplicationIndex(foreground_package.value));
-        } else {userContext.put("foreground_package", -1);}
+            if (foreground_package != null && (foreground_package.time - curTime < 1800000)) {
+                userContext.put("foreground_package", AppPreferences.getApplicationIndex(foreground_package.value));
+            } else {
+                userContext.put("foreground_package", -1);
+            }
 
         /*
         if (foreground_app_category != null && (foreground_app_category.time - curTime < 300000)) {
@@ -422,34 +446,53 @@ public class UserContextService extends IntentService {
         } else {userContext.put("foreground_app_category", -1);}
         */
 
-        if (proximity != null && (proximity.time - curTime < 1800000)) {
-            userContext.put("proximity", proximity.value);
-        } else {userContext.put("proximity", -1);}
+            if (proximity != null && (proximity.time - curTime < 1800000)) {
+                userContext.put("proximity", proximity.value);
+            } else {
+                userContext.put("proximity", -1);
+            }
 
-        if (last_call != null && (last_call.time - curTime < 1800000)) {
-            userContext.put("last_call", last_call.value);
-        } else {userContext.put("last_call", -1);}
+            if (last_call != null && (last_call.time - curTime < 1800000)) {
+                userContext.put("last_call", last_call.value);
+            } else {
+                userContext.put("last_call", -1);
+            }
 
-        if (internet_available != null && (internet_available.time - curTime < 1800000)) {
-            userContext.put("internet_available", internet_available.value);
-        } else {userContext.put("internet_available", -1);}
+            if (internet_available != null && (internet_available.time - curTime < 1800000)) {
+                userContext.put("internet_available", internet_available.value);
+            } else {
+                userContext.put("internet_available", -1);
+            }
 
-        if (wifi_available != null && (wifi_available.time - curTime < 1800000)) {
-            userContext.put("wifi_available", wifi_available.value);
-        } else {userContext.put("wifi_available", -1);}
+            if (wifi_available != null && (wifi_available.time - curTime < 1800000)) {
+                userContext.put("wifi_available", wifi_available.value);
+            } else {
+                userContext.put("wifi_available", -1);
+            }
 
-        if (network_type != null && (network_type.time - curTime < 1800000)) {
-            userContext.put("network_type", network_type.value);
-        } else {userContext.put("network_type", -1);}
+            if (network_type != null && (network_type.time - curTime < 1800000)) {
+                userContext.put("network_type", network_type.value);
+            } else {
+                userContext.put("network_type", -1);
+            }
 
-        if (last_action != null && (last_action.time - curTime < 1800000)) {
-            userContext.put("last_action", last_action.value);
-        } else {userContext.put("last_action", -1);}
+            if (last_action != null && (last_action.time - curTime < 1800000)) {
+                userContext.put("last_action", last_action.value);
+            } else {
+                userContext.put("last_action", -1);
+            }
 
-        if (activity != null && (activity.time - curTime < 1800000)) {
-            userContext.put("activity", activity.value);
-        } else {userContext.put("activity", -1);}
-
+            if (activity != null && (activity.time - curTime < 1800000)) {
+                userContext.put("activity", activity.value);
+            } else {
+                userContext.put("activity", -1);
+            }
+        }
+        catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            AnalyticsApplication.sendEvent("crash", "getContextJson()", sw.toString(), null);
+        }
     }
 
     public static JSONObject getUserContext() {

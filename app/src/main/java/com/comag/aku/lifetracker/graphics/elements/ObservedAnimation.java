@@ -20,6 +20,7 @@ public class ObservedAnimation extends AnimationDrawable {
         for (int i = 0; i < aniDrawable.getNumberOfFrames(); i++) {
             this.addFrame(aniDrawable.getFrame(i), aniDrawable.getDuration(i));
         }
+
     }
 
     @Override

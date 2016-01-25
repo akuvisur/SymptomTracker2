@@ -13,11 +13,15 @@ import com.aware.Aware_Preferences;
 import com.aware.Screen;
 import com.comag.aku.lifetracker.AppHelpers;
 import com.comag.aku.lifetracker.R;
+import com.comag.aku.lifetracker.analytics.AnalyticsApplication;
 import com.comag.aku.lifetracker.app_settings.AppPreferences;
 import com.comag.aku.lifetracker.data_syncronization.Plugin;
+import com.comag.aku.lifetracker.data_syncronization.SyncronizationController;
 import com.comag.aku.lifetracker.model.NoSQLStorage;
 import com.comag.aku.lifetracker.services.smart_notifications.SmartNotificationEngine;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Calendar;
 
 /**
@@ -125,6 +129,13 @@ public class NotificationService extends IntentService {
                 }, AppPreferences.userSettings.getPopupInterval());
                 break;
             case LEARNING_MODE:
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        emitLearningMode();
+                        emitNotification();
+                    }
+                }, AppPreferences.userSettings.getPopupInterval());
                 break;
         }
 
@@ -133,82 +144,129 @@ public class NotificationService extends IntentService {
 
     private void postOnUnlock() {
         // for debug
-        SmartNotificationEngine.generatePastContext();
-        if (mode == NotificationMode.DUMMY_MODE) if ((Math.random()*100) < NotificationPreferences.getCurrentPreference()) new InputPopup().show();
-        else if (mode == NotificationMode.LEARNING_MODE && SmartNotificationEngine.emitNow()) new InputPopup().show();
+        //SmartNotificationEngine.generatePastContext();
+        try {
+            if (mode == NotificationMode.DUMMY_MODE) {
+                if ((Math.random() * 100) < NotificationPreferences.getCurrentPreference()) {
+                    new InputPopup().show();
+                    SmartNotificationEngine.emitNow();
+                }
+                else {
+                    SmartNotificationEngine.emitNow();
+                    SyncronizationController.storeNotificationResponse("no_popup_simple:" + + NotificationPreferences.getCurrentPreference(), "not_shown", UserContextService.getUserContextString());
+                }
+            }
+            else if (mode == NotificationMode.LEARNING_MODE) {
+                if (SmartNotificationEngine.emitNow()) {
+                    new InputPopup().show();
+                }
+                else {
+                    SyncronizationController.storeNotificationResponse("no_popup_ml", "not_shown", UserContextService.getUserContextString());
+                }
+            }
+        }
+        catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            AnalyticsApplication.sendEvent("crash", "postOnUnlock()", sw.toString(), null);
+        }
     }
 
     private void emitDummyMode() {
-        Log.d("emit pop", "delay: " + AppPreferences.userSettings.getPopupInterval());
-        if ((Math.random() * 100) < NotificationPreferences.getCurrentPreference()) {
-            if (!mainRunning() && !AppHelpers.showingPopup && screenStatus == 1 && mode.equals(NotificationMode.DUMMY_MODE)) {
-                new InputPopup().show();
-                AppHelpers.showingPopup = true;
+        try {
+            if ((Math.random() * 100) < NotificationPreferences.getCurrentPreference()) {
+                if (!mainRunning() && !AppHelpers.showingPopup && screenStatus == 1 && mode.equals(NotificationMode.DUMMY_MODE)) {
+                    // thread this to prevent main thread crashing
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            new InputPopup().show();
+                        }
+                    }, 100);
+                    // generate ML predictors
+                    SmartNotificationEngine.emitNow();
+
+                    AppHelpers.showingPopup = true;
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            emitDummyMode();
+                        }
+                    }, AppPreferences.userSettings.getPopupInterval());
+                } else if (mode.equals(NotificationMode.DUMMY_MODE)) {
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            emitDummyMode();
+                        }
+                    }, AppPreferences.userSettings.getPopupInterval());
+                }
+            }
+            //
+            else if (mode.equals(NotificationMode.DUMMY_MODE)) {
+                SyncronizationController.storeNotificationResponse("no_popup_simple:" + NotificationPreferences.getCurrentPreference(), "not_shown", UserContextService.getUserContextString());
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        Log.d("postnew", "was not running - launch!");
                         emitDummyMode();
                     }
                 }, AppPreferences.userSettings.getPopupInterval());
-            } else if (mode.equals(NotificationMode.DUMMY_MODE)) {
+            }
+            else if (mode.equals(NotificationMode.LEARNING_MODE)) {
+                SyncronizationController.storeNotificationResponse("no_popup_simple:" + + NotificationPreferences.getCurrentPreference(), "not_shown", UserContextService.getUserContextString());
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        Log.d("postnew", "was running");
+                        emitLearningMode();
+                    }
+                }, AppPreferences.userSettings.getPopupInterval());
+            }
+        }
+        catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            AnalyticsApplication.sendEvent("crash", "emitDummyMode()", sw.toString(), null);
+        }
+
+    }
+
+    private void emitLearningMode() {
+        try {
+            if (SmartNotificationEngine.emitNow() && !mainRunning() && !AppHelpers.showingPopup && screenStatus == 1 && mode.equals(NotificationMode.LEARNING_MODE)) {
+                new InputPopup().show();
+                AppHelpers.showingPopup = true;
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        emitLearningMode();
+                    }
+                }, AppPreferences.userSettings.getPopupInterval());
+            } else if (mode.equals(NotificationMode.LEARNING_MODE)) {
+                SyncronizationController.storeNotificationResponse("no_popup_ml", "not_shown", UserContextService.getUserContextString());
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        emitLearningMode();
+                    }
+                }, AppPreferences.userSettings.getPopupInterval());
+            } else if (mode.equals(NotificationMode.DUMMY_MODE)) {
+                SyncronizationController.storeNotificationResponse("no_popup_ml", "not_shown", UserContextService.getUserContextString());
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
                         emitDummyMode();
                     }
                 }, AppPreferences.userSettings.getPopupInterval());
             }
         }
-        //
-        else if (mode.equals(NotificationMode.DUMMY_MODE)) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    emitDummyMode();
-                }
-            }, AppPreferences.userSettings.getPopupInterval());
-        }
-        else if (mode.equals(NotificationMode.LEARNING_MODE)) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                   emitLearningMode();
-                }
-            }, AppPreferences.userSettings.getPopupInterval());
+        catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            AnalyticsApplication.sendEvent("crash", "emitLearningMode()", sw.toString(), null);
         }
     }
 
-    private void emitLearningMode() {
-        if (SmartNotificationEngine.emitNow() && !mainRunning() && !AppHelpers.showingPopup && screenStatus == 1 && mode.equals(NotificationMode.LEARNING_MODE)) {
-            new InputPopup().show();
-            AppHelpers.showingPopup = true;
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    emitLearningMode();
-                }
-            }, AppPreferences.userSettings.getPopupInterval());
-        }
-        else if (mode.equals(NotificationMode.LEARNING_MODE)) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    emitLearningMode();
-                }
-            }, AppPreferences.userSettings.getPopupInterval());
-        }
-        else if (mode.equals(NotificationMode.DUMMY_MODE)) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    emitDummyMode();
-                }
-            }, AppPreferences.userSettings.getPopupInterval());
-        }
-
-    }
 
     @Override
     protected void onHandleIntent(Intent intent) {}
@@ -254,7 +312,16 @@ public class NotificationService extends IntentService {
 
 
     private boolean mainRunning() {
-        return UserContextService.foreground_app.value.equals(getResources().getString(R.string.app_name));
+        try {
+            return UserContextService.foreground_app.value.equals(getResources().getString(R.string.app_name));
+        }
+        catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            AnalyticsApplication.sendEvent("crash", "mainRunning()", sw.toString(), null);
+            // return true to prevent popups in case of crashes
+            return true;
+        }
         /*
         Log.d("mainact", MainActivity.class.getCanonicalName());
         ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
