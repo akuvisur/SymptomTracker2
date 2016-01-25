@@ -37,7 +37,7 @@ public class Symptoms implements Callback<JsonObject> {
         // get the changed NotificationService users to see if this user has switched to smart mode
         JsonElement b = response.body().get("mode_changes");
         for (int i = 0; i < b.getAsJsonArray().size(); i++) {
-            if (b.getAsJsonArray().get(i).getAsString().equals(AppPreferences.USER_ID)) {
+            if (b.getAsJsonArray().get(i).getAsString().equals(AppPreferences.userSettings.getUserId())) {
                 NotificationService.setMode(NotificationService.NotificationMode.LEARNING_MODE);
             }
         }

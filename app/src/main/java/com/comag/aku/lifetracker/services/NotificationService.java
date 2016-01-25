@@ -17,6 +17,7 @@ import com.comag.aku.lifetracker.analytics.AnalyticsApplication;
 import com.comag.aku.lifetracker.app_settings.AppPreferences;
 import com.comag.aku.lifetracker.data_syncronization.Plugin;
 import com.comag.aku.lifetracker.data_syncronization.SyncronizationController;
+import com.comag.aku.lifetracker.model.ApiManager;
 import com.comag.aku.lifetracker.model.NoSQLStorage;
 import com.comag.aku.lifetracker.services.smart_notifications.SmartNotificationEngine;
 
@@ -33,11 +34,15 @@ public class NotificationService extends IntentService {
 
     public enum NotificationMode { DUMMY_MODE, LEARNING_MODE }
 
-    private static NotificationMode mode = NotificationMode.DUMMY_MODE;
+    private static NotificationMode mode = AppPreferences.getNotificationMode();
     public static NotificationMode getMode() {return mode;}
     public static void setMode(NotificationMode newMode) {
-        if (!SmartNotificationEngine.isEnabled()) mode = NotificationMode.DUMMY_MODE;
+        Log.d("NotificationService", "Setting new mode! " + getModeInt());
+        if (!SmartNotificationEngine.isEnabled()) {
+            mode = NotificationMode.DUMMY_MODE;
+        }
         else mode = newMode;
+        AppPreferences.setNotificationMode(newMode.equals(NotificationMode.LEARNING_MODE));
     }
 
     public static int getModeInt() {
@@ -55,6 +60,7 @@ public class NotificationService extends IntentService {
 
     private int screenStatus = 1;
 
+    private long lastSymptomSync = System.currentTimeMillis();
     // listen to screen unlock/lock changes
     private class ScreenReceiver extends BroadcastReceiver {
         @Override
@@ -65,6 +71,20 @@ public class NotificationService extends IntentService {
                     AppHelpers.showingPopup = false;
                     // prevent duplicate popups
                     InputPopup.hidePopup();
+
+                    // if 12 hours since last sync
+                    if ((System.currentTimeMillis() - lastSymptomSync) > 60 * 12 * AppHelpers.MINUTE_IN_MILLISECONDS) {
+                        // send threaded query to dashboard to get symptom info +
+                        // check if notitication_mode has changed
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                lastSymptomSync = System.currentTimeMillis();
+                                ApiManager.getSymptomsForSchema();
+                            }
+                        }, 1000);
+                    }
+
                     break;
                 case "ACTION_AWARE_SCREEN_UNLOCKED":
                     if (!AppHelpers.showingPopup) postOnUnlock();

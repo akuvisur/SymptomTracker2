@@ -80,9 +80,9 @@ public class InputPopup {
     public boolean emit(ArrayList<String> keys) {
         // nothing to show
         if (keys.isEmpty()) {
-            Log.d("popup", "nothing to show!");
-            // randomly prompt factor check ups
             AppHelpers.showingPopup = false;
+
+            SyncronizationController.storeNotificationResponse("no_popup_inputtedall" + + NotificationPreferences.getCurrentPreference(), "not_shown", UserContextService.getUserContextString());
             return false;
         }
         AppHelpers.showingPopup = true;

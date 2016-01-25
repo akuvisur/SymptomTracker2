@@ -47,6 +47,24 @@ public class AppPreferences {
 
     public static UserSettings userSettings = new UserSettings();
 
+    public static void setNotificationMode(boolean smart) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putBoolean("smart_notification", smart);
+        editor.apply();
+    }
+
+    public static NotificationService.NotificationMode getNotificationMode() {
+        try {
+            init();
+            boolean b = sharedPrefs.getBoolean("smart_notification", false);
+            if (b) return NotificationService.NotificationMode.LEARNING_MODE;
+            else return NotificationService.NotificationMode.DUMMY_MODE;
+        }
+        catch (NullPointerException e) {
+            return NotificationService.NotificationMode.DUMMY_MODE;
+        }
+    }
+
     private static void init() {
         String myTrackedData = "TrackingData";
         if (AppHelpers.currentContext != null) {
