@@ -53,6 +53,7 @@ public class UserSettings {
     }
 
     public int getPopupInterval() {
+        Log.d("UserSettings", "popupinterval: " + popupInterval);
         return popupInterval;
     }
 

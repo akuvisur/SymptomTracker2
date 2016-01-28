@@ -81,7 +81,6 @@ public class InputPopup {
         // nothing to show
         if (keys.isEmpty()) {
             AppHelpers.showingPopup = false;
-
             SyncronizationController.storeNotificationResponse("no_popup_inputtedall" + + NotificationPreferences.getCurrentPreference(), "not_shown", UserContextService.getUserContextString());
             return false;
         }
@@ -219,6 +218,7 @@ public class InputPopup {
     ArrayList<String> missingKeys;
     private static String factorValue;
     private void getMissingInputs() {
+        final Calendar now = Calendar.getInstance();
         missingKeys = new ArrayList<>();
         factorValue = "";
         for (String key : AppPreferences.factors.keySet()) missingKeys.add(key);
@@ -233,13 +233,14 @@ public class InputPopup {
                                 missingKeys.remove(entities.get(i).getData().c.key);
                             }
                         }
+                        ArrayList<String> tooEarlyKeys = new ArrayList<String>();
                         if (missingKeys.isEmpty()) {
                             // sometimes randomly show daily factor inputs to keep them up to date during the day
                             Calendar c  =Calendar.getInstance();
                             if (c.get(Calendar.HOUR_OF_DAY) < 18) {
                                 return;
                             }
-                            if ((new Random(System.currentTimeMillis()).nextInt(100) < 115) && !AppPreferences.factors.isEmpty()) {
+                            if ((new Random(System.currentTimeMillis()).nextInt(100) < 10) && !AppPreferences.factors.isEmpty()) {
                                 ArrayList<String> factors = new ArrayList<>();
                                 for (String key : AppPreferences.factors.keySet()) {
                                     if (AppPreferences.factors.get(key).rep_window.equals("day")) factors.add(key);
@@ -252,6 +253,25 @@ public class InputPopup {
                                     }
                                 }
                             }
+                        }
+                        // if its too early in the day, dont ask daily/weekly/monthly trackables
+                        // TODO don't ask weekly/monthly too early
+                        else {
+                            for (String key : missingKeys) {
+                                if (AppPreferences.factors.containsKey(key)) {
+                                    if ((AppPreferences.factors.get(key).rep_window.equals("day")) && (now.get(Calendar.HOUR_OF_DAY)) < 14) {
+                                        tooEarlyKeys.add(key);
+                                    }
+                                }
+                                else if (AppPreferences.symptoms.containsKey(key)) {
+                                    if ((AppPreferences.symptoms.get(key).rep_window.equals("day")) && (now.get(Calendar.HOUR_OF_DAY)) < 14) {
+                                        tooEarlyKeys.add(key);
+                                    }
+                                }
+                            }
+                        }
+                        for (String key : tooEarlyKeys) {
+                            missingKeys.remove(key);
                         }
                         emit(missingKeys);
                     }

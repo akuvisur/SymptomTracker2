@@ -158,7 +158,6 @@ public class NotificationService extends IntentService {
                 }, AppPreferences.userSettings.getPopupInterval());
                 break;
         }
-
         return START_STICKY;
     }
 
