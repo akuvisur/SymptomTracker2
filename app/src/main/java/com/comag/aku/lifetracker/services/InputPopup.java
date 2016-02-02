@@ -72,8 +72,11 @@ public class InputPopup {
         final WindowManager windowManager = (WindowManager) NotificationService.getContext().getSystemService(Context.WINDOW_SERVICE);
         try {
             AppHelpers.showingPopup = false;
+            WindowCleaner.clearViews();
+            /*
             if (popupLayout != null) windowManager.removeView(popupLayout);
             if (dialogView != null) windowManager.removeView(dialogView);
+            */
         }
         catch (IllegalArgumentException e) {
             Log.d("input_popup", "crash while trying to hide non-existing popups");
@@ -215,6 +218,7 @@ public class InputPopup {
 
         // remove view after 1 minutes
         windowManager.addView(popupLayout, params);
+        WindowCleaner.addView("popup", popupLayout);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -546,7 +550,8 @@ public class InputPopup {
                     }
                 }, 350);
                 try  {
-                    windowManager.removeView(dialogView);
+                    WindowCleaner.removeView(factor.key);
+                    //windowManager.removeView(dialogView);
                 }
                 catch (Exception e) {
                     Log.d(LOG, "crash when trying to hide multiple select view");
@@ -557,7 +562,8 @@ public class InputPopup {
             @Override
             public void onClick(View v) {
                 try  {
-                    windowManager.removeView(dialogView);
+                    WindowCleaner.removeView(factor.key);
+                    //windowManager.removeView(dialogView);
                 }
                 catch (Exception e) {
                     Log.d(LOG, "crash when trying to hide multiple select view");
@@ -568,6 +574,8 @@ public class InputPopup {
         dialogView.setBackgroundColor(ContextCompat.getColor(NotificationService.getContext(), R.color.white));
 
         windowManager.addView(dialogView, params);
+
+        WindowCleaner.addView(factor.key, dialogView);
     }
 
     private class ValueButton extends CheckBox {
