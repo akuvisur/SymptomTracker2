@@ -30,6 +30,8 @@ import com.google.android.gms.analytics.Tracker;
  * the {@link Tracker}.
  */
 public class AnalyticsApplication extends Application {
+    private static final String LOG = "AnalyticsApplication";
+
     private static Tracker mTracker;
 
     /**
@@ -46,19 +48,24 @@ public class AnalyticsApplication extends Application {
     }
 
     public static void sendEvent(String category, String action, String label, Long value) {
-        Log.d("analytics", "new event " + category);
-        HitBuilders.EventBuilder event = new HitBuilders.EventBuilder();
+        try {
+            //Log.d("analytics", "new event " + category);
+            HitBuilders.EventBuilder event = new HitBuilders.EventBuilder();
 
-        if (category == null || action == null) {
-            return;
+            if (category == null || action == null) {
+                return;
+            }
+            event.setCategory(category);
+            event.setAction(action);
+            if (label != null) event.setLabel(label);
+            if (value != null) event.setValue(value);
+
+            mTracker.send(event.build());
+
+            UserContextService.setLastAction();
         }
-        event.setCategory(category);
-        event.setAction(action);
-        if (label != null) event.setLabel(label);
-        if (value != null) event.setValue(value);
-
-        mTracker.send(event.build());
-
-        UserContextService.setLastAction();
+        catch (NullPointerException e) {
+            Log.d(LOG, "Tracker was null");
+        }
     }
 }

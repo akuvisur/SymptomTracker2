@@ -2,6 +2,7 @@ package com.comag.aku.lifetracker.services;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -10,6 +11,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.v4.view.accessibility.AccessibilityEventCompat;
 import android.support.v4.view.accessibility.AccessibilityManagerCompat;
@@ -72,7 +74,7 @@ public class ApplicationMonitor extends AccessibilityService {
 
         Intent newForeground = new Intent(NEW_FOREGROUND);
         newForeground.putExtra("app_name", appName);
-        newForeground.putExtra("package_name", pkgInfo.packageName);
+        if (pkgInfo != null) newForeground.putExtra("package_name", pkgInfo.packageName);
         sendBroadcast(newForeground);
 
         AppPreferences.addUsedApplication(appName, pkgInfo.packageName, "category");
@@ -81,6 +83,20 @@ public class ApplicationMonitor extends AccessibilityService {
     @Override
     public void onInterrupt() {
         Log.d("appmonitor", "has been destroyed");
+    }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        // TODO Auto-generated method stub
+        Intent restartService = new Intent(getApplicationContext(),
+                ApplicationMonitor.class);
+        restartService.setPackage(getPackageName());
+        PendingIntent restartServicePI = PendingIntent.getService(
+                getApplicationContext(), 1, restartService,
+                PendingIntent.FLAG_ONE_SHOT);
+        AlarmManager alarmService = (AlarmManager)getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        alarmService.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 1000, restartServicePI);
+
     }
 
     private static boolean isAccessibilityEnabled(Context c) {

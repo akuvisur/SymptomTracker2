@@ -34,6 +34,8 @@ public class SyncronizationController {
 
         c.put(SyncProvider.AdverseEventData.INPUT_SOURCE, input_source);
 
+        c.put(SyncProvider.AdverseEventData.SELECTED_STUDY, AppPreferences.schema.title);
+
         if (cond.key.contains("symptom_")) {
             c.put(SyncProvider.AdverseEventData.TRACKABLE_FREQUENCY, AppPreferences.symptoms.get(cond.key).rep_window);
             c.put(SyncProvider.AdverseEventData.TRACKABLE_TYPE, "symptom");

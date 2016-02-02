@@ -329,7 +329,7 @@ public class SmartNotificationEngine {
                 }
                 o.put("value", c.getString(1));
                 pastContext.add(o);
-                Log.d("past_context_dump", o.toString());
+                //Log.d("past_context_dump", o.toString());
             }
             catch (JSONException e) {
                 Log.d("past_context", "error generating JSON from string: " + c.getString(0));

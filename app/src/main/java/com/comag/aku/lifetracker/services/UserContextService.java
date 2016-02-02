@@ -1,6 +1,8 @@
 package com.comag.aku.lifetracker.services;
 
+import android.app.AlarmManager;
 import android.app.IntentService;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -9,6 +11,8 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
 import android.os.Handler;
+import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.aware.Applications;
@@ -24,7 +28,6 @@ import com.aware.providers.Applications_Provider;
 import com.aware.providers.Battery_Provider;
 import com.comag.aku.lifetracker.analytics.AnalyticsApplication;
 import com.comag.aku.lifetracker.app_settings.AppPreferences;
-import com.comag.aku.lifetracker.data_syncronization.SyncProvider;
 import com.gc.android.market.api.MarketSession;
 import com.gc.android.market.api.model.Market;
 
@@ -41,6 +44,7 @@ import java.util.List;
  * Created by aku on 11/12/15.
  */
 public class UserContextService extends IntentService {
+    private final static String LOG = "UserContextService";
 
     static String input_source = "app";
     public static void setInputSource(String source) {
@@ -292,8 +296,50 @@ public class UserContextService extends IntentService {
     @Override
     public void onCreate() {}
 
+    // set system wide alarm to restart service if it has been shutdown
+    final static int restartAlarmInterval = 60*60*1000;
+    final static int resetAlarmTimer = 15*60*1000;
+    public void setServiceKeepAlive() {
+        final AlarmManager alarmMgr = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        final Intent restartIntent = new Intent(getApplicationContext(), UserContextService.class);
+        restartIntent.putExtra("ALARM_RESTART_SERVICE_DIED", true);
+        final RestartHandler restartServiceHandler = new RestartHandler(restartIntent, alarmMgr, getApplicationContext());
+
+        restartServiceHandler.sendEmptyMessageDelayed(0, 0);
+    }
+
+    private static class RestartHandler extends Handler {
+        Intent restartIntent;
+        AlarmManager alarmMgr;
+        Context applicationContext;
+        public RestartHandler(Intent restartIntent, AlarmManager alarmMgr, Context applicationContext) {
+            this.restartIntent = restartIntent;
+            this.alarmMgr = alarmMgr;
+            this.applicationContext = applicationContext;
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            PendingIntent pintent = PendingIntent.getService(applicationContext, 0, restartIntent, 0);
+            alarmMgr.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + restartAlarmInterval, pintent);
+            sendEmptyMessageDelayed(0, resetAlarmTimer);
+        }
+    }
+
+    private static boolean IS_RUNNING = false;
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        if ((intent != null) && (intent.getBooleanExtra("ALARM_RESTART_SERVICE_DIED", false)))
+        {
+            Log.d(LOG, "onStartCommand after ALARM_RESTART_SERVICE_DIED");
+            if (IS_RUNNING)
+            {
+                Log.d(LOG, "Service already running - return immediately...");
+                setServiceKeepAlive();
+                return START_STICKY;
+            }
+        }
 
         if (co != null) unregisterReceiver(co);
 
@@ -352,7 +398,9 @@ public class UserContextService extends IntentService {
 
         ApplicationMonitor.isAccessibilityServiceActive(this);
 
-        SyncProvider sp = new SyncProvider();
+        setServiceKeepAlive();
+        IS_RUNNING = true;
+
         return START_STICKY;
     }
 
@@ -374,7 +422,22 @@ public class UserContextService extends IntentService {
     protected void onHandleIntent(Intent intent) {}
 
     @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        IS_RUNNING = false;
+        Intent restartService = new Intent(getApplicationContext(),
+                UserContextService.class);
+        restartService.setPackage(getPackageName());
+        PendingIntent restartServicePI = PendingIntent.getService(
+                getApplicationContext(), 1, restartService,
+                PendingIntent.FLAG_ONE_SHOT);
+        AlarmManager alarmService = (AlarmManager)getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        alarmService.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() +1000, restartServicePI);
+    }
+
+    @Override
     public void onDestroy() {
+        IS_RUNNING = false;
+
         Aware.stopSensor(this, Aware_Preferences.STATUS_ROTATION);
         Aware.stopSensor(this, Aware_Preferences.STATUS_BATTERY);
         Aware.stopSensor(this, Aware_Preferences.STATUS_CALLS);
@@ -516,4 +579,5 @@ public class UserContextService extends IntentService {
         }
         return userContext.toString();
     }
+
 }

@@ -25,7 +25,7 @@ import java.util.HashMap;
  */
 public class SyncProvider extends ContentProvider {
     public static String AUTHORITY = "com.comag.aku.lifetracker.provider";
-    public static final int DATABASE_VERSION = 7;
+    public static final int DATABASE_VERSION = 8;
 
     private static final int ADVERSE_EVENTS = 1;
     private static final int ADVERSE_EVENTS_TYPE = 2;
@@ -49,6 +49,7 @@ public class SyncProvider extends ContentProvider {
                     AdverseEventData.PICTURE + " blob," +
                     AdverseEventData.NOTIFICATION_MODE + " integer default 0," +
                     AdverseEventData.INPUT_SOURCE + " text default ''," +
+                    AdverseEventData.SELECTED_STUDY + " text default ''," +
                     "UNIQUE (" + AdverseEventData.TRACKABLE_FREQUENCY + "," + AdverseEventData.TRACKABLE_FREQUENCY_VALUE + "," + AdverseEventData.DEVICE_ID + "," + AdverseEventData.TRACKABLE_KEY + ")"
             ,
             NotificationEventData._ID + " integer primary key autoincrement," +
@@ -119,6 +120,7 @@ public class SyncProvider extends ContentProvider {
         eventMap.put(AdverseEventData.PICTURE, AdverseEventData.PICTURE);
         eventMap.put(AdverseEventData.NOTIFICATION_MODE, AdverseEventData.NOTIFICATION_MODE);
         eventMap.put(AdverseEventData.INPUT_SOURCE, AdverseEventData.INPUT_SOURCE);
+        eventMap.put(AdverseEventData.SELECTED_STUDY, AdverseEventData.SELECTED_STUDY);
 
         notificationMap = new HashMap<>();
         notificationMap.put(NotificationEventData._ID, NotificationEventData._ID);
@@ -324,6 +326,7 @@ public class SyncProvider extends ContentProvider {
         public static final String PICTURE = "picture";
         public static final String NOTIFICATION_MODE = "notification_mode";
         public static final String INPUT_SOURCE = "input_source";
+        public static final String SELECTED_STUDY = "selected_study";
 
    }
 

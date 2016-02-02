@@ -28,6 +28,8 @@ import java.util.TreeMap;
 
 public class Launch extends AppCompatActivity {
 
+    public static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 485749857;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,16 +43,14 @@ public class Launch extends AppCompatActivity {
         AppHelpers.currentContext = getApplicationContext();
         AppHelpers.currentActivity = this;
 
-        if (AppHelpers.DEBUG) AppPreferences.clear();
+        AppPreferences.load();
+        if (AppPreferences.getSchema() == null) launch(null);
         else {
-            AppPreferences.load();
-            if (AppPreferences.getSchema() == null) launch(null);
-            else {
-                ApiManager.getFactorsForSchema();
-                ApiManager.getSymptomsForSchema();
-                AppHelpers.currentActivity.startActivity(new Intent(AppHelpers.currentActivity, MainActivity.class));
-            }
+            ApiManager.getFactorsForSchema();
+            ApiManager.getSymptomsForSchema();
+            AppHelpers.currentActivity.startActivity(new Intent(AppHelpers.currentActivity, MainActivity.class));
         }
+
     }
 
     public static ListView schemaView;

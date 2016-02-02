@@ -54,6 +54,8 @@ import java.util.Random;
  * Created by aku on 26/11/15.
  */
 public class InputPopup {
+    private static final String LOG = "InputPopup";
+
     private View row;
     private Animation anim;
 
@@ -71,12 +73,14 @@ public class InputPopup {
         try {
             AppHelpers.showingPopup = false;
             if (popupLayout != null) windowManager.removeView(popupLayout);
+            if (dialogView != null) windowManager.removeView(dialogView);
         }
         catch (IllegalArgumentException e) {
             Log.d("input_popup", "crash while trying to hide non-existing popups");
         }
     }
 
+    static HashMap<String, TextView> factorValueButtons;
     public boolean emit(ArrayList<String> keys) {
         // nothing to show
         if (keys.isEmpty()) {
@@ -84,7 +88,15 @@ public class InputPopup {
             SyncronizationController.storeNotificationResponse("no_popup_inputtedall" + + NotificationPreferences.getCurrentPreference(), "not_shown", UserContextService.getUserContextString());
             return false;
         }
+        final WindowManager windowManager = (WindowManager) NotificationService.getContext().getSystemService(Context.WINDOW_SERVICE);
+        // hide old popups
+        hidePopup();
+
+        NotificationService.lastNotificationTime = System.currentTimeMillis();
+
         AppHelpers.showingPopup = true;
+
+        factorValueButtons = new HashMap<>();
 
         inflater = (LayoutInflater) NotificationService.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         popupLayout = inflater.inflate(R.layout.popup, null);
@@ -94,8 +106,6 @@ public class InputPopup {
         Button okButton = (Button) popupLayout.findViewById(R.id.popup_ok);
 
         LinearLayout inputRows = (LinearLayout) popupLayout.findViewById(R.id.popup_inputrows);
-
-        final WindowManager windowManager = (WindowManager) NotificationService.getContext().getSystemService(Context.WINDOW_SERVICE);
 
         final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -129,7 +139,7 @@ public class InputPopup {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        windowManager.removeView(popupLayout);
+                        hidePopup();
                         AppHelpers.showingPopup = false;
                         switch (NotificationService.getMode()) {
                             case DUMMY_MODE:
@@ -154,7 +164,7 @@ public class InputPopup {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        windowManager.removeView(popupLayout);
+                        hidePopup();
                         AppHelpers.showingPopup = false;
                         Intent intent = new Intent(NotificationService.getContext(), Launch.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -190,7 +200,7 @@ public class InputPopup {
                     @Override
                     public void run() {
                         AppHelpers.showingPopup = false;
-                        windowManager.removeView(popupLayout);
+                        hidePopup();
                         switch (NotificationService.getMode()) {
                             case DUMMY_MODE:
                                 NotificationPreferences.addDummyOk();
@@ -203,24 +213,24 @@ public class InputPopup {
             }
         });
 
-        // remove view after 5 minutes
+        // remove view after 1 minutes
         windowManager.addView(popupLayout, params);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 hidePopup();
             }
-        }, 300000);
+        }, 60000);
         // returned a popup
         return true;
     }
 
     ArrayList<String> missingKeys;
-    private static String factorValue;
+    private static HashMap<String, String> factorValue;
     private void getMissingInputs() {
         final Calendar now = Calendar.getInstance();
         missingKeys = new ArrayList<>();
-        factorValue = "";
+        factorValue = new HashMap<>();
         for (String key : AppPreferences.factors.keySet()) missingKeys.add(key);
         for (String key : AppPreferences.symptoms.keySet()) missingKeys.add(key);
         NoSQL.with(NotificationService.getContext()).using(DataObject.class)
@@ -249,7 +259,7 @@ public class InputPopup {
                                 missingKeys.add(factors.get(0));
                                 for (int i = 0; i < entities.size(); i++) {
                                     if (entities.get(i).getData().c.isCurrent() && entities.get(i).getData().c.key.equals(missingKeys.get(0))) {
-                                        factorValue = entities.get(i).getData().v.getValue();
+                                        factorValue.put(entities.get(i).getData().c.key, entities.get(i).getData().v.getValue());
                                     }
                                 }
                             }
@@ -344,9 +354,9 @@ public class InputPopup {
 
         inputButton = (Button) row.findViewById(R.id.factor_input);
         valueViews.put(key, inputButton);
-        if (factorValue.length() > 0) {
+        if (factorValue.keySet().contains(key) && factorValue.get(key).length() > 0) {
             try {
-                Integer i = Integer.valueOf(factorValue);
+                Integer i = Integer.valueOf(factorValue.get(key));
                 inputButton.setText(i.toString());
             }
             catch (NumberFormatException e) {
@@ -409,10 +419,10 @@ public class InputPopup {
             Log.d("generatedTrackedSelect", "some null pointer error");
         }
 
-        if (factorValue.length() > 0) {
+        if (factorValue.containsKey(factor.key) && factorValue.get(factor.key).length() > 0) {
             try {
-                rangeBar.setProgress(Integer.valueOf(factorValue));
-                rangeText.setText(factorValue);
+                rangeBar.setProgress(Integer.valueOf(factorValue.get(factor.key)));
+                rangeText.setText(factorValue.get(factor.key));
             } catch (NumberFormatException e) {
                 Log.d("generatedTrackedSelect", "bad number format for value " + factorValue);
             }
@@ -458,17 +468,28 @@ public class InputPopup {
     }
 
     List<String> selected;
-    View dialogView;
+    static View dialogView;
     Button dialogOk;
     Button dialogCancel;
+    static ArrayList<ValueButton> multipleButtons ;
     private void generateMultipleSelect(LinearLayout container, View inputs, final TextView valueView, final Factor factor) {
+
+        final WindowManager windowManager = (WindowManager) NotificationService.getContext().getSystemService(Context.WINDOW_SERVICE);
+        try {
+            if (dialogView != null) windowManager.removeView(dialogView);
+        }
+        catch (Exception e) {
+            Log.d(LOG, "Could not remove old multiple selection dialog view");
+        }
+
         selected = new ArrayList<>();
+        multipleButtons = new ArrayList<>();
         FlowLayout selection;
         List<String> options;
         ValueButton button;
         List<String> oldSelected;
 
-        oldSelected = Arrays.asList(factorValue.split(","));
+        oldSelected = Arrays.asList(factorValue.get(factor.key).split(","));
         options = Arrays.asList(factor.values.split(","));
 
         dialogView = View.inflate(NotificationService.getContext(), R.layout.popup_factorrow_input_multiple, null);
@@ -489,9 +510,8 @@ public class InputPopup {
                 selected.add(option);
             }
             selection.addView(button);
+            multipleButtons.add(button);
         }
-
-        final WindowManager windowManager = (WindowManager) NotificationService.getContext().getSystemService(Context.WINDOW_SERVICE);
 
         final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -510,10 +530,14 @@ public class InputPopup {
         dialogOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                selected.clear();
+                for (ValueButton b : multipleButtons) {
+                    if (b.isChecked()) selected.add(b.value);
+                }
                 Values.addMultipleValues(new Condition(factor.key), selected);
-                valueView.setBackground(ContextCompat.getDrawable(NotificationService.getContext(), R.drawable.checkmark_primary));
-                valueView.setText("");
-                valueView.invalidate();
+                valueViews.get(factor.key).setBackground(ContextCompat.getDrawable(NotificationService.getContext(), R.drawable.checkmark_primary));
+                valueViews.get(factor.key).setText("");
+                valueViews.get(factor.key).invalidate();
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -521,14 +545,23 @@ public class InputPopup {
                         NoSQLStorage.storeSingle(new Condition(factor.key), new ValueMap(selected));
                     }
                 }, 350);
-                windowManager.removeView(dialogView);
+                try  {
+                    windowManager.removeView(dialogView);
+                }
+                catch (Exception e) {
+                    Log.d(LOG, "crash when trying to hide multiple select view");
+                }
             }
         });
         dialogCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AnalyticsApplication.sendEvent("popup", "cancelled", UserContextService.getUserContextString(), null);
-                windowManager.removeView(dialogView);
+                try  {
+                    windowManager.removeView(dialogView);
+                }
+                catch (Exception e) {
+                    Log.d(LOG, "crash when trying to hide multiple select view");
+                }
             }
         });
 
@@ -539,9 +572,11 @@ public class InputPopup {
 
     private class ValueButton extends CheckBox {
         private ValueButton _this;
+        public String value;
         public ValueButton(Context context, final String value) {
             super(context);
             this._this = this;
+            this.value = value;
             this.setTextColor(ContextCompat.getColor(NotificationService.getContext(), R.color.black));
             this.setOnClickListener(new OnClickListener() {
                 @Override
