@@ -304,7 +304,6 @@ public class UserContextService extends IntentService {
         final Intent restartIntent = new Intent(getApplicationContext(), UserContextService.class);
         restartIntent.putExtra("ALARM_RESTART_SERVICE_DIED", true);
         final RestartHandler restartServiceHandler = new RestartHandler(restartIntent, alarmMgr, getApplicationContext());
-
         restartServiceHandler.sendEmptyMessageDelayed(0, 0);
     }
 
@@ -320,9 +319,19 @@ public class UserContextService extends IntentService {
 
         @Override
         public void handleMessage(Message msg) {
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.HOUR_OF_DAY, 8);
             PendingIntent pintent = PendingIntent.getService(applicationContext, 0, restartIntent, 0);
-            alarmMgr.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + restartAlarmInterval, pintent);
-            sendEmptyMessageDelayed(0, resetAlarmTimer);
+
+            // set restart reminder to 8 in the morning if in night hours (00:00 - 08:00)
+            if ((System.currentTimeMillis() - cal.getTimeInMillis()) < 0) {
+                alarmMgr.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + restartAlarmInterval, pintent);
+                sendEmptyMessageDelayed(0, cal.getTimeInMillis() - System.currentTimeMillis());
+            }
+            else {
+                alarmMgr.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + restartAlarmInterval, pintent);
+                sendEmptyMessageDelayed(0, resetAlarmTimer);
+            }
         }
     }
 
