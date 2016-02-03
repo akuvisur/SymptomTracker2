@@ -357,13 +357,13 @@ public class MainActivity extends AppCompatActivity {
         popupAutomated.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                AppPreferences.setUserSetting(AppPreferences.POPUP_AUTOMATED, isChecked);
+                AppPreferences.setUserSetting(AppPreferences.POPUP_AUTOMATED, popupAutomated.isChecked());
                 popupFreq.setEnabled(!isChecked);
                 if (isChecked) {
                     popupFreqText.setText(String.valueOf(NotificationPreferences.getCurrentPreference()));
                     popupFreq.setProgress(NotificationPreferences.getCurrentPreference());
                 }
-                Toast.makeText(AppHelpers.currentContext, "Popup automation changed to " + isChecked + ".", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AppHelpers.currentContext, "Popup automation changed to " + AppPreferences.userSettings.isPopupsAutomated() + ".", Toast.LENGTH_SHORT).show();
                 AnalyticsApplication.sendEvent("settings", "popup_automation", String.valueOf(isChecked), null);
 
             }

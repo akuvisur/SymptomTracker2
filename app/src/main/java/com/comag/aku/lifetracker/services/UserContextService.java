@@ -297,8 +297,8 @@ public class UserContextService extends IntentService {
     public void onCreate() {}
 
     // set system wide alarm to restart service if it has been shutdown
-    final static int restartAlarmInterval = 60*60*1000;
-    final static int resetAlarmTimer = 15*60*1000;
+    final static int restartAlarmInterval = 20*60*1000;
+    final static int resetAlarmTimer = 5*60*1000;
     public void setServiceKeepAlive() {
         final AlarmManager alarmMgr = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
         final Intent restartIntent = new Intent(getApplicationContext(), UserContextService.class);

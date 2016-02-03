@@ -364,6 +364,7 @@ public class InputPopup {
                 inputButton.setText(i.toString());
             }
             catch (NumberFormatException e) {
+                Log.d("InputPopup", "should be a multiple input?");
                 inputButton.setBackground(ContextCompat.getDrawable(NotificationService.getContext(), R.drawable.checkmark_primary));
                 inputButton.setText("");
             }
@@ -384,6 +385,7 @@ public class InputPopup {
                         generateMultipleSelect(container, inputs, inputButton, factor);
                     }
                 });
+
                 break;
         }
 
@@ -409,6 +411,7 @@ public class InputPopup {
 
         ImageButton okButton = (ImageButton) inputs.findViewById(R.id.input_ok);
         okButton.setOnClickListener(generateOkButtonListener(rangeBar, container, inputs, factor));
+
 
         try {
             int value = Integer.valueOf(Values.fetch(factor.key).getValue());
@@ -491,9 +494,10 @@ public class InputPopup {
         FlowLayout selection;
         List<String> options;
         ValueButton button;
-        List<String> oldSelected;
+        List<String> oldSelected = new ArrayList<>();
 
-        oldSelected = Arrays.asList(factorValue.get(factor.key).split(","));
+        if (factorValue.get(factor.key) != null ) oldSelected = Arrays.asList(factorValue.get(factor.key).split(","));
+
         options = Arrays.asList(factor.values.split(","));
 
         dialogView = View.inflate(NotificationService.getContext(), R.layout.popup_factorrow_input_multiple, null);
@@ -539,16 +543,18 @@ public class InputPopup {
                     if (b.isChecked()) selected.add(b.value);
                 }
                 Values.addMultipleValues(new Condition(factor.key), selected);
-                valueViews.get(factor.key).setBackground(ContextCompat.getDrawable(NotificationService.getContext(), R.drawable.checkmark_primary));
-                valueViews.get(factor.key).setText("");
-                valueViews.get(factor.key).invalidate();
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         UserContextService.setInputSource("popup");
+
+                        valueViews.get(factor.key).setBackground(ContextCompat.getDrawable(NotificationService.getContext(), R.drawable.checkmark_primary));
+                        valueViews.get(factor.key).setText("");
+                        valueViews.get(factor.key).invalidate();
+
                         NoSQLStorage.storeSingle(new Condition(factor.key), new ValueMap(selected));
                     }
-                }, 350);
+                }, 50);
                 try  {
                     WindowCleaner.removeView(factor.key);
                     //windowManager.removeView(dialogView);

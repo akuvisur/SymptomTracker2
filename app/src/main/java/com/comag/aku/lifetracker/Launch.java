@@ -164,6 +164,7 @@ public class Launch extends AppCompatActivity {
                 ApiManager.getSymptomsForSchema();
                 ApiManager.getFactorsForSchema();
                 AppHelpers.currentActivity.startActivity(new Intent(AppHelpers.currentActivity, MainActivity.class));
+                // only do this once here
                 ApplicationMonitor.sendAccessibilityServiceVerification(AppHelpers.currentContext);
                 Snackbar.make(input, "Please enable accessibility services for this application in your settings", Snackbar.LENGTH_INDEFINITE).setAction("Go to settings", new View.OnClickListener() {
                     @Override

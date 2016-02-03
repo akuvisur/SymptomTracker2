@@ -282,7 +282,7 @@ public class AppPreferences {
                 break;
         }
 
-        editor.commit();
+        editor.apply();
     }
 
     public static List<Symptom> symptomsAsList() {

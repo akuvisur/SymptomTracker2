@@ -1,7 +1,5 @@
 package com.comag.aku.lifetracker.app_settings;
 
-import android.util.Log;
-
 import com.aware.Aware;
 import com.comag.aku.lifetracker.services.NotificationPreferences;
 import com.comag.aku.lifetracker.services.NotificationService;
@@ -53,14 +51,14 @@ public class UserSettings {
     }
 
     public int getPopupInterval() {
-        Log.d("UserSettings", "popupinterval: " + popupInterval);
+        //Log.d("UserSettings", "popupinterval: " + popupInterval);
         return popupInterval;
     }
 
     public boolean dataSyncEnabled() {
-        Log.d("study url", AppPreferences.schema.aware_study_url);
+        //Log.d("study url", AppPreferences.schema.aware_study_url);
         if (AppPreferences.schema.aware_study_url != null && Aware.getSetting(NotificationService.getContext(), Aware.STUDY_ID).length() > 0) {
-            Log.d("settings", "joined study");
+            //Log.d("settings", "joined study");
             Aware.joinStudy(NotificationService.getContext(), AppPreferences.schema.aware_study_url);
         }
         return (Aware.getSetting(NotificationService.getContext(), Aware.STUDY_ID).length() > 0);

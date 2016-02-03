@@ -181,7 +181,7 @@ public class SmartNotificationEngine {
                 catch (JSONException e) {
                     NAIVE_BAYES_PREDICTOR = Prediction.ML_UNDEFINED;
                     C49_PREDICTOR = Prediction.ML_UNDEFINED;
-                    Log.d("past_context", "object naive = "+i);
+                    //Log.d("past_context", "object naive = "+i);
                 }
             }
 
@@ -209,19 +209,19 @@ public class SmartNotificationEngine {
             dataRaw.setClassIndex(dataRaw.numAttributes() - 1);
 
             NaiveBayes model = new NaiveBayes();
-            Log.d("past_context", "122");
+            //Log.d("past_context", "122");
 
-            Log.d("past_context", "136");
+            //Log.d("past_context", "136");
             model.buildClassifier(dataRaw);   // build classifier
 
             Instances dataRaw2 = new Instances("EvalInstances", atts, 0);
 
             double[] instanceValue3 = new double[dataRaw2.numAttributes()];
-            Log.d("past_context", "142");
+            //Log.d("past_context", "142");
             try {
                 // get the doubles for current
                 Double hour = userContext.getDouble("hour");
-                Log.d("past_context","134 hour = "+ hour);
+                //Log.d("past_context","134 hour = "+ hour);
                 Double minute = userContext.getDouble("minute");
                 Double day_of_week = userContext.getDouble("day");
                 Double battery_level = userContext.getDouble("battery_level");
@@ -252,18 +252,18 @@ public class SmartNotificationEngine {
             catch (JSONException e) {
                 NAIVE_BAYES_PREDICTOR = Prediction.ML_UNDEFINED;
                 C49_PREDICTOR = Prediction.ML_UNDEFINED;
-                Log.d("past_context", "current naive");
+                //Log.d("past_context", "current naive");
             }
 
-            Log.d("past_context", "167");
+            //Log.d("past_context", "167");
             dataRaw2.add(new DenseInstance(1.0, instanceValue3));
             dataRaw2.setClassIndex(dataRaw2.numAttributes() - 1);
 
             //then predict
-            Log.d("past_context", "172");
+            //Log.d("past_context", "172");
             NaiveResult = model.classifyInstance(dataRaw2.instance(0));
 
-            Log.d("past_context", "173 Naive Bayes Classification result= "+NaiveResult);
+            //Log.d("past_context", "173 Naive Bayes Classification result= "+NaiveResult);
             String[] options = new String[1];
 
             //we use weka j48 here
@@ -272,7 +272,7 @@ public class SmartNotificationEngine {
             tree.setOptions(options);
             tree.buildClassifier(dataRaw);
             TreeResult=tree.classifyInstance(dataRaw2.instance(0));
-            Log.d("past_context", "201 Tree Classification result= "+TreeResult);
+            //Log.d("past_context", "201 Tree Classification result= "+TreeResult);
 
         }
         catch(Exception e) {
@@ -282,9 +282,9 @@ public class SmartNotificationEngine {
         }
 
         long end=System.currentTimeMillis();
-        Log.d("past_context", "Time spent= "+(end-start));
-        Log.d(LOG, "naive: " + NaiveResult);
-        Log.d(LOG, "tree :" + TreeResult);
+        //Log.d("past_context", "Time spent= "+(end-start));
+        //Log.d(LOG, "naive: " + NaiveResult);
+        //Log.d(LOG, "tree :" + TreeResult);
 
         NAIVE_BAYES_PREDICTOR = (NaiveResult > 0.1) ? Prediction.ML_YES : Prediction.ML_NO;
         C49_PREDICTOR = (TreeResult > 0.1) ? Prediction.ML_YES : Prediction.ML_NO;

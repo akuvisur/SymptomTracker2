@@ -152,13 +152,13 @@ public class ApplicationMonitor extends AccessibilityService {
     public static boolean isAccessibilityServiceActive(Context c) {
         // service verification was bugged 15/1/2016
         // would always remind user to switch services on
-        //return true;
-
+        return true;
+        /*
         if( ! isAccessibilityEnabled(c) ) {
             sendAccessibilityServiceVerification(c);
         }
         return isAccessibilityEnabled(c);
-
+        */
     }
 
     public static void sendAccessibilityServiceVerification(Context c) {

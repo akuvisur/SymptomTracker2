@@ -70,8 +70,11 @@ public class NotificationPreferences {
     public static int getCurrentPreference() {
         switch (NotificationService.getMode()) {
             case DUMMY_MODE:
-                int pref = getCurrentDummyPreference();
+                int pref;
+                if (AppPreferences.userSettings.isPopupsAutomated()) pref = getCurrentDummyPreference();
+                else pref = AppPreferences.userSettings.getPopupFrequency();
                 AppPreferences.userSettings.setPopupFrequency(pref);
+                //Log.d("dummy_pref", "" + pref);
                 return pref;
             case LEARNING_MODE:
                 pref =  getCurrentLearningPreference();

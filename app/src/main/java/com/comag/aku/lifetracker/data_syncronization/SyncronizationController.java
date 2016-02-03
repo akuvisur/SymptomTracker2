@@ -81,6 +81,7 @@ public class SyncronizationController {
                     null
             );
             if (cur != null && cur.moveToFirst()) {
+                Log.d("DataSync", "Found _ID, performing update");
                 s.update(
                         SyncProvider.AdverseEventData.CONTENT_URI,
                         c,

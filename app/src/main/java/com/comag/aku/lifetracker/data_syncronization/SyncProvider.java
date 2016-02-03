@@ -276,6 +276,8 @@ public class SyncProvider extends ContentProvider {
 
         values.put("user_id", AppPreferences.userSettings.getUserId());
 
+        Log.d("SyncProvider", "updating values to database...");
+
         switch (sUriMatcher.match(uri)) {
             case NOTIFICATIONS:
                 count = database.update(DATABASE_TABLES[1], values, selection, selectionArgs);
