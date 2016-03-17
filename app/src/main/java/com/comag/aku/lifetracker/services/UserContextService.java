@@ -320,12 +320,11 @@ public class UserContextService extends IntentService {
         @Override
         public void handleMessage(Message msg) {
             Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.HOUR_OF_DAY, 8);
             PendingIntent pintent = PendingIntent.getService(applicationContext, 0, restartIntent, 0);
-
             // set restart reminder to 8 in the morning if in night hours (00:00 - 08:00)
-            if ((System.currentTimeMillis() - cal.getTimeInMillis()) < 0) {
-                alarmMgr.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + restartAlarmInterval, pintent);
+            if (cal.get(Calendar.HOUR_OF_DAY) < 8) {
+                cal.set(Calendar.HOUR_OF_DAY, 8);
+                alarmMgr.set(AlarmManager.ELAPSED_REALTIME, cal.getTimeInMillis() - System.currentTimeMillis(), pintent);
                 sendEmptyMessageDelayed(0, cal.getTimeInMillis() - System.currentTimeMillis());
             }
             else {

@@ -261,7 +261,7 @@ public class SmartNotificationEngine {
 
             //then predict
             //Log.d("past_context", "172");
-            NaiveResult = model.classifyInstance(dataRaw2.instance(0));
+            //NaiveResult = model.classifyInstance(dataRaw2.instance(0));
 
             //Log.d("past_context", "173 Naive Bayes Classification result= "+NaiveResult);
             String[] options = new String[1];
@@ -286,13 +286,14 @@ public class SmartNotificationEngine {
         //Log.d(LOG, "naive: " + NaiveResult);
         //Log.d(LOG, "tree :" + TreeResult);
 
-        NAIVE_BAYES_PREDICTOR = (NaiveResult > 0.1) ? Prediction.ML_YES : Prediction.ML_NO;
+        //NAIVE_BAYES_PREDICTOR = (NaiveResult > 0.1) ? Prediction.ML_YES : Prediction.ML_NO;
         C49_PREDICTOR = (TreeResult > 0.1) ? Prediction.ML_YES : Prediction.ML_NO;
-
+        /*
         if(NaiveResult>0.1) //true if naive bayes says yes
         {
             return true;
         }
+        */
         if(TreeResult>0.1) //true if J48 says yes
         {
             return true;

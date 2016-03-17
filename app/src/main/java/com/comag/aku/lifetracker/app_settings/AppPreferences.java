@@ -47,22 +47,80 @@ public class AppPreferences {
 
     public static UserSettings userSettings = new UserSettings();
 
+    // hardcoded ML participant listing
     public static void setNotificationMode(boolean smart) {
         SharedPreferences.Editor editor = sharedPrefs.edit();
-        editor.putBoolean("smart_notification", smart);
-        editor.apply();
+        editor.putBoolean("smart_notification", true);
+        editor.commit();
+        /*
+        if (userSettings.getUserId() != null) {
+            Integer uId = Integer.valueOf(userSettings.getUserId());
+            if (mlParticipants.contains(uId)) {
+                SharedPreferences.Editor editor = sharedPrefs.edit();
+                //editor.putBoolean("smart_notification", smart);
+                editor.putBoolean("smart_notification", true);
+                editor.commit();
+            }
+            else {
+                SharedPreferences.Editor editor = sharedPrefs.edit();
+                //editor.putBoolean("smart_notification", smart);
+                editor.putBoolean("smart_notification", false);
+                editor.commit();
+            }
+        }
+        else {
+            load();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    setNotificationMode(true);
+                }
+            }, 5000);
+        }
+        */
     }
 
     public static NotificationService.NotificationMode getNotificationMode() {
+        return NotificationService.NotificationMode.LEARNING_MODE;
+
+        /*try {
+            if (userSettings != null && userSettings.getUserId() != null) {
+                Integer uId = Integer.valueOf(userSettings.getUserId());
+                if (mlParticipants.contains(uId)) {
+                    return NotificationService.NotificationMode.LEARNING_MODE;
+                } else {
+                    return NotificationService.NotificationMode.DUMMY_MODE;
+                }
+            }
+            else {
+                load();
+
+                    Integer uId = Integer.valueOf(userSettings.getUserId());
+                    if (mlParticipants.contains(uId)) {
+                        return NotificationService.NotificationMode.LEARNING_MODE;
+                    } else {
+                        return NotificationService.NotificationMode.DUMMY_MODE;
+                    }
+                }
+
+        }
+        catch (NullPointerException e) {
+            Log.d("AppPrefs", "Could not fetch user_id");
+            return NotificationService.NotificationMode.UNDEFINED;
+        }
+        catch (NumberFormatException e) {
+            Log.d("AppPrefs", "undefined user id");
+            return NotificationService.NotificationMode.UNDEFINED;
+        }
         try {
             init();
-            boolean b = sharedPrefs.getBoolean("smart_notification", false);
+            Boolean b = sharedPrefs.getBoolean("smart_notification", false);
             if (b) return NotificationService.NotificationMode.LEARNING_MODE;
             else return NotificationService.NotificationMode.DUMMY_MODE;
         }
         catch (NullPointerException e) {
-            return NotificationService.NotificationMode.DUMMY_MODE;
         }
+        */
     }
 
     private static void init() {
@@ -241,6 +299,8 @@ public class AppPreferences {
         userSettings.setPopupsAutomated(sharedPrefs.getBoolean(POPUP_AUTOMATED, true));
         userSettings.setPopupInterval(sharedPrefs.getInt(POPUP_INTERVAL, NotificationService.NOTIFICATION_DELAY_MS));
         userSettings.setUserId(sharedPrefs.getString(USER_ID, ""));
+
+        setNotificationMode(true);
 
         return true;
     }

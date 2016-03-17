@@ -36,31 +36,45 @@ public class NotificationService extends IntentService {
 
     private static final String LOG = "NotificationService";
 
+
     public static int NOTIFICATION_DELAY_MS = 20 * AppHelpers.MINUTE_IN_MILLISECONDS;
 
     public static long lastNotificationTime = System.currentTimeMillis();
 
-    public enum NotificationMode { DUMMY_MODE, LEARNING_MODE }
+    public enum NotificationMode { DUMMY_MODE, LEARNING_MODE, UNDEFINED }
+
+    private static Handler handler = new Handler();
 
     private static NotificationMode mode = AppPreferences.getNotificationMode();
+    //private static NotificationMode mode = NotificationMode.LEARNING_MODE;
     public static NotificationMode getMode() {return mode;}
     public static void setMode(NotificationMode newMode) {
+        AppPreferences.setNotificationMode(true);
+        mode = AppPreferences.getNotificationMode();
+
+        /*
         Log.d("NotificationService", "Setting new mode! " + getModeInt());
         if (!SmartNotificationEngine.isEnabled()) {
             mode = NotificationMode.DUMMY_MODE;
         }
         else mode = newMode;
         AppPreferences.setNotificationMode(newMode.equals(NotificationMode.LEARNING_MODE));
+        */
     }
 
     public static int getModeInt() {
+        AppPreferences.setNotificationMode(true);
+        return 1;
+        /*
+        mode = AppPreferences.getNotificationMode();
         switch (getMode()) {
             case DUMMY_MODE:
                 return 0;
             case LEARNING_MODE:
                 return 1;
         }
-        return 0;
+        return -1;
+        */
     }
 
     private static Context context;
@@ -84,7 +98,7 @@ public class NotificationService extends IntentService {
                     if ((System.currentTimeMillis() - lastSymptomSync) > 60 * 12 * AppHelpers.MINUTE_IN_MILLISECONDS) {
                         // send threaded query to dashboard to get symptom info +
                         // check if notitication_mode has changed
-                        new Handler().postDelayed(new Runnable() {
+                        handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 lastSymptomSync = System.currentTimeMillis();
@@ -143,6 +157,8 @@ public class NotificationService extends IntentService {
         final Intent restartIntent = new Intent(getApplicationContext(), NotificationService.class);
         restartIntent.putExtra("ALARM_RESTART_SERVICE_DIED", true);
         final RestartHandler restartServiceHandler = new RestartHandler(restartIntent, alarmMgr, getApplicationContext());
+        AnalyticsApplication.sendEvent("DEBUG", "setServiceKeepAlive()", "new restart intent set with delay" + restartAlarmInterval, System.currentTimeMillis());
+
         restartServiceHandler.sendEmptyMessageDelayed(0, 0);
     }
 
@@ -158,16 +174,22 @@ public class NotificationService extends IntentService {
 
         @Override
         public void handleMessage(Message msg) {
+            Log.d(LOG, "got restart message");
             Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.HOUR_OF_DAY, 8);
             PendingIntent pintent = PendingIntent.getService(applicationContext, 0, restartIntent, 0);
 
             // set restart reminder to 8 in the morning if in night hours (00:00 - 08:00)
-            if ((System.currentTimeMillis() - cal.getTimeInMillis()) < 0) {
-                alarmMgr.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + restartAlarmInterval, pintent);
+            if (cal.get(Calendar.HOUR_OF_DAY) < 8) {
+                Log.d(LOG, "Morning");
+                AnalyticsApplication.sendEvent("DEBUG", "handleMessage()", "It was morning", System.currentTimeMillis());
+                cal.set(Calendar.HOUR_OF_DAY, 8);
+                alarmMgr.set(AlarmManager.ELAPSED_REALTIME, cal.getTimeInMillis() - System.currentTimeMillis(), pintent);
                 sendEmptyMessageDelayed(0, cal.getTimeInMillis() - System.currentTimeMillis());
             }
             else {
+                Log.d(LOG, "Not morning");
+                AnalyticsApplication.sendEvent("DEBUG", "handleMessage()", "It was not morning", System.currentTimeMillis());
+
                 alarmMgr.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + restartAlarmInterval, pintent);
                 sendEmptyMessageDelayed(0, resetAlarmTimer);
             }
@@ -183,6 +205,7 @@ public class NotificationService extends IntentService {
             if (IS_RUNNING)
             {
                 Log.d(LOG, "Service already running - return immediately...");
+                AnalyticsApplication.sendEvent("DEBUG", "service_was_running", "set new service keep alive", System.currentTimeMillis());
                 setServiceKeepAlive();
                 return START_STICKY;
             }
@@ -198,7 +221,7 @@ public class NotificationService extends IntentService {
 
         switch (mode) {
             case DUMMY_MODE:
-                new Handler().postDelayed(new Runnable() {
+                handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         emitDummyMode();
@@ -207,7 +230,7 @@ public class NotificationService extends IntentService {
                 }, AppPreferences.userSettings.getPopupInterval());
                 break;
             case LEARNING_MODE:
-                new Handler().postDelayed(new Runnable() {
+                handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         emitLearningMode();
@@ -234,10 +257,14 @@ public class NotificationService extends IntentService {
                 getApplicationContext(), 1, restartService,
                 PendingIntent.FLAG_ONE_SHOT);
         AlarmManager alarmService = (AlarmManager)getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-        alarmService.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() +1000, restartServicePI);
+        alarmService.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 1000, restartServicePI);
     }
 
     private void postOnUnlock() {
+        Log.d("PostOnUnlock", getModeInt() + "");
+        if (mode == NotificationMode.UNDEFINED) {
+            mode = AppPreferences.getNotificationMode();
+        }
         // for debug
         //SmartNotificationEngine.generatePastContext();
         try {
@@ -269,19 +296,17 @@ public class NotificationService extends IntentService {
 
     private void emitDummyMode() {
         if ((System.currentTimeMillis() - lastNotificationTime) < 5*AppHelpers.MINUTE_IN_MILLISECONDS) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    emitDummyMode();
-                }
-            }, AppPreferences.userSettings.getPopupInterval());
+            handler.postDelayed(emitDummy, AppPreferences.userSettings.getPopupInterval());
             return;
+        }
+        if (mode == NotificationMode.UNDEFINED) {
+            mode = AppPreferences.getNotificationMode();
         }
         try {
             if ((Math.random() * 100) < NotificationPreferences.getCurrentPreference()) {
                 if (!mainRunning() && !AppHelpers.showingPopup && screenStatus == 1 && mode.equals(NotificationMode.DUMMY_MODE)) {
                     // thread this to prevent main thread crashing
-                    new Handler().postDelayed(new Runnable() {
+                    handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             new InputPopup().show();
@@ -291,39 +316,19 @@ public class NotificationService extends IntentService {
                     SmartNotificationEngine.emitNow();
 
                     AppHelpers.showingPopup = true;
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            emitDummyMode();
-                        }
-                    }, AppPreferences.userSettings.getPopupInterval());
+                    handler.postDelayed(emitDummy, AppPreferences.userSettings.getPopupInterval());
                 } else if (mode.equals(NotificationMode.DUMMY_MODE)) {
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            emitDummyMode();
-                        }
-                    }, AppPreferences.userSettings.getPopupInterval());
+                    handler.postDelayed(emitDummy, AppPreferences.userSettings.getPopupInterval());
                 }
             }
             //
             else if (mode.equals(NotificationMode.DUMMY_MODE)) {
                 SyncronizationController.storeNotificationResponse("no_popup_simple:" + NotificationPreferences.getCurrentPreference(), "not_shown", UserContextService.getUserContextString());
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        emitDummyMode();
-                    }
-                }, AppPreferences.userSettings.getPopupInterval());
+                handler.postDelayed(emitDummy, AppPreferences.userSettings.getPopupInterval());
             }
             else if (mode.equals(NotificationMode.LEARNING_MODE)) {
                 SyncronizationController.storeNotificationResponse("no_popup_simple:" + + NotificationPreferences.getCurrentPreference(), "not_shown", UserContextService.getUserContextString());
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        emitLearningMode();
-                    }
-                }, AppPreferences.userSettings.getPopupInterval());
+                handler.postDelayed(emitLearning, AppPreferences.userSettings.getPopupInterval());
             }
         }
         catch (Exception e) {
@@ -334,43 +339,41 @@ public class NotificationService extends IntentService {
 
     }
 
+    private Runnable emitLearning = new Runnable() {
+        @Override
+        public void run() {
+            emitLearningMode();
+        }
+    };
+
+
+    private Runnable emitDummy = new Runnable() {
+        @Override
+        public void run() {
+            emitDummyMode();
+        }
+    };
+
     private void emitLearningMode() {
         if ((System.currentTimeMillis() - lastNotificationTime) < 5*AppHelpers.MINUTE_IN_MILLISECONDS) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    emitDummyMode();
-                }
-            }, AppPreferences.userSettings.getPopupInterval());
+            handler.postDelayed(emitLearning, AppPreferences.userSettings.getPopupInterval());
             return;
+        }
+        if (mode == NotificationMode.UNDEFINED) {
+            mode = AppPreferences.getNotificationMode();
         }
         try {
             if (SmartNotificationEngine.emitNow() && !mainRunning() && !AppHelpers.showingPopup
                     && screenStatus == 1 && mode.equals(NotificationMode.LEARNING_MODE)) {
                 new InputPopup().show();
                 AppHelpers.showingPopup = true;
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        emitLearningMode();
-                    }
-                }, AppPreferences.userSettings.getPopupInterval());
+                handler.postDelayed(emitLearning, AppPreferences.userSettings.getPopupInterval());
             } else if (mode.equals(NotificationMode.LEARNING_MODE)) {
                 SyncronizationController.storeNotificationResponse("no_popup_ml", "not_shown", UserContextService.getUserContextString());
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        emitLearningMode();
-                    }
-                }, AppPreferences.userSettings.getPopupInterval());
+                handler.postDelayed(emitLearning, AppPreferences.userSettings.getPopupInterval());
             } else if (mode.equals(NotificationMode.DUMMY_MODE)) {
                 SyncronizationController.storeNotificationResponse("no_popup_ml", "not_shown", UserContextService.getUserContextString());
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        emitDummyMode();
-                    }
-                }, AppPreferences.userSettings.getPopupInterval());
+                handler.postDelayed(emitDummy, AppPreferences.userSettings.getPopupInterval());
             }
         }
         catch (Exception e) {
@@ -389,6 +392,9 @@ public class NotificationService extends IntentService {
         IS_RUNNING = false;
 
         Aware.stopSensor(this, Aware_Preferences.STATUS_SCREEN);
+
+        handler.removeCallbacks(emitLearning);
+        handler.removeCallbacks(emitDummy);
 
         try {
             if (s != null) unregisterReceiver(s);

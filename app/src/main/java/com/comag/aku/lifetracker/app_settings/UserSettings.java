@@ -1,6 +1,7 @@
 package com.comag.aku.lifetracker.app_settings;
 
 import com.aware.Aware;
+import com.comag.aku.lifetracker.AppHelpers;
 import com.comag.aku.lifetracker.services.NotificationPreferences;
 import com.comag.aku.lifetracker.services.NotificationService;
 
@@ -11,9 +12,10 @@ public class UserSettings {
     boolean popupsAutomated = true;
     int notificationHour = 18;
     int popupFrequency = 50;
-    int popupInterval = NotificationService.NOTIFICATION_DELAY_MS;
+    int popupInterval = 1 * AppHelpers.MINUTE_IN_MILLISECONDS;
     String userId = "";
     boolean data_sync = false;
+
 
     public void setPopupsAutomated(Boolean automated) {
         popupsAutomated = automated;
