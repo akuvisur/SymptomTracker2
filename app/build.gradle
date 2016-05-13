@@ -1,21 +1,37 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.jfrog.bintray'
+
+version = version_readable
+group = "com.awareframework"
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion "23.0.2"
 
     defaultConfig {
         applicationId "com.comag.aku.lifetracker"
         minSdkVersion 17
         targetSdkVersion 23
         versionCode 20
-        versionName "0.99.14"
+        versionName "0.99.15"
         multiDexEnabled true
     }
+
+    signingConfigs {
+        release {
+            //set values in ~/.gradle/gradle.properties to sign with your own keystore and certificate
+            storeFile file(project.hasProperty("KEYSTORE_FILE") ? KEYSTORE_FILE : "/")
+            storePassword project.hasProperty("KEYSTORE_PASSWORD") ? KEYSTORE_PASSWORD : ""
+            keyAlias project.hasProperty("KEY") ? KEY : ""
+            keyPassword project.hasProperty("KEY_PASSWORD") ? KEY_PASSWORD : ""
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     dexOptions {
@@ -27,25 +43,56 @@ android {
 
 }
 
+bintray {
+    user = project.hasProperty("bintrayUsername") ? bintrayUsername : ""
+    key = project.hasProperty("bintrayKey") ? bintrayKey : ""
+
+    configurations = ['archives']
+
+    publish = true
+
+    pkg {
+        repo = 'com.awareframework'
+        name = android.defaultConfig.applicationId
+        licenses = ['Apache-2.0']
+        websiteUrl = 'https://github.com/akuvisur/SymptomTracker2' //EDIT ME
+        issueTrackerUrl = 'https://github.com/akuvisur/SymptomTracker2/issues' //EDIT ME
+        labels = ['aar', 'android', 'framework', 'aware']
+        publicDownloadNumbers = true
+        vcsUrl = 'https://github.com/akuvisur/SymptomTracker2.git' //EDIT ME
+        desc = "AWARE Plugin: Template" //EDIT ME
+        userOrg = user
+        githubRepo = "akuvisur/SymptomTracker2" //EDIT ME
+
+        version {
+            name = "$version_readable"
+            desc = bintray.pkg.desc
+            released = new Date()
+            vcsTag = "$version_readable"
+        }
+    }
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile project(':com.aware.plugin.google.activity_recognition')
-    compile 'com.awareframework:aware-core:3.9.8@aar'
+    compile "com.awareframework:aware-core:${aware_libs}@aar"
     compile 'nz.ac.waikato.cms.weka:weka-dev:3.7.10'
     compile 'com.google.android.gms:play-services:8.4.0'
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.android.support:cardview-v7:23.1.1'
-    compile 'com.android.support:design:23.1.1'
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
     compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
     compile 'com.colintmiller:simplenosql:0.5.1'
-    compile 'com.github.PhilJay:MPAndroidChart:v2.1.6'
+    compile 'com.github.PhilJay:MPAndroidChart:v2.2.4'
     compile 'com.google.android.gms:play-services-ads:8.4.0'
     compile 'com.google.android.gms:play-services-identity:8.4.0'
     compile 'com.google.android.gms:play-services-gcm:8.4.0'
     compile 'com.google.android.gms:play-services-analytics:8.4.0'
     compile 'com.koushikdutta.ion:ion:2.1.6'
-
+    compile 'com.google.android.gms:play-services-auth:8.4.0'
+    compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.0.2'
+    compile project(':com.aware.plugin.google.activity_recognition')
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:design:23.4.0'
 }
+

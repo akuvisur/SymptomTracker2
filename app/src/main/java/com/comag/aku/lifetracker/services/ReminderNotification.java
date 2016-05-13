@@ -55,6 +55,10 @@ public class ReminderNotification {
                     public void retrievedResults(List<NoSQLEntity<DataObject>> entities) {
                         // remove keys from missingList if they are current data
                         for (int i = 0; i < entities.size(); i++) {
+                            // no reminders for hourly inputted data
+                            if (entities.get(i).getData().c.window.equals("hour")) {
+                                missingKeys.remove(entities.get(i).getData().c.key);
+                            }
                             if (entities.get(i).getData().c.isCurrent()) {
                                 missingKeys.remove(entities.get(i).getData().c.key);
                             }

@@ -109,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
         mTracker = application.getDefaultTracker();
 
         // start aware
+        Log.d("launch", "starting aware");
         Intent aware = new Intent(this, Aware.class);
         startService(aware);
 

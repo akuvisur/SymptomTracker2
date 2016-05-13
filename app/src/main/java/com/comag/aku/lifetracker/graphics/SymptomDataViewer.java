@@ -2,7 +2,6 @@ package com.comag.aku.lifetracker.graphics;
 
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -34,6 +33,8 @@ import com.github.mikephil.charting.data.BubbleEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.IBubbleDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -143,7 +144,7 @@ public class SymptomDataViewer {
     private static void parseSymptomChartValues() {
         Calendar c = Calendar.getInstance();
         HashMap<String, ArrayList<BubbleEntry>> rows = new HashMap<>();
-        ArrayList<BubbleDataSet> data = new ArrayList<>();
+        ArrayList<IBubbleDataSet> data = new ArrayList<>();
 
         c.setTimeInMillis(System.currentTimeMillis());
         c.set(Calendar.MINUTE, 0);
@@ -219,9 +220,7 @@ public class SymptomDataViewer {
                 rowIndex++;
             }
         }
-        for (BubbleDataSet ds : data) {
-            Log.d("bubblesize", "yvals: " + ds.getYVals() + " name: " + ds.getLabel());
-        }
+
         symptomChartData = new BubbleData(xLabels, data);
         //symptomChartData.setValueFormatter(new ChartSymptomValueFormatter());
         symptomChartData.setHighlightEnabled(true);
@@ -429,7 +428,7 @@ public class SymptomDataViewer {
             else yHighlight.add(new Entry(-2f, x));
         }
 
-        ArrayList<LineDataSet> values = new ArrayList<>();
+        ArrayList<ILineDataSet> values = new ArrayList<>();
         LineDataSet l = new LineDataSet(yVals, "");
         l.setDrawValues(false);
         l.setColor(ContextCompat.getColor(AppHelpers.currentContext, R.color.Symptom_lighter));
@@ -693,8 +692,7 @@ public class SymptomDataViewer {
         }
 
         @Override
-        protected void calcMinMax(int start, int end) {
-            super.calcMinMax(start, end);
+        public void calcMinMax(int start, int end) {
             // set max size to slightly bigger than maxvalue(3) so the edges dont touch
             mMaxSize = 3.1f;
         }

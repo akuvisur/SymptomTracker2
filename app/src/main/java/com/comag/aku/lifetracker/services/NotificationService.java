@@ -1,19 +1,14 @@
 package com.comag.aku.lifetracker.services;
 
-import android.app.AlarmManager;
 import android.app.IntentService;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
-import android.os.Message;
-import android.os.SystemClock;
 import android.util.Log;
 
 import com.aware.Aware;
-import com.aware.Aware_Preferences;
 import com.aware.Screen;
 import com.comag.aku.lifetracker.AppHelpers;
 import com.comag.aku.lifetracker.R;
@@ -45,14 +40,15 @@ public class NotificationService extends IntentService {
 
     private static Handler handler = new Handler();
 
-    private static NotificationMode mode = AppPreferences.getNotificationMode();
-    //private static NotificationMode mode = NotificationMode.LEARNING_MODE;
+    //private static NotificationMode mode = AppPreferences.getNotificationMode();
+    private static NotificationMode mode = NotificationMode.LEARNING_MODE;
     public static NotificationMode getMode() {return mode;}
     public static void setMode(NotificationMode newMode) {
+        mode = NotificationMode.LEARNING_MODE;
+        /*
         AppPreferences.setNotificationMode(true);
         mode = AppPreferences.getNotificationMode();
 
-        /*
         Log.d("NotificationService", "Setting new mode! " + getModeInt());
         if (!SmartNotificationEngine.isEnabled()) {
             mode = NotificationMode.DUMMY_MODE;
@@ -130,11 +126,7 @@ public class NotificationService extends IntentService {
         context = this;
 
         //Apply settings
-        Aware.startSensor(this, Aware_Preferences.STATUS_SCREEN);
-
-        Aware.setSetting(this, Aware_Preferences.STATUS_SCREEN, true);
-
-        //startService(new Intent(this, Aware.class));
+        Aware.startScreen(this);
 
         s = new ScreenReceiver();
         IntentFilter i = new IntentFilter();
@@ -149,68 +141,9 @@ public class NotificationService extends IntentService {
         startService(plugin);
     }
 
-    // set system wide alarm to restart service if it has been shutdown
-    final static int restartAlarmInterval = 20*60*1000;
-    final static int resetAlarmTimer = 5*60*1000;
-    public void setServiceKeepAlive() {
-        final AlarmManager alarmMgr = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-        final Intent restartIntent = new Intent(getApplicationContext(), NotificationService.class);
-        restartIntent.putExtra("ALARM_RESTART_SERVICE_DIED", true);
-        final RestartHandler restartServiceHandler = new RestartHandler(restartIntent, alarmMgr, getApplicationContext());
-        AnalyticsApplication.sendEvent("DEBUG", "setServiceKeepAlive()", "new restart intent set with delay" + restartAlarmInterval, System.currentTimeMillis());
 
-        restartServiceHandler.sendEmptyMessageDelayed(0, 0);
-    }
-
-    private static class RestartHandler extends Handler {
-        Intent restartIntent;
-        AlarmManager alarmMgr;
-        Context applicationContext;
-        public RestartHandler(Intent restartIntent, AlarmManager alarmMgr, Context applicationContext) {
-            this.restartIntent = restartIntent;
-            this.alarmMgr = alarmMgr;
-            this.applicationContext = applicationContext;
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            Log.d(LOG, "got restart message");
-            Calendar cal = Calendar.getInstance();
-            PendingIntent pintent = PendingIntent.getService(applicationContext, 0, restartIntent, 0);
-
-            // set restart reminder to 8 in the morning if in night hours (00:00 - 08:00)
-            if (cal.get(Calendar.HOUR_OF_DAY) < 8) {
-                Log.d(LOG, "Morning");
-                AnalyticsApplication.sendEvent("DEBUG", "handleMessage()", "It was morning", System.currentTimeMillis());
-                cal.set(Calendar.HOUR_OF_DAY, 8);
-                alarmMgr.set(AlarmManager.ELAPSED_REALTIME, cal.getTimeInMillis() - System.currentTimeMillis(), pintent);
-                sendEmptyMessageDelayed(0, cal.getTimeInMillis() - System.currentTimeMillis());
-            }
-            else {
-                Log.d(LOG, "Not morning");
-                AnalyticsApplication.sendEvent("DEBUG", "handleMessage()", "It was not morning", System.currentTimeMillis());
-
-                alarmMgr.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + restartAlarmInterval, pintent);
-                sendEmptyMessageDelayed(0, resetAlarmTimer);
-            }
-        }
-    }
-
-    private static boolean IS_RUNNING = false;
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if ((intent != null) && (intent.getBooleanExtra("ALARM_RESTART_SERVICE_DIED", false)))
-        {
-            Log.d(LOG, "onStartCommand after ALARM_RESTART_SERVICE_DIED");
-            if (IS_RUNNING)
-            {
-                Log.d(LOG, "Service already running - return immediately...");
-                AnalyticsApplication.sendEvent("DEBUG", "service_was_running", "set new service keep alive", System.currentTimeMillis());
-                setServiceKeepAlive();
-                return START_STICKY;
-            }
-        }
-
         // if app not set up, no need for the service to run
         if (!AppPreferences.appIsSetUp()) return START_NOT_STICKY;
 
@@ -219,45 +152,7 @@ public class NotificationService extends IntentService {
         // otherwise load the prefs etc..
         if (!AppPreferences.hasLoaded()) AppPreferences.load();
 
-        switch (mode) {
-            case DUMMY_MODE:
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        emitDummyMode();
-                        emitNotification();
-                    }
-                }, AppPreferences.userSettings.getPopupInterval());
-                break;
-            case LEARNING_MODE:
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        emitLearningMode();
-                        emitNotification();
-                    }
-                }, AppPreferences.userSettings.getPopupInterval());
-                break;
-        }
-
-        setServiceKeepAlive();
-
-        IS_RUNNING = true;
-
         return START_STICKY;
-    }
-
-    @Override
-    public void onTaskRemoved(Intent rootIntent) {
-        IS_RUNNING = false;
-        Intent restartService = new Intent(getApplicationContext(),
-                NotificationService.class);
-        restartService.setPackage(getPackageName());
-        PendingIntent restartServicePI = PendingIntent.getService(
-                getApplicationContext(), 1, restartService,
-                PendingIntent.FLAG_ONE_SHOT);
-        AlarmManager alarmService = (AlarmManager)getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-        alarmService.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 1000, restartServicePI);
     }
 
     private void postOnUnlock() {
@@ -296,7 +191,6 @@ public class NotificationService extends IntentService {
 
     private void emitDummyMode() {
         if ((System.currentTimeMillis() - lastNotificationTime) < 5*AppHelpers.MINUTE_IN_MILLISECONDS) {
-            handler.postDelayed(emitDummy, AppPreferences.userSettings.getPopupInterval());
             return;
         }
         if (mode == NotificationMode.UNDEFINED) {
@@ -321,7 +215,7 @@ public class NotificationService extends IntentService {
                     handler.postDelayed(emitDummy, AppPreferences.userSettings.getPopupInterval());
                 }
             }
-            //
+
             else if (mode.equals(NotificationMode.DUMMY_MODE)) {
                 SyncronizationController.storeNotificationResponse("no_popup_simple:" + NotificationPreferences.getCurrentPreference(), "not_shown", UserContextService.getUserContextString());
                 handler.postDelayed(emitDummy, AppPreferences.userSettings.getPopupInterval());
@@ -389,19 +283,13 @@ public class NotificationService extends IntentService {
 
     @Override
     public void onDestroy() {
-        IS_RUNNING = false;
-
-        Aware.stopSensor(this, Aware_Preferences.STATUS_SCREEN);
+        Aware.stopScreen(this);
 
         handler.removeCallbacks(emitLearning);
         handler.removeCallbacks(emitDummy);
 
         try {
             if (s != null) unregisterReceiver(s);
-            /*
-            Intent aware = new Intent(this, Aware.class);
-            stopService(aware);
-            */
         }
         catch (Exception e) {}
     }
@@ -446,16 +334,7 @@ public class NotificationService extends IntentService {
             // return true to prevent popups in case of crashes
             return true;
         }
-        /*
-        Log.d("mainact", MainActivity.class.getCanonicalName());
-        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> runningTaskInfo = manager.getRunningTasks(1);
-        Log.d("foreground", UserContextService.foreground_app);
-        for (int i = 0; i < runningTaskInfo.size(); i++) {
-            Log.d("running", runningTaskInfo.get(i).topActivity.getClassName());
-            if (runningTaskInfo.get(i).topActivity.getClassName().equals(MainActivity.class.getCanonicalName())) return true;
-        }
-        return false;*/
+
     }
 
 }

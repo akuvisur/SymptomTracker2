@@ -17,7 +17,6 @@ import android.util.Log;
 
 import com.aware.Applications;
 import com.aware.Aware;
-import com.aware.Aware_Preferences;
 import com.aware.Battery;
 import com.aware.Communication;
 import com.aware.Network;
@@ -183,7 +182,7 @@ public class UserContextService extends IntentService {
                         setProximity(c);
                     }
                     break;
-                case Plugin.ACTION_AWARE_GOOGLE_ACTIVITY_RECOGNITION:
+                case "ACTION_AWARE_GOOGLE_ACTIVITY_RECOGNITION":
                     if (intent.getIntExtra("confidence", 0) > 60 && intent.getIntExtra("activity", -1) > -1) {
                         activity = new Tuple(System.currentTimeMillis(), intent.getIntExtra("activity", -1));
                     }
@@ -271,25 +270,6 @@ public class UserContextService extends IntentService {
         else network_type = new Tuple(System.currentTimeMillis(), 3);
     }
 
-    private int calculatePosture(ContentValues c) {
-        // if tilting positively and in an angle between 20 and 80
-        // the device is in a normal hand-held position
-        if ((c.getAsDouble("double_values_1") * c.getAsDouble("double_values_2")) > 0 &&
-                (0.20 < Math.abs(c.getAsDouble("double_values_1")) && Math.abs(c.getAsDouble("double_values_1")) < 0.40)) {
-            postureBuffer = 0;
-            return 1;
-        }
-        // because of the variance in the sensor values we want to verify the
-        // position based on a 10-point buffer
-        else {
-            postureBuffer++;
-            if (postureBuffer > 10) {
-                return 0;
-            }
-            else return 1;
-        }
-    }
-
     // allow only one instance
     static ContextReceiver co;
 
@@ -353,23 +333,11 @@ public class UserContextService extends IntentService {
 
         Log.d("ContextService", "Started");
 
-        Aware.setSetting(this, Aware_Preferences.STATUS_ROTATION, false);
-        Aware.setSetting(this, Aware_Preferences.STATUS_BATTERY, true);
-        Aware.setSetting(this, Aware_Preferences.STATUS_CALLS, true);
-        Aware.setSetting(this, Aware_Preferences.STATUS_NETWORK_EVENTS, true);
-        //Aware.setSetting(this, Aware_Preferences.STATUS_APPLICATIONS, true);
-        Aware.setSetting(this, Aware_Preferences.STATUS_PROXIMITY, true);
-        Aware.setSetting(this, Aware_Preferences.STATUS_BATTERY, true);
-        Aware.setSetting(this, "com.aware.plugin.google.activity_recognition", true);
-
-        //Aware.setSetting(this, Aware_Preferences.FREQUENCY_ROTATION, 60000);
-
-        //Aware.startSensor(this, Aware_Preferences.STATUS_ROTATION);
-        Aware.startSensor(this, Aware_Preferences.STATUS_BATTERY);
-        Aware.startSensor(this, Aware_Preferences.STATUS_CALLS);
-        Aware.startSensor(this, Aware_Preferences.STATUS_NETWORK_EVENTS);
-        //Aware.startSensor(this, Aware_Preferences.STATUS_APPLICATIONS);
-        Aware.startSensor(this, Aware_Preferences.STATUS_PROXIMITY);
+        Aware.startBattery(this);
+        Aware.startCommunication(this);
+        Aware.startApplications(this);
+        Aware.startProximity(this);
+        Aware.startNetwork(this);
 
         Aware.startPlugin(this, "com.aware.plugin.google.activity_recognition");
 
@@ -446,11 +414,11 @@ public class UserContextService extends IntentService {
     public void onDestroy() {
         IS_RUNNING = false;
 
-        Aware.stopSensor(this, Aware_Preferences.STATUS_ROTATION);
-        Aware.stopSensor(this, Aware_Preferences.STATUS_BATTERY);
-        Aware.stopSensor(this, Aware_Preferences.STATUS_CALLS);
-        Aware.stopSensor(this, Aware_Preferences.STATUS_NETWORK_EVENTS);
-        //Aware.setSetting(this, Aware_Preferences.STATUS_APPLICATIONS, false);
+        Aware.stopApplications(this);
+        Aware.stopBattery(this);
+        Aware.stopCommunication(this);
+        Aware.stopNetwork(this);
+        Aware.stopProximity(this);
 
         unregisterReceiver(co);
 

@@ -14,7 +14,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.trees.J48;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -71,7 +70,6 @@ public class SmartNotificationEngine {
     static JSONObject userContext;
     public static boolean emitNow() {
         Log.d(LOG, "emitnow");
-        Double NaiveResult =0d;
         Double TreeResult =0d;
         long start=System.currentTimeMillis();
 
@@ -81,19 +79,14 @@ public class SmartNotificationEngine {
         // get current context
         userContext = UserContextService.getUserContext();
 
+        if (pastContext.size() < 5) return true;
+
         try {
             //max training size
-            final int size=900;
+            final int size=2000;
 
             int actual_size=pastContext.size();
             contextSize = actual_size;
-
-            if(actual_size < MINIMUM_CONTEXT_SIZE) //too small, return true
-            {
-                C49_PREDICTOR = Prediction.ML_UNDEFINED;
-                NAIVE_BAYES_PREDICTOR = Prediction.ML_UNDEFINED;
-                return true;
-            }
 
             //container for training data
             ArrayList<Attribute> atts = new ArrayList<Attribute>(14);
@@ -101,7 +94,6 @@ public class SmartNotificationEngine {
             classVal.add("ok");
             classVal.add("no");
             double[][] instanceValue1 = new double[size][14];
-
 
             // get context data from userContext JSONObject
             for (int i = 0; i < actual_size ; i++) {
@@ -114,49 +106,19 @@ public class SmartNotificationEngine {
                     // get the doubles for past to NB
                     JSONObject o = pastContext.get(actual_size-1-i);
                     Double hour = o.getDouble("hour");
-
                     Double minute = o.getDouble("minute");
-
                     Double day_of_week = o.getDouble("day_of_week");
-
                     Double battery_level = o.getDouble("battery_level");
-
                     Double battery_charging = o.getDouble("battery_charging");
-
                     Double foreground_package = o.getDouble("foreground_package");
-
                     Double proximity = o.getDouble("proximity");
-
                     Double last_call = o.getDouble("last_call");
-
                     Double internet_available = o.getDouble("internet_available");
-
                     Double wifi_available = o.getDouble("wifi_available");
-
                     Double network_type = o.getDouble("network_type");
-
                     Double last_action = o.getDouble("last_action");
-
                     Double activity = o.getDouble("activity");
-
                     String valueString = o.getString("value");
-
-
-                    //Log.d("past_context","58 hour = "+ hour);
-                    //Log.d("past_context","58 minute = "+ minute);
-                    //Log.d("past_context","58 day_of_week = "+ day_of_week);
-                    //Log.d("past_context","58 battery_level = "+ battery_level);
-                    //Log.d("past_context","58 battery_charging = "+ battery_charging);
-                    //Log.d("past_context","58 foreground_package = "+ foreground_package);
-                    //Log.d("past_context","58 proximity = "+ proximity);
-                    //Log.d("past_context","58 last_call = "+ last_call);
-                    //Log.d("past_context","58 internet_available = "+ internet_available);
-                    //Log.d("past_context","58 wifi_available = "+ wifi_available);
-                    //Log.d("past_context","58 network_type = "+ network_type);
-                    //Log.d("past_context","58 last_action = "+ last_action);
-                    //Log.d("past_context","58 activity = "+ activity);
-                    //Log.d("past_context","58 valueString = "+ valueString);
-
                     int value=0;
                     if(valueString.equals("ok") || valueString.equals("app"))
                     {
@@ -179,12 +141,10 @@ public class SmartNotificationEngine {
 
                 }
                 catch (JSONException e) {
-                    NAIVE_BAYES_PREDICTOR = Prediction.ML_UNDEFINED;
                     C49_PREDICTOR = Prediction.ML_UNDEFINED;
                     //Log.d("past_context", "object naive = "+i);
                 }
             }
-
 
             // do training
             atts.add(new Attribute("1"));
@@ -208,16 +168,10 @@ public class SmartNotificationEngine {
             }
             dataRaw.setClassIndex(dataRaw.numAttributes() - 1);
 
-            NaiveBayes model = new NaiveBayes();
-            //Log.d("past_context", "122");
-
-            //Log.d("past_context", "136");
-            model.buildClassifier(dataRaw);   // build classifier
 
             Instances dataRaw2 = new Instances("EvalInstances", atts, 0);
 
             double[] instanceValue3 = new double[dataRaw2.numAttributes()];
-            //Log.d("past_context", "142");
             try {
                 // get the doubles for current
                 Double hour = userContext.getDouble("hour");
@@ -250,20 +204,12 @@ public class SmartNotificationEngine {
 
             }
             catch (JSONException e) {
-                NAIVE_BAYES_PREDICTOR = Prediction.ML_UNDEFINED;
                 C49_PREDICTOR = Prediction.ML_UNDEFINED;
-                //Log.d("past_context", "current naive");
             }
 
-            //Log.d("past_context", "167");
             dataRaw2.add(new DenseInstance(1.0, instanceValue3));
             dataRaw2.setClassIndex(dataRaw2.numAttributes() - 1);
 
-            //then predict
-            //Log.d("past_context", "172");
-            //NaiveResult = model.classifyInstance(dataRaw2.instance(0));
-
-            //Log.d("past_context", "173 Naive Bayes Classification result= "+NaiveResult);
             String[] options = new String[1];
 
             //we use weka j48 here
@@ -272,28 +218,15 @@ public class SmartNotificationEngine {
             tree.setOptions(options);
             tree.buildClassifier(dataRaw);
             TreeResult=tree.classifyInstance(dataRaw2.instance(0));
-            //Log.d("past_context", "201 Tree Classification result= "+TreeResult);
 
         }
         catch(Exception e) {
             e.printStackTrace();
-            NAIVE_BAYES_PREDICTOR = Prediction.ML_UNDEFINED;
             C49_PREDICTOR = Prediction.ML_UNDEFINED;
         }
 
-        long end=System.currentTimeMillis();
-        //Log.d("past_context", "Time spent= "+(end-start));
-        //Log.d(LOG, "naive: " + NaiveResult);
-        //Log.d(LOG, "tree :" + TreeResult);
-
-        //NAIVE_BAYES_PREDICTOR = (NaiveResult > 0.1) ? Prediction.ML_YES : Prediction.ML_NO;
         C49_PREDICTOR = (TreeResult > 0.1) ? Prediction.ML_YES : Prediction.ML_NO;
-        /*
-        if(NaiveResult>0.1) //true if naive bayes says yes
-        {
-            return true;
-        }
-        */
+
         if(TreeResult>0.1) //true if J48 says yes
         {
             return true;
