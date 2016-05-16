@@ -227,12 +227,17 @@ public class SmartNotificationEngine {
 
         C49_PREDICTOR = (TreeResult > 0.1) ? Prediction.ML_YES : Prediction.ML_NO;
 
-        if(TreeResult>0.1) //true if J48 says yes
-        {
-            return true;
+        Log.d("C49Tree", C49_PREDICTOR.toString());
+        Log.d("C49Result", TreeResult.toString());
+        Log.d("ContextSize", contextSize.toString());
+
+        // prevent total lack of popups with contextSize of 100 or less
+        if (C49_PREDICTOR == Prediction.ML_NO && contextSize < 100) {
+            return (Math.random() * 100) < 10;
         }
-        // otherwise return false;
-        return false;
+
+        return TreeResult>0.1; //true if J48 says yes
+
     }
 
     private static SyncProvider sp;
